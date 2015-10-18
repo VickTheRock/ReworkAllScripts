@@ -205,7 +205,7 @@ namespace EmberSpirit
                         halberd.CanBeCasted() &&
                         me.CanCast() &&
                         !target.IsMagicImmune() &&
-                        (abyssal.CanBeCasted() &&
+                        (halberd.CanBeCasted() &&
                         Utils.SleepCheck("halberd") &&
                         me.Distance2D(target) <= 700)
                         )
@@ -303,16 +303,9 @@ namespace EmberSpirit
             if (!Game.IsChatOpen)
             {
                 if (Game.IsKeyDown(KeyCombo))
-                {
                     activated = true;
-                }
                 else
-                {
                     activated = false;
-                }
-
-               
-                
             }
         }
 
