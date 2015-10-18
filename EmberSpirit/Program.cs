@@ -13,6 +13,7 @@ namespace EmberSpirit
 {
     internal class Program
     {
+        private static Item mjollnir, mom, stick, wand, dagon, satanic, diffusal, ethereal, soulring, halberd, abyssal, shiva, arcane, cheese, orchid;
         private static bool activated;
         private static bool toggle = true;
         private static Font txt;
@@ -66,28 +67,44 @@ namespace EmberSpirit
             if (activated && toggle && me.CanCast())
             {
                 var target = me.ClosestToMouseTarget(2000);
-                if (target.IsAlive && !target.IsInvul())
+                if (target.IsAlive && !target.IsInvul() && target != null)
                 {
                     var Q = me.Spellbook.SpellQ;
                     var W = me.Spellbook.SpellW;
                     var E = me.Spellbook.SpellE;
                     var R = me.Spellbook.SpellR;
                     var D = me.Spellbook.SpellD;
-                    var dagon = me.GetDagon();
-                    var ethereal = me.FindItem("item_ethereal_blade");
-                    var soulring = me.FindItem("item_soul_ring");
-                    var halberd = me.FindItem("item_heavens_halberd");
-                    var abyssal = me.FindItem("item_abyssal_blade");
-                    var shiva = me.FindItem("item_shivas_guard");
-                    var mjollnir = me.FindItem("item_mjollnir");
-                    var mom = me.FindItem("item_mask_of_madness");
-                    var satanic = me.FindItem("item_satanic");
-                    var arcane = me.FindItem("item_arcane_boots");
-                    var diffusal = me.FindItem("item_diffusal_blade");
-                    var wand = me.FindItem("item_magic_wand");
-                    var stick = me.FindItem("item_magic_stick");
-                    var cheese = me.FindItem("item_cheese");
-                    var orchid = me.FindItem("item_orchid");
+                    
+                    if (dagon == null)
+                        dagon = me.GetDagon();
+                    if (ethereal == null)
+                        ethereal = me.FindItem("item_ethereal_blade");
+                    if (soulring == null)
+                        soulring = me.FindItem("item_soul_ring");
+                    if (halberd == null)
+                        halberd = me.FindItem("item_heavens_halberd");
+                    if (abyssal == null)
+                        abyssal = me.FindItem("item_abyssal_blade");
+                    if (shiva == null)
+                        shiva = me.FindItem("item_shivas_guard");
+                    if (mjollnir == null)
+                        mjollnir = me.FindItem("item_mjollnir");
+                    if (mom == null)
+                        mom = me.FindItem("item_mask_of_madness");
+                    if (satanic == null)
+                        satanic = me.FindItem("item_satanic");
+                    if (arcane == null)
+                        arcane = me.FindItem("item_arcane_boots");
+                    if (diffusal == null)
+                        diffusal = me.FindItem("item_diffusal_blade");
+                    if (wand == null)
+                        wand = me.FindItem("item_magic_wand");
+                    if (stick == null)
+                        stick = me.FindItem("item_magic_stick");
+                    if (cheese == null)
+                        cheese = me.FindItem("item_cheese");
+                    if (orchid == null)
+                        orchid = me.FindItem("item_orchid");
 
                     if ( // Q Skill
                         Q != null &&
