@@ -279,10 +279,9 @@ namespace EmberSpirit
                         Utils.Sleep(350 + Game.Ping, "D");
                     }
                      
-                    }
-                
+                }
             }
-            }
+        }
         
 
       
