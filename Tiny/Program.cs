@@ -1,4 +1,4 @@
-﻿//ONLY LOVE MazaiPC ;) 
+//ONLY LOVE MazaiPC ;) 
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -18,14 +18,10 @@ namespace TinyAutoCombo
         private static bool toggle = true;
         private static Font txt;
         private static Font not;
-        private static bool AvalancheCasted;
-        private static bool TossCasted;
-        private static bool BlinkCasted;
         private static Key KeyCombo = Key.D;
         private static bool loaded;
         private static Hero me;
         private static Hero target;
-        private const Key ChaseKey = Key.D;
         private static ParticleEffect rangeDisplay;
         static void Main(string[] args)
         {
@@ -67,51 +63,175 @@ namespace TinyAutoCombo
                 return;
             }
 
-            if (activated && toggle && me.CanCast())
+            if (activated && toggle)
             {
                 var target = me.ClosestToMouseTarget(2000);
                 if (target.IsAlive && !target.IsInvul())
                 {
-                    var blink = me.Inventory.Items.FirstOrDefault(x => x.Name == "item_blink");
+                    var blink = me.FindItem("item_blink");
                     var Q = me.Spellbook.SpellQ;
                     var W = me.Spellbook.SpellW;
-
-                    if (target != null && target.IsAlive && target.IsVisible)
+                    var dagon = me.GetDagon();
+                    var soulring = me.FindItem("item_soul_ring");
+                    var halberd = me.FindItem("item_heavens_halberd");
+                    var abyssal = me.FindItem("item_abyssal_blade");
+                    var shiva = me.FindItem("item_shivas_guard");
+                    var mjollnir = me.FindItem("item_mjollnir");
+                    var mom = me.FindItem("item_mask_of_madness");
+                    var satanic = me.FindItem("item_satanic");
+                    var arcane = me.FindItem("item_arcane_boots");
+                    var diffusal = me.FindItem("item_diffusal_blade");
+                    var wand = me.FindItem("item_magic_wand");
+                    var stick = me.FindItem("item_magic_stick");
+                    var cheese = me.FindItem("item_cheese");
+                    var orchid = me.FindItem("item_orchid");
+                    if (target != null && target.IsAlive && target.IsVisible && me.Distance2D(target) <= 1200)
                     {
-                        if (Vector3.DistanceSquared(me.Position, target.Position) > 400 && BlinkCasted == false)
+                        if (Q.CanBeCasted() &&
+                            blink.CanBeCasted()  &&
+                            me.Position.Distance2D(target.Position) > 350 &&
+                            Utils.SleepCheck("blink"))
                         {
                             blink.UseAbility(target.Position);
-                            BlinkCasted = true;
-                            return;
+                            Utils.Sleep(250, "blink");
                         }
-                        else
+                        if (Q.CanBeCasted() &&
+                            me.Position.Distance2D(target.Position) < 350 &&
+                            Utils.SleepCheck("Q"))
                         {
-                            if (Q.AbilityState == AbilityState.Ready)
-                            {
-                                Q.UseAbility(target.Position);
-                                AvalancheCasted = true;
-                                TossCasted = false;
-                                BlinkCasted = false;
-                                return;
-                            }
-                            if (W.AbilityState == AbilityState.Ready)
-                            {
-                                W.UseAbility(target);
-                                AvalancheCasted = false;
-                                TossCasted = true;
-                                return;
-                            }
+                            Q.UseAbility(target.Position);
+                            Utils.Sleep(150, "Q");
                         }
-                        var range = 1600;
-                        var canAttack = !Orbwalking.AttackOnCooldown(target) && !target.IsInvul() && !target.IsAttackImmune()
-                                     && me.CanAttack();
-                        if (canAttack)
-                            if (me.Distance2D(target) <= range)
-                                if (me.Distance2D(target) <= 550 && Utils.SleepCheck("attack"))
-                                {
-                                    me.Attack(target);
-                                    Utils.Sleep(250, "attack");
-                                }
+                        if (W.CanBeCasted() && target.IsStunned() &&
+                            me.Position.Distance2D(target.Position) < 350 &&
+                            Utils.SleepCheck("blink"))
+                        {
+                            W.UseAbility(target);
+                            Utils.Sleep(100, "W");
+                        }
+
+                        if (// SoulRing Item 
+                            soulring != null &&
+                            me.Health / me.MaximumHealth <= 0.4 &&
+                            me.Mana <= Q.ManaCost &&
+                            soulring.CanBeCasted())
+                        {
+                            soulring.UseAbility();
+                        } // SoulRing Item end
+
+                        if (// Arcane Boots Item
+                            arcane != null &&
+                            me.Mana <= Q.ManaCost &&
+                            arcane.CanBeCasted())
+                        {
+                            arcane.UseAbility();
+                        } // Arcane Boots Item end
+
+                        if (// Shiva Item
+                            shiva != null &&
+                            shiva.CanBeCasted() &&
+                            me.CanCast() &&
+                            !target.IsMagicImmune() &&
+                            (shiva.CanBeCasted() &&
+                            Utils.SleepCheck("shiva") &&
+                            me.Distance2D(target) <= 600)
+                            )
+                        {
+                            shiva.UseAbility();
+                            Utils.Sleep(250 + Game.Ping, "shiva");
+                        } // Shiva Item end
+
+                        if (// MOM
+                            mom != null &&
+                            mom.CanBeCasted() &&
+                            me.CanCast() &&
+                            (mom.CanBeCasted() &&
+                            Utils.SleepCheck("mom") &&
+                            me.Distance2D(target) <= 700)
+                            )
+                        {
+                            mom.UseAbility();
+                            Utils.Sleep(250 + Game.Ping, "mom");
+                        } // MOM Item end
+
+
+                        if ( // Abyssal Blade
+                            abyssal != null &&
+                            abyssal.CanBeCasted() &&
+                            me.CanCast() &&
+                            !target.IsMagicImmune() &&
+                            (abyssal.CanBeCasted() &&
+                            Utils.SleepCheck("abyssal") &&
+                            me.Distance2D(target) <= 400)
+                            )
+                        {
+                            abyssal.UseAbility(target);
+                            Utils.Sleep(250 + Game.Ping, "abyssal");
+                        } // Abyssal Item end
+                        
+                        if ( // Hellbard
+                            halberd != null &&
+                            halberd.CanBeCasted() &&
+                            me.CanCast() &&
+                            !target.IsMagicImmune() &&
+                            (halberd.CanBeCasted() &&
+                            Utils.SleepCheck("halberd") &&
+                            me.Distance2D(target) <= 700)
+                            )
+                        {
+                            halberd.UseAbility(target);
+                            Utils.Sleep(250 + Game.Ping, "halberd");
+                        } // Hellbard Item end
+
+                        if ( // Mjollnir
+                            mjollnir != null &&
+                            mjollnir.CanBeCasted() &&
+                            me.CanCast() &&
+                            !target.IsMagicImmune() &&
+                            (mjollnir.CanBeCasted() &&
+                            Utils.SleepCheck("mjollnir") &&
+                            me.Distance2D(target) <= 900)
+                           )
+                        {
+                            mjollnir.UseAbility(me);
+                            Utils.Sleep(250 + Game.Ping, "mjollnir");
+                        } // Mjollnir Item end
+
+                        if (// Dagon
+                            dagon != null &&
+                            dagon.CanBeCasted() &&
+                            me.CanCast() &&
+                            !target.IsMagicImmune() &&
+                            (dagon.CanBeCasted() &&
+                            Utils.SleepCheck("dagon"))
+                           )
+                        {
+                            dagon.UseAbility(target);
+                            Utils.Sleep(150 + Game.Ping, "dagon");
+                        } // Dagon Item end
+
+                        if (
+                            // Stick
+                            (stick != null && stick.CanBeCasted()) ||
+                            (wand != null && wand.CanBeCasted()) ||
+                            (cheese != null && cheese.CanBeCasted()) &&
+                            Utils.SleepCheck("stick") &&
+                            me.Distance2D(target) <= 700)
+                        {
+                            stick.UseAbility();
+                            wand.UseAbility();
+                            cheese.UseAbility();
+                            Utils.Sleep(150 + Game.Ping, "stick");
+                        } // Stick Item end
+
+                        if (// Satanic 
+                            satanic != null &&
+                            me.Health / me.MaximumHealth <= 0.3 &&
+                            satanic.CanBeCasted() &&
+                            me.Distance2D(target) <= 700)
+                        {
+                            satanic.UseAbility();
+                        } // Satanic Item end
                     }
                 }
             }
