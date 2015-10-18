@@ -280,16 +280,7 @@ namespace EmberSpirit
                     }
                      
                     }
-                var range = 1600;
-                var canAttack = !Orbwalking.AttackOnCooldown(target) && !target.IsInvul() && !target.IsAttackImmune()
-                             && me.CanAttack();
-                if (canAttack)
-                    if (me.Distance2D(target) <= range)
-                        if (me.Distance2D(target) <= 550 && Utils.SleepCheck("attack"))
-                        {
-                            me.Attack(target);
-                            Utils.Sleep(250, "attack");
-                        }
+                
             }
             }
         
