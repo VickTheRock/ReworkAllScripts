@@ -89,7 +89,7 @@ namespace TinyAutoCombo
                     {
                         if (Q.CanBeCasted() &&
                             blink.CanBeCasted()  &&
-                            me.Position.Distance2D(target.Position) > 350 &&
+                            me.Position.Distance2D(target.Position) > 300 &&
                             Utils.SleepCheck("blink"))
                         {
                             blink.UseAbility(target.Position);
@@ -103,11 +103,11 @@ namespace TinyAutoCombo
                             Utils.Sleep(150, "Q");
                         }
                         if (W.CanBeCasted() && target.IsStunned() &&
-                            me.Position.Distance2D(target.Position) < 350 &&
-                            Utils.SleepCheck("blink"))
+                            me.Position.Distance2D(target.Position) < 280 &&
+                            Utils.SleepCheck("W"))
                         {
                             W.UseAbility(target);
-                            Utils.Sleep(100, "W");
+                            Utils.Sleep(60, "W");
                         }
 
                         if (// SoulRing Item 
