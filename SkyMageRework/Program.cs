@@ -87,8 +87,6 @@ namespace SkyMage
                     var satanic = me.FindItem("item_satanic");
                     var arcane = me.FindItem("item_arcane_boots");
                     var sheep = target.ClassID == ClassID.CDOTA_Unit_Hero_Tidehunter ? null : me.FindItem("item_sheepstick");
-                    var wand = me.FindItem("item_magic_wand");
-                    var stick = me.FindItem("item_magic_stick");
                     var cheese = me.FindItem("item_cheese");
                     var vail = me.FindItem("item_veil_of_discord");
                     var orchid = me.FindItem("item_orchid");
@@ -296,16 +294,12 @@ namespace SkyMage
 
                         if (
                             // Stick
-                            (stick != null && stick.CanBeCasted()) ||
-                            (wand != null && wand.CanBeCasted()) ||
                             (cheese != null && cheese.CanBeCasted()) &&
-                            Utils.SleepCheck("stick") &&
+                            Utils.SleepCheck("cheese") &&
                             me.Distance2D(target) <= 700)
                         {
-                            stick.UseAbility();
-                            wand.UseAbility();
                             cheese.UseAbility();
-                            Utils.Sleep(150 + Game.Ping, "stick");
+                            Utils.Sleep(150 + Game.Ping, "cheese");
                         } // Stick Item end
                         
                     }
