@@ -21,7 +21,7 @@ namespace EmberSpirit
         private static bool loaded;
         private static Hero me;
         private static Hero target;
-        private const Key ChaseKey = Key.D;
+        //private const Key ChaseKey = Key.D;
         private static ParticleEffect rangeDisplay;
         static void Main(string[] args)
         {
@@ -205,7 +205,7 @@ namespace EmberSpirit
                         halberd.CanBeCasted() &&
                         me.CanCast() &&
                         !target.IsMagicImmune() &&
-                        (abyssal.CanBeCasted() &&
+                        (halberd.CanBeCasted() &&
                         Utils.SleepCheck("halberd") &&
                         me.Distance2D(target) <= 700)
                         )
@@ -279,19 +279,9 @@ namespace EmberSpirit
                         Utils.Sleep(350 + Game.Ping, "D");
                     }
                      
-                    }
-                var range = 1600;
-                var canAttack = !Orbwalking.AttackOnCooldown(target) && !target.IsInvul() && !target.IsAttackImmune()
-                             && me.CanAttack();
-                if (canAttack)
-                    if (me.Distance2D(target) <= range)
-                        if (me.Distance2D(target) <= 550 && Utils.SleepCheck("attack"))
-                        {
-                            me.Attack(target);
-                            Utils.Sleep(250, "attack");
-                        }
+                }
             }
-            }
+        }
         
 
       
@@ -303,16 +293,9 @@ namespace EmberSpirit
             if (!Game.IsChatOpen)
             {
                 if (Game.IsKeyDown(KeyCombo))
-                {
                     activated = true;
-                }
                 else
-                {
                     activated = false;
-                }
-
-               
-                
             }
         }
 
