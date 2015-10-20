@@ -14,18 +14,16 @@ namespace EmberSpirit
     internal class Program
     {
         private static bool activated;
-        private static bool toggle = true;
+        private static bool togleQW;
         private static Font txt;
         private static Font not;
         private static Key KeyCombo = Key.D;
+        private const Key TogleQW = Key.W;
         private static bool loaded;
-        private static Hero me;
-        private static Hero target;
-        //private const Key ChaseKey = Key.D;
-        private static ParticleEffect rangeDisplay;
         static void Main(string[] args)
         {
             Game.OnUpdate += Game_OnUpdate;
+            Game.OnUpdate += Game_OnUpdateQW;
             Game.OnWndProc += Game_OnWndProc;
             Console.WriteLine("> EmberSpirit# loaded!");
 
@@ -58,15 +56,15 @@ namespace EmberSpirit
         public static void Game_OnUpdate(EventArgs args)
         {
             var me = ObjectMgr.LocalHero;
+           
+            
             if (!Game.IsInGame || me.ClassID != ClassID.CDOTA_Unit_Hero_EmberSpirit)
             {
                 return;
             }
-
-            if (activated && toggle && me.CanCast())
-            {
-                var target = me.ClosestToMouseTarget(2000);
-                if (target.IsAlive && !target.IsInvul())
+            var target = me.ClosestToMouseTarget(2000);
+            
+                if (activated && target.IsAlive && !target.IsInvul())
                 {
                     var Q = me.Spellbook.SpellQ;
                     var W = me.Spellbook.SpellW;
@@ -74,7 +72,6 @@ namespace EmberSpirit
                     var R = me.Spellbook.SpellR;
                     var D = me.Spellbook.SpellD;
                     var dagon = me.GetDagon();
-                    var ethereal = me.FindItem("item_ethereal_blade");
                     var soulring = me.FindItem("item_soul_ring");
                     var halberd = me.FindItem("item_heavens_halberd");
                     var abyssal = me.FindItem("item_abyssal_blade");
@@ -108,8 +105,7 @@ namespace EmberSpirit
                         W.CanBeCasted() &&
                         me.CanCast() &&
                         !target.IsMagicImmune() &&
-                        (W.CanBeCasted() &&
-                        Utils.SleepCheck("W"))
+                        Utils.SleepCheck("W")
                         )
                     {
                         W.UseAbility(target.Position);
@@ -121,9 +117,8 @@ namespace EmberSpirit
                         E.CanBeCasted() &&
                         me.CanCast() &&
                         !target.IsMagicImmune() &&
-                        (E.CanBeCasted() &&
                         Utils.SleepCheck("E") &&
-                        me.Distance2D(target) <= 400)
+                        me.Distance2D(target) <= 400
                         )
                     {
                         E.UseAbility();
@@ -131,6 +126,7 @@ namespace EmberSpirit
                     } // E Skill end
 
                     if (//R Skill
+                        R != null &&
                         R.CanBeCasted() &&
                         me.CanCast() &&
                         me.Distance2D(target) <= 1100 &&
@@ -163,9 +159,8 @@ namespace EmberSpirit
                         shiva.CanBeCasted() &&
                         me.CanCast() &&
                         !target.IsMagicImmune() &&
-                        (shiva.CanBeCasted() &&
                         Utils.SleepCheck("shiva") &&
-                        me.Distance2D(target) <= 600)
+                        me.Distance2D(target) <= 600
                         )
                     {
                         shiva.UseAbility();
@@ -176,9 +171,8 @@ namespace EmberSpirit
                         mom != null &&
                         mom.CanBeCasted() &&
                         me.CanCast() &&
-                        (mom.CanBeCasted() &&
                         Utils.SleepCheck("mom") &&
-                        me.Distance2D(target) <= 700)
+                        me.Distance2D(target) <= 700
                         )
                     {
                         mom.UseAbility();
@@ -191,9 +185,8 @@ namespace EmberSpirit
                         abyssal.CanBeCasted() &&
                         me.CanCast() &&
                         !target.IsMagicImmune() &&
-                        (abyssal.CanBeCasted() &&
                         Utils.SleepCheck("abyssal") &&
-                        me.Distance2D(target) <= 400)
+                        me.Distance2D(target) <= 400
                         )
                     {
                         abyssal.UseAbility(target);
@@ -205,9 +198,8 @@ namespace EmberSpirit
                         halberd.CanBeCasted() &&
                         me.CanCast() &&
                         !target.IsMagicImmune() &&
-                        (halberd.CanBeCasted() &&
                         Utils.SleepCheck("halberd") &&
-                        me.Distance2D(target) <= 700)
+                        me.Distance2D(target) <= 700
                         )
                     {
                         halberd.UseAbility(target);
@@ -219,9 +211,8 @@ namespace EmberSpirit
                         mjollnir.CanBeCasted() &&
                         me.CanCast() &&
                         !target.IsMagicImmune() &&
-                        (mjollnir.CanBeCasted() &&
                         Utils.SleepCheck("mjollnir") &&
-                        me.Distance2D(target) <= 900)
+                        me.Distance2D(target) <= 900
                        )
                     {
                         mjollnir.UseAbility(me);
@@ -233,8 +224,7 @@ namespace EmberSpirit
                         dagon.CanBeCasted() &&
                         me.CanCast() &&
                         !target.IsMagicImmune() &&
-                        (dagon.CanBeCasted() &&
-                        Utils.SleepCheck("dagon"))
+                        Utils.SleepCheck("dagon")
                        )
                     {
                         dagon.UseAbility(target);
@@ -243,16 +233,12 @@ namespace EmberSpirit
 
                     if (
                         // Stick
-                        (stick != null && stick.CanBeCasted()) ||
-                        (wand != null && wand.CanBeCasted()) ||
-                        (cheese != null && cheese.CanBeCasted()) &&
-                        Utils.SleepCheck("stick") &&
+                        cheese != null && cheese.CanBeCasted() &&
+                        Utils.SleepCheck("cheese") &&
                         me.Distance2D(target) <= 700)
                     {
-                        stick.UseAbility();
-                        wand.UseAbility();
                         cheese.UseAbility();
-                        Utils.Sleep(150 + Game.Ping, "stick");
+                        Utils.Sleep(150 + Game.Ping, "cheese");
                     } // Stick Item end
 
                     if (// Satanic 
@@ -278,13 +264,55 @@ namespace EmberSpirit
                         D.UseAbility(target.Position);
                         Utils.Sleep(350 + Game.Ping, "D");
                     }
-                     
-                }
-            }
-        }
-        
 
-      
+                }
+            
+        }
+
+        public static void Game_OnUpdateQW(EventArgs args)
+        {
+            var me = ObjectMgr.LocalHero;
+            if (!Game.IsInGame || me.ClassID != ClassID.CDOTA_Unit_Hero_EmberSpirit)
+            {
+                return;
+            }
+
+                    var target = me.ClosestToMouseTarget(2000);
+                if (togleQW && target.IsAlive && !target.IsInvul())
+                {
+                    var Q = me.Spellbook.SpellQ;
+                    var W = me.Spellbook.SpellW;
+
+                        if ( // Q Skill
+                                Q != null &&
+                                Q.CanBeCasted() &&
+                                me.CanCast() &&
+                                !target.IsMagicImmune() &&
+                                me.Distance2D(target) <= 140 &&
+                                Utils.SleepCheck("Q")
+                                )
+
+                        {
+                            Q.UseAbility();
+                            Utils.Sleep(40 + Game.Ping, "Q");
+                        } // Q Skill end
+
+                        if ( // W Skill
+                            W != null &&
+                            W.CanBeCasted() &&
+                            me.CanCast() &&
+                            !target.IsMagicImmune() &&
+                            (W.CanBeCasted() &&
+                            Utils.SleepCheck("W"))
+                            )
+                        {
+                            W.UseAbility(target.Position);
+                            Utils.Sleep(200 + Game.Ping, "W");
+                        } // W Skill end
+                    }
+            }
+
+            
 
 
 
@@ -296,6 +324,12 @@ namespace EmberSpirit
                     activated = true;
                 else
                     activated = false;
+            }
+            {
+                if (Game.IsKeyDown(TogleQW))
+                    togleQW = true;
+                else
+                    togleQW = false;
             }
         }
 
@@ -324,8 +358,17 @@ namespace EmberSpirit
             {
                 txt.DrawText(null, "Ember#: go combo  [" + KeyCombo + "] for toggle combo", 4, 150, Color.Aqua);
             }
-            
-            
+            if (togleQW)
+            {
+                txt.DrawText(null, "Ember#: ComboingQW!", 4, 150, Color.Green);
+            }
+
+            if (!togleQW)
+            {
+                txt.DrawText(null, "Ember#: go comboQW  [" + TogleQW + "] for toggle combo", 4, 190, Color.Aqua);
+            }
+
+
         }
 
         static void Drawing_OnPostReset(EventArgs args)
