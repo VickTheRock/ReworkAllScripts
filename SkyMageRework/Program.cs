@@ -81,9 +81,6 @@ namespace SkyMageRework
             var ethereal = me.FindItem("item_ethereal_blade");
             var arcane = me.FindItem("item_arcane_boots");
             var sheep = target.ClassID == ClassID.CDOTA_Unit_Hero_Tidehunter ? null : me.FindItem("item_sheepstick");
-            var stick = _me.FindItem("item_magic_stick");
-            var wand = _me.FindItem("item_magic_wand");
-            var cheese = _me.FindItem("item_cheese");
             var vail = me.FindItem("item_veil_of_discord");
             var orchid = me.FindItem("item_orchid");
             var linkens = target.Modifiers.Any(x => x.Name == "modifier_item_spheretarget") || target.Inventory.Items.Any(x => x.Name == "item_sphere");
@@ -289,17 +286,7 @@ namespace SkyMageRework
                         Utils.Sleep(150 + Game.Ping, "dagon");
                     } // Dagon Item end
 
-                     if (((decimal)me.Health / me.MaximumHealth <= (decimal)0.3) && Utils.SleepCheck("Stick/Wand/Cheese"))
-                    if ((CanCast(me, stick) || CanCast(me, wand)) || CanCast(me, cheese))
-                    {
-                        if (wand != null && wand.CurrentCharges > 0)
-                            wand.UseAbility();
-                        else if (stick != null && stick.CurrentCharges > 0)
-                            stick.UseAbility();
-                        if (cheese != null)
-                            cheese.UseAbility();
-                        Utils.Sleep(150 + Game.Ping, "Stick/Wand/Cheese");
-                    }
+                    
                 }
             }
         }
