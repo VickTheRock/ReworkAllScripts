@@ -82,7 +82,9 @@ namespace Tuskar
                     var arcane = me.FindItem("item_arcane_boots");
                     var medall = me.FindItem("item_medallion_of_courage");
                     var solar = me.FindItem("item_solar_crest");
-                    var cheese = me.FindItem("item_cheese");
+                    var stick = _me.FindItem("item_magic_stick");
+                    var wand = _me.FindItem("item_magic_wand");
+                    var cheese = _me.FindItem("item_cheese");
                     var linkens = target.Modifiers.Any(x => x.Name == "modifier_item_spheretarget") || target.Inventory.Items.Any(x => x.Name == "item_sphere");
                     bool ModifW = me.Modifiers.Any(x => x.Name == "modifier_tusk_snowball_movement");
                     bool ModifWW = me.Modifiers.All(x => x.Name == "modifier_tusk_snowball_movement");
@@ -286,16 +288,16 @@ namespace Tuskar
                         Utils.Sleep(150 + Game.Ping, "dagon");
                     } // Dagon Item end
 
-                    if (
-                        // Stick
-                       (cheese != null && cheese.CanBeCasted()) &&
-                        Utils.SleepCheck("stick") &&
-                        !ModifInv &&
-                        me.Distance2D(target) <= 700
-                        )
+                   if (((decimal)_me.Health / _me.MaximumHealth <= (decimal)0.3) && Utils.SleepCheck("Stick/Wand/Cheese"))
+                    if ((CanCast(_me, stick) || CanCast(_me, wand)) || CanCast(_me, cheese))
                     {
-                        cheese.UseAbility();
-                        Utils.Sleep(150 + Game.Ping, "stick");
+                        if (wand != null && wand.CurrentCharges > 0)
+                            wand.UseAbility();
+                        else if (stick != null && stick.CurrentCharges > 0)
+                            stick.UseAbility();
+                        if (cheese != null)
+                            cheese.UseAbility();
+                        Utils.Sleep(150 + Game.Ping, "Stick/Wand/Cheese");
                     } // Stick Item end
 
                     if (// Satanic 
