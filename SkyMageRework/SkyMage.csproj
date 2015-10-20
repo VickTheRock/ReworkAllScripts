@@ -7,8 +7,8 @@
     <ProjectGuid>{215A36CA-85EA-4638-8C18-03D7BBAF1820}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SkyMage</RootNamespace>
-    <AssemblyName>SkyMage</AssemblyName>
+    <RootNamespace>SkyMageRework</RootNamespace>
+    <AssemblyName>SkyMageRework</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
