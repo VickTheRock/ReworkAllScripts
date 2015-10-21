@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 
 using Ensage;
@@ -81,6 +81,7 @@ namespace SkyMageRework
             var ethereal = me.FindItem("item_ethereal_blade");
             var arcane = me.FindItem("item_arcane_boots");
             var sheep = target.ClassID == ClassID.CDOTA_Unit_Hero_Tidehunter ? null : me.FindItem("item_sheepstick");
+            var cheese = me.FindItem("item_cheese");
             var vail = me.FindItem("item_veil_of_discord");
             var orchid = me.FindItem("item_orchid");
             var linkens = target.Modifiers.Any(x => x.Name == "modifier_item_spheretarget") || target.Inventory.Items.Any(x => x.Name == "item_sphere");
@@ -286,7 +287,15 @@ namespace SkyMageRework
                         Utils.Sleep(150 + Game.Ping, "dagon");
                     } // Dagon Item end
 
-                    
+                     if (
+                         // cheese
+                         cheese != null && cheese.CanBeCasted() &&
+                         Utils.SleepCheck("cheese") &&
+                         me.Distance2D(target) <= 700)
+                     {
+                         cheese.UseAbility();
+                         Utils.Sleep(150 + Game.Ping, "cheese");
+                    } // cheese Item end
                 }
             }
         }
@@ -414,6 +423,5 @@ namespace SkyMageRework
         }
     }
 }
- 
  
  
