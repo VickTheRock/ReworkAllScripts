@@ -99,8 +99,8 @@ namespace SkyMageRework
                 if (target != null && target.IsVisible && me.Distance2D(target) <= 2300 && !noBlade)
                 {
                     if (
-						W!= null &&
-						W.CanBeCasted() &&
+			W!= null &&
+			W.CanBeCasted() &&
                         me.CanCast() &&
                         me.Distance2D(target) < 1370 &&
                         Utils.SleepCheck("W"))
@@ -110,8 +110,8 @@ namespace SkyMageRework
                     }
 
                     if (
-						blink!= null &&
-						Q.CanBeCasted() &&
+			blink!= null &&
+			Q.CanBeCasted() &&
                         blinkToggle &&
                         blink.CanBeCasted() &&
                         me.Distance2D(target) > 1000 &&
@@ -121,8 +121,8 @@ namespace SkyMageRework
                         Utils.Sleep(250, "blink");
                     }
                     if (
-						Q!= null &&
-						Q.CanBeCasted() &&
+			Q!= null &&
+			Q.CanBeCasted() &&
                         me.Distance2D(target) < 1100 &&
                         Utils.SleepCheck("Q"))
                     {
@@ -131,8 +131,8 @@ namespace SkyMageRework
                     }
 
                     if (
-						E!= null &&
-						E.CanBeCasted() &&
+			E!= null &&
+			E.CanBeCasted() &&
                         me.Position.Distance2D(target) < 1200 &&
                         !linkens &&
                         Utils.SleepCheck("E"))
@@ -141,8 +141,8 @@ namespace SkyMageRework
                         Utils.Sleep(200, "E");
                     }
                     if (
-						R!= null &&
-						R.CanBeCasted() &&
+			R!= null &&
+			R.CanBeCasted() &&
                         useUltimate &&
                         !ModifR &&
                         (ModifW ||
