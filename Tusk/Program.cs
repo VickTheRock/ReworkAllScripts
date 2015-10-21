@@ -1,4 +1,4 @@
-﻿//ONLY LOVE MazaiPC ;) 
+//ONLY LOVE MazaiPC ;) 
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -80,19 +80,27 @@ namespace Tuskar
                     var mom = me.FindItem("item_mask_of_madness");
                     var satanic = me.FindItem("item_satanic");
                     var arcane = me.FindItem("item_arcane_boots");
-                    var medall = me.FindItem("item_medallion_of_courage");
-                    var solar = me.FindItem("item_solar_crest");
+                    var medall = me.FindItem("item_medallion_of_courage") ??  me.FindItem("item_solar_crest");
                     var linkens = target.Modifiers.Any(x => x.Name == "modifier_item_spheretarget") || target.Inventory.Items.Any(x => x.Name == "item_sphere");
                     bool ModifW = me.Modifiers.Any(x => x.Name == "modifier_tusk_snowball_movement");
                     bool ModifWW = me.Modifiers.All(x => x.Name == "modifier_tusk_snowball_movement");
-                    var ModifInv = me.Modifiers.Any(x => x.Name == "modifier_item_invisibility_edge_windwalk") || me.Modifiers.Any(x => x.Name == "modifier_item_invisibility_edge_windwalk");
-                    
+                    var ModifInv = me.Modifiers.All(x => x.Name == "modifier_item_invisibility_edge_windwalk");
+                    bool medallModiff = target.Modifiers.Any(x => x.Name == "modifier_item_medallion_of_courage_armor_reduction") || target.Modifiers.Any(x => x.Name == "modifier_item_solar_crest_armor_reduction");
 
+                    if(
+                        ModifInv             &&
+                        Utils.SleepCheck("invi")
+                        )
+                    {
+                        R.UseAbility(target);
+                        Utils.Sleep(200 + Game.Ping, "invi");
+                    }
 
                     if ( // Q Skill
                         Q != null                    &&
                         Q.CanBeCasted()              &&
                         me.CanCast()                 &&
+                        !ModifInv &&
                         ModifW                       &&
                         !target.IsMagicImmune()      &&
                         me.Distance2D(target) <= 300 &&
@@ -106,6 +114,7 @@ namespace Tuskar
 
                     if ( // W Skill
                          W != null &&
+                         !ModifInv &&
                         W.CanBeCasted() &&
                         !target.IsMagicImmune() &&
                         Utils.SleepCheck("W")
@@ -116,6 +125,7 @@ namespace Tuskar
                         Utils.Sleep(140 + Game.Ping, "W");
                     }
                     if(
+                         W != null &&
                           ModifWW  &&
                         Utils.SleepCheck("WW")
                         )
@@ -126,7 +136,7 @@ namespace Tuskar
                     if ( // E Skill
                         E != null               &&
                         E.CanBeCasted()         &&
-                        !ModifInv &&
+                        !ModifInv               &&
                         me.CanCast()            &&
                         ModifW                  &&
                         !target.IsMagicImmune() &&
@@ -138,7 +148,8 @@ namespace Tuskar
                         Utils.Sleep(350 + Game.Ping, "E");
                     } // E Skill end
                     if (//R Skill
-                        (solar != null || medall != null) &&
+                        (medall != null)                  &&
+                        medallModiff                      &&
                         R != null                         &&
                         R.CanBeCasted()                   &&
                         me.CanCast()                      &&
@@ -152,7 +163,7 @@ namespace Tuskar
                     } // R Skill end
 
                     if (//R Skill
-                        (solar == null||medall == null)&&
+                        (medall == null)&&
                         R != null                    &&
                         R.CanBeCasted()              &&
                         me.CanCast()                 &&
@@ -221,19 +232,6 @@ namespace Tuskar
                         Utils.Sleep(250 + Game.Ping, "Medall");
                     } // Medall Item end
 
-                    if ( // solar
-                        solar != null &&
-                        solar.CanBeCasted() && !ModifInv &&
-                        me.CanCast() &&
-                        !target.IsMagicImmune() &&
-                        Utils.SleepCheck("solar") &&
-                        me.Distance2D(target) <= 500
-                        )
-                    {
-                        solar.UseAbility(target);
-                        Utils.Sleep(250 + Game.Ping, "solar");
-                    } // Medall Item end
-
                     if ( // Abyssal Blade
                         abyssal != null &&
                         abyssal.CanBeCasted() && !ModifInv &&
@@ -285,6 +283,7 @@ namespace Tuskar
                         Utils.Sleep(150 + Game.Ping, "dagon");
                     } // Dagon Item end
 
+
                     if (// Satanic 
                         satanic != null &&
                         me.Health / me.MaximumHealth <= 0.3 &&
@@ -294,22 +293,24 @@ namespace Tuskar
                     {
                         satanic.UseAbility();
                     } // Satanic Item end
-                    var enemyHeroes = ObjectMgr.GetEntities<Hero>().Where(x =>  x.Team == me.GetEnemyTeam() && x.IsAlive && x.IsVisible && !x.IsMagicImmune()
-                         && Utils.SleepCheck(x.ClassID.ToString()) && !x.IsIllusion);
+                  
+                    var enemyHeroes = ObjectMgr.GetEntities<Hero>()
+                    .Where(  x => x.Team == me.GetEnemyTeam() && !x.IsIllusion && x.IsAlive && x.IsVisible
+                            && x.Distance2D(Game.MousePosition) <= 1000 && !x.IsMagicImmune());
                     var Sigl = ObjectMgr.GetEntities<Unit>().Where(x => (x.ClassID == ClassID.CDOTA_BaseNPC_Tusk_Sigil)
                         && x.IsAlive  && x.IsControllable);
 
                     foreach (var enemy in enemyHeroes)
                     {
-                            foreach (var SigVar in Sigl)
+                        foreach (var SigVar in Sigl)
+                        {
+                            if (enemy.Position.Distance2D(SigVar.Position) < 500 &&
+                                Utils.SleepCheck(SigVar.Handle.ToString()))
                             {
-                                if (enemy.Position.Distance2D(SigVar.Position) < 1500 &&
-                                    Utils.SleepCheck(SigVar.Handle.ToString()))
-                                {
-                                    SigVar.Follow(enemy);
-                                    Utils.Sleep(1000, SigVar.Handle.ToString());
-                                }
+                                SigVar.Follow(enemy);
+                                Utils.Sleep(700, SigVar.Handle.ToString());
                             }
+                        }
                     }
                 }
             }
