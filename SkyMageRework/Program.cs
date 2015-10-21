@@ -12,10 +12,10 @@ namespace SkyMageRework
 {
     internal class Program
     {
-        
+
         private static bool activated;
         private static bool toggle;
-        private static bool blinkToggle = true; 
+        private static bool blinkToggle = true;
         private static bool useUltimate = true;
         private static Font txt;
         private static Font noti;
@@ -24,11 +24,11 @@ namespace SkyMageRework
         private static Key toggleKey = Key.M;
         private static Key blinkToggleKey = Key.P;
         private static Key UseUltimate = Key.H;
-        
+
 
         static void Main(string[] args)
         {
-            
+
             Game.OnUpdate += Game_OnUpdate;
             Game.OnWndProc += Game_OnWndProc;
             Console.WriteLine("> SkyWrath# loaded!");
@@ -87,9 +87,10 @@ namespace SkyMageRework
             var linkens = target.Modifiers.Any(x => x.Name == "modifier_item_spheretarget") || target.Inventory.Items.Any(x => x.Name == "item_sphere");
             var ModifW = target.Modifiers.Any(y => y.Name == "modifier_skywrath_mage_concussive_shot_slow");
             var ModifR = target.Modifiers.Any(y => y.Name == "modifier_skywrath_mystic_flare_aura_effect");
-           // var ModifE = target.Modifiers.Any(y => y.Name == "modifier_skywrath_mage_ancient_seal");
+            // var ModifE = target.Modifiers.Any(y => y.Name == "modifier_skywrath_mage_ancient_seal");
             var ModifRod = target.Modifiers.Any(y => y.Name == "modifier_item_rod_of_atos_debuf");
             var ModifEther = target.Modifiers.Any(y => y.Name == "modifier_item_ethereal_blade_slow");
+            var castR = Prediction.SkillShotXYZ(me, target, (float)100, (float)target.MovementSpeed, (float)1200);
             // Main combo
 
             if (activated && toggle && me.IsAlive && target.IsAlive)
@@ -97,8 +98,10 @@ namespace SkyMageRework
                 var noBlade = target.Modifiers.Any(y => y.Name == "modifier_item_blade_mail_reflect");
                 if (target != null && target.IsVisible && me.Distance2D(target) <= 2300 && !noBlade)
                 {
-                    if (W.CanBeCasted()              &&
-                        me.CanCast()                 &&
+                    if (
+						W!= null &&
+						W.CanBeCasted() &&
+                        me.CanCast() &&
                         me.Distance2D(target) < 1370 &&
                         Utils.SleepCheck("W"))
                     {
@@ -106,8 +109,10 @@ namespace SkyMageRework
                         Utils.Sleep(300, "W");
                     }
 
-                    if (Q.CanBeCasted()     &&
-                        blinkToggle         &&
+                    if (
+						blink!= null &&
+						Q.CanBeCasted() &&
+                        blinkToggle &&
                         blink.CanBeCasted() &&
                         me.Distance2D(target) > 1000 &&
                         Utils.SleepCheck("blink"))
@@ -115,15 +120,19 @@ namespace SkyMageRework
                         blink.UseAbility(target.Position);
                         Utils.Sleep(250, "blink");
                     }
-                    if (Q.CanBeCasted() &&
+                    if (
+						Q!= null &&
+						Q.CanBeCasted() &&
                         me.Distance2D(target) < 1100 &&
                         Utils.SleepCheck("Q"))
                     {
                         Q.UseAbility(target);
                         Utils.Sleep(150, "Q");
                     }
-                    
-                    if (E.CanBeCasted() &&
+
+                    if (
+						E!= null &&
+						E.CanBeCasted() &&
                         me.Position.Distance2D(target) < 1200 &&
                         !linkens &&
                         Utils.SleepCheck("E"))
@@ -131,18 +140,20 @@ namespace SkyMageRework
                         E.UseAbility(target);
                         Utils.Sleep(200, "E");
                     }
-                     if (R.CanBeCasted()                        &&
-                         useUltimate                            &&
-                         !ModifR                                &&
-                         (ModifW                                ||
-                         ModifEther                             ||
-                         ModifRod)                              &&
-                         me.Position.Distance2D(target) < 1200 &&
-                         Utils.SleepCheck("R"))
-                     {
-                         R.UseAbility(target.Position);
-                         Utils.Sleep(330, "R");
-                     }
+                    if (
+						R!= null &&
+						R.CanBeCasted() &&
+                        useUltimate &&
+                        !ModifR &&
+                        (ModifW ||
+                        ModifEther ||
+                        ModifRod) &&
+                        me.Position.Distance2D(target) < 1200 &&
+                        Utils.SleepCheck("R"))
+                    {
+                        R.UseAbility(castR);
+                        Utils.Sleep(330, "R");
+                    }
 
                     if (// SoulRing Item 
                         soulring != null &&
@@ -169,7 +180,7 @@ namespace SkyMageRework
                         Utils.SleepCheck("shiva") &&
                         me.Distance2D(target) <= 600
                         )
-                        
+
                     {
                         shiva.UseAbility();
                         Utils.Sleep(250 + Game.Ping, "shiva");
@@ -287,14 +298,14 @@ namespace SkyMageRework
                         Utils.Sleep(150 + Game.Ping, "dagon");
                     } // Dagon Item end
 
-                     if (
-                         // cheese
-                         cheese != null && cheese.CanBeCasted() &&
-                         Utils.SleepCheck("cheese") &&
-                         me.Distance2D(target) <= 700)
-                     {
-                         cheese.UseAbility();
-                         Utils.Sleep(150 + Game.Ping, "cheese");
+                    if (
+                        // cheese
+                        cheese != null && cheese.CanBeCasted() &&
+                        Utils.SleepCheck("cheese") &&
+                        me.Distance2D(target) <= 700)
+                    {
+                        cheese.UseAbility();
+                        Utils.Sleep(150 + Game.Ping, "cheese");
                     } // cheese Item end
                 }
             }
@@ -362,8 +373,8 @@ namespace SkyMageRework
                     Utils.Sleep(150, "toggleBlink");
                 }
 
-               
-                
+
+
             }
         }
 
@@ -374,7 +385,7 @@ namespace SkyMageRework
             lines.Dispose();
         }
 
-       
+
 
         static void Drawing_OnPostReset(EventArgs args)
         {
@@ -423,5 +434,4 @@ namespace SkyMageRework
         }
     }
 }
- 
- 
+
