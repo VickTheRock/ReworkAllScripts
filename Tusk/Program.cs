@@ -301,7 +301,6 @@ namespace Tuskar
 
                     foreach (var enemy in enemyHeroes)
                     {
-                        if (enemy.Team == me.GetEnemyTeam())
                             foreach (var SigVar in Sigl)
                             {
                                 if (enemy.Position.Distance2D(SigVar.Position) < 1500 &&
