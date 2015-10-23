@@ -122,8 +122,7 @@ namespace SkyMageRework
             if (shiva == null)
                 shiva = me.FindItem("item_shivas_guard");
 
-            if (dagon == null)
-                dagon = me.GetDagon();
+        	dagon = me.GetDagon();
             
       
             
