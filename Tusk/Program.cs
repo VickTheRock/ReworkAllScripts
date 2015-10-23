@@ -91,7 +91,6 @@ namespace Tuskar
                     if (satanic == null)
                         satanic = me.FindItem("item_satanic");
 
-                    if (dagon == null)
                         dagon = me.GetDagon();
 
                     if (halberd == null)
