@@ -501,7 +501,7 @@ namespace SkyMageRework
         {
             f.DrawText(null, stext, x + 1, y + 1, Color.Black);
             f.DrawText(null, stext, x, y, color);
-        }
+	}
     }
 }
  
