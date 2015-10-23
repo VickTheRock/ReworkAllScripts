@@ -18,6 +18,8 @@ namespace Tuskar
         private static Font txt;
         private static Font not;
         private static Key KeyCombo = Key.D;
+        private static Item mom, abyssal, soulring, arcane, blink, shiva, halberd, mjollnir, satanic, dagon, medall;
+        private static Ability Q, W, E, R, D, F;
         private static bool loaded;
         private static Hero me;
         private static Hero target;
@@ -61,33 +63,70 @@ namespace Tuskar
             {
                 return;
             }
+            var target = me.ClosestToMouseTarget(2000);
+
+            if (target == null)
+            {
+                return;
+            }
 
             if (activated)
             {
-                var target = me.ClosestToMouseTarget(2000);
                 if (target.IsAlive && !target.IsInvul() && !me.IsInvisible() && !target.IsIllusion)
                 {
-                    var Q = me.Spellbook.SpellQ;
-                    var W = me.Spellbook.SpellW;
-                    var E = me.Spellbook.SpellE;
-                    var R = me.Spellbook.SpellR;
-                    var dagon = me.GetDagon();
-                    var soulring = me.FindItem("item_soul_ring");
-                    var halberd = me.FindItem("item_heavens_halberd");
-                    var abyssal = me.FindItem("item_abyssal_blade");
-                    var shiva = me.FindItem("item_shivas_guard");
-                    var mjollnir = me.FindItem("item_mjollnir");
-                    var mom = me.FindItem("item_mask_of_madness");
-                    var satanic = me.FindItem("item_satanic");
-                    var arcane = me.FindItem("item_arcane_boots");
-                    var medall = me.FindItem("item_medallion_of_courage") ??  me.FindItem("item_solar_crest");
-                    var linkens = target.Modifiers.Any(x => x.Name == "modifier_item_spheretarget") || target.Inventory.Items.Any(x => x.Name == "item_sphere");
-                    bool ModifW = me.Modifiers.Any(x => x.Name == "modifier_tusk_snowball_movement");
-                    bool ModifWW = me.Modifiers.All(x => x.Name == "modifier_tusk_snowball_movement");
-                    var ModifInv = me.Modifiers.All(x => x.Name == "modifier_item_invisibility_edge_windwalk");
-                    bool medallModiff = target.Modifiers.Any(x => x.Name == "modifier_item_medallion_of_courage_armor_reduction") || target.Modifiers.Any(x => x.Name == "modifier_item_solar_crest_armor_reduction");
+                    if (Q == null)
+                        Q = me.Spellbook.SpellQ;
 
-                    if(
+                    var W = me.Spellbook.SpellW;
+
+                    if (E == null)
+                        E = me.Spellbook.SpellE;
+
+                    if (R == null)
+                        R = me.Spellbook.SpellR;
+
+
+
+                    // item 
+                    if (satanic == null)
+                        satanic = me.FindItem("item_satanic");
+
+                    if (dagon == null)
+                        dagon = me.GetDagon();
+
+                    if (halberd == null)
+                        halberd = me.FindItem("item_heavens_halberd");
+
+                    if (medall == null)
+                        medall = me.FindItem("item_medallion_of_courage") ?? me.FindItem("item_solar_crest");
+
+                    if (abyssal == null)
+                        abyssal = me.FindItem("item_abyssal_blade");
+
+                    if (mjollnir == null)
+                        mjollnir = me.FindItem("item_mjollnir");
+
+                    if (soulring == null)
+                        soulring = me.FindItem("item_soul_ring");
+
+                    if (arcane == null)
+                        arcane = me.FindItem("item_arcane_boots");
+
+                    if (mom == null)
+                        mom = me.FindItem("item_mask_of_madness");
+
+                    if (shiva == null)
+                        shiva = me.FindItem("item_shivas_guard");
+                    
+
+                    var linkens = target.Modifiers.Any(x => x.Name == "modifier_item_spheretarget") || target.Inventory.Items.Any(x => x.Name == "item_sphere");
+                    var ModifW = me.Modifiers.Any(x => x.Name == "modifier_tusk_snowball_movement");
+                    var ModifWW = me.Modifiers.All(x => x.Name == "modifier_tusk_snowball_movement");
+                    var ModifInv = me.Modifiers.All(x => x.Name == "modifier_item_invisibility_edge_windwalk");
+                    var medallModiff = target.Modifiers.Any(x => x.Name == "modifier_item_medallion_of_courage_armor_reduction") || target.Modifiers.Any(x => x.Name == "modifier_item_solar_crest_armor_reduction");
+                    
+
+                    if (
                         ModifInv             &&
                         Utils.SleepCheck("invi")
                         )
@@ -112,28 +151,38 @@ namespace Tuskar
                         Utils.Sleep(200 + Game.Ping, "Q");
                     } // Q Skill end
 
-                    if ( // W Skill
-                         W != null &&
-                         !ModifInv &&
-                        W.CanBeCasted() &&
-                        !target.IsMagicImmune() &&
-                        Utils.SleepCheck("W")
+
+                    if (//R Skill
+                       
+                       
+                       R != null &&
+                       medallModiff &&
+                       R.CanBeCasted() &&
+                       me.CanCast() &&
+                       !linkens &&
+                       me.Distance2D(target) <= 350 &&
+                       Utils.SleepCheck("R")
+                       )
+                    {
+                        R.UseAbility(target);
+                        Utils.Sleep(150 + Game.Ping, "R");
+                    } // R Skill end
+
+                    if (//R Skill
+                        medall == null &&
+                        R != null &&
+                        R.CanBeCasted() &&
+                        me.CanCast() &&
+                        me.Distance2D(target) <= 350 &&
+                        Utils.SleepCheck("R")
                         )
                     {
-                        W.UseAbility(target);
-                        W.UseAbility();
-                        Utils.Sleep(140 + Game.Ping, "W");
-                    }
-                    if(
-                         W != null &&
-                          ModifWW  &&
-                        Utils.SleepCheck("WW")
-                        )
-                        W.UseAbility();// W Skill end
-                    Utils.Sleep(150 + Game.Ping, "WW");
+                        R.UseAbility(target);
+                        Utils.Sleep(150 + Game.Ping, "R");
+                    } // R Skill end
 
-
-                    if ( // E Skill
+                   
+                        if ( // E Skill
                         E != null               &&
                         E.CanBeCasted()         &&
                         !ModifInv               &&
@@ -147,33 +196,7 @@ namespace Tuskar
                         E.UseAbility();
                         Utils.Sleep(350 + Game.Ping, "E");
                     } // E Skill end
-                    if (//R Skill
-                        (medall != null)                  &&
-                        medallModiff                      &&
-                        R != null                         &&
-                        R.CanBeCasted()                   &&
-                        me.CanCast()                      &&
-                        !linkens                          &&
-                        me.Distance2D(target) <= 350      &&
-                        Utils.SleepCheck("R")
-                        )
-                    {
-                        R.UseAbility(target);
-                        Utils.Sleep(150 + Game.Ping, "R");
-                    } // R Skill end
-
-                    if (//R Skill
-                        (medall == null)&&
-                        R != null                    &&
-                        R.CanBeCasted()              &&
-                        me.CanCast()                 &&
-                        me.Distance2D(target) <= 350 &&
-                        Utils.SleepCheck("R")
-                        )
-                    {
-                        R.UseAbility(target);
-                        Utils.Sleep(150 + Game.Ping, "R");
-                    } // R Skill end
+                   
 
                     if (// SoulRing Item 
                         soulring != null &&
@@ -221,9 +244,8 @@ namespace Tuskar
 
                     if ( // Medall
                         medall != null &&
-                        medall.CanBeCasted() && !ModifInv &&
-                        me.CanCast() &&
-                        !target.IsMagicImmune() &&
+                        medall.CanBeCasted() && 
+                        !ModifInv &&
                         Utils.SleepCheck("Medall") &&
                         me.Distance2D(target) <= 500
                         )
@@ -293,7 +315,20 @@ namespace Tuskar
                     {
                         satanic.UseAbility();
                     } // Satanic Item end
-                  
+
+                    if ( // W Skill
+                       W != null &&
+                       !ModifInv &&
+                      W.CanBeCasted() &&
+                      !target.IsMagicImmune() &&
+                      Utils.SleepCheck("W")
+                      )
+                    {
+                        W.UseAbility(target);
+                        W.UseAbility();
+                        Utils.Sleep(120 + Game.Ping, "W");
+                    }
+
                     var enemyHeroes = ObjectMgr.GetEntities<Hero>()
                     .Where(  x => x.Team == me.GetEnemyTeam() && !x.IsIllusion && x.IsAlive && x.IsVisible
                             && x.Distance2D(Game.MousePosition) <= 1000 && !x.IsMagicImmune());
@@ -312,6 +347,8 @@ namespace Tuskar
                             }
                         }
                     }
+                    
+                    
                 }
             }
         }
