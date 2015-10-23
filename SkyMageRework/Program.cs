@@ -106,6 +106,9 @@ namespace SkyMageRework
 
             if (orchid == null)
                 orchid = me.FindItem("item_orchid");
+                
+            if (atos == null)
+                atos = me.FindItem("item_rod_of_atos");
 
             if (soulring == null)
                 soulring = me.FindItem("item_soul_ring");
@@ -115,8 +118,6 @@ namespace SkyMageRework
 
             if (blink == null)
                 blink = me.FindItem("item_blink");
-
-
 
             if (shiva == null)
                 shiva = me.FindItem("item_shivas_guard");
