@@ -90,8 +90,7 @@ namespace TinyAutoCombo
                     if (shiva == null)
                         shiva = me.FindItem("item_shivas_guard");
 
-                    if (dagon == null)
-                        dagon = me.GetDagon();
+                    dagon = me.GetDagon();
 
                     if (arcane == null)
                         arcane = me.FindItem("item_arcane_boots");
