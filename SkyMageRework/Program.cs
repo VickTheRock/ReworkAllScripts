@@ -71,7 +71,13 @@ namespace SkyMageRework
             {
                 return;
             }
+
             var target = me.ClosestToMouseTarget(2000);
+            if (target == null)
+				{
+                return;
+				}
+          
             //spell
             if (Q == null)
                 Q = me.Spellbook.SpellQ;
@@ -131,7 +137,7 @@ namespace SkyMageRework
             
 
 
-            if (activated && target != null && toggle && me.IsAlive && target.IsAlive && Utils.SleepCheck("activated"))
+            if (activated && toggle && me.IsAlive && target.IsAlive && Utils.SleepCheck("activated"))
             {
                 var noBlade = target.Modifiers.Any(y => y.Name == "modifier_item_blade_mail_reflect");
                 if ( target.IsVisible && me.Distance2D(target) <= 2300 && !noBlade)
