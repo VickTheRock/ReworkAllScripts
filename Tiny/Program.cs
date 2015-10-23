@@ -144,9 +144,9 @@ namespace TinyAutoCombo
                             Utils.SleepCheck("Q"))
                         {
                             Q.UseAbility(target.Position);
-                            Utils.Sleep(150, "Q");
+                            Utils.Sleep(90, "Q");
                         }
-                        if (W.CanBeCasted() && target.IsStunned() &&
+                        if (W.CanBeCasted()                 &&
                             me.Position.Distance2D(target.Position) < 280 &&
                             Utils.SleepCheck("W"))
                         {
