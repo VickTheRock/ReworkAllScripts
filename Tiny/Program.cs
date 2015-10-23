@@ -15,7 +15,8 @@ namespace TinyAutoCombo
     internal class Program
     {
         private static bool activated;
-        private static bool toggle = true;
+        private static Item soulring, arcane, blink, shiva, dagon, mjollnir, mom, halberd, abyssal, ethereal, cheese, satanic, medall;
+        private static Ability Q, W;
         private static Font txt;
         private static Font not;
         private static Key KeyCombo = Key.D;
@@ -63,29 +64,72 @@ namespace TinyAutoCombo
                 return;
             }
 
-            if (activated && toggle)
+            if (activated)
             {
                 var target = me.ClosestToMouseTarget(2000);
+                if (target == null)
+                {
+                    return;
+                }
                 if (target.IsAlive && !target.IsInvul())
                 {
-                    var blink = me.FindItem("item_blink");
-                    var Q = me.Spellbook.SpellQ;
-                    var W = me.Spellbook.SpellW;
-                    var dagon = me.GetDagon();
-                    var soulring = me.FindItem("item_soul_ring");
-                    var halberd = me.FindItem("item_heavens_halberd");
-                    var abyssal = me.FindItem("item_abyssal_blade");
-                    var shiva = me.FindItem("item_shivas_guard");
-                    var mjollnir = me.FindItem("item_mjollnir");
-                    var mom = me.FindItem("item_mask_of_madness");
-                    var satanic = me.FindItem("item_satanic");
-                    var arcane = me.FindItem("item_arcane_boots");
-                    var diffusal = me.FindItem("item_diffusal_blade");
-                    var wand = me.FindItem("item_magic_wand");
-                    var stick = me.FindItem("item_magic_stick");
-                    var cheese = me.FindItem("item_cheese");
-                    var orchid = me.FindItem("item_orchid");
-                    if (target != null && target.IsAlive && target.IsVisible && me.Distance2D(target) <= 1200)
+                  
+
+                    //spell
+                    if (Q == null)
+                        Q = me.Spellbook.SpellQ;
+
+                    if (W == null)
+                        W = me.Spellbook.SpellW;
+
+
+                    // item 
+                    if (satanic == null)
+                        satanic = me.FindItem("item_satanic");
+
+                    if (shiva == null)
+                        shiva = me.FindItem("item_shivas_guard");
+
+                    if (dagon == null)
+                        dagon = me.GetDagon();
+
+                    if (arcane == null)
+                        arcane = me.FindItem("item_arcane_boots");
+
+                    if (mom == null)
+                        mom = me.FindItem("item_mask_of_madness");
+
+                    if (medall == null)
+                        medall = me.FindItem("item_shivas_guard") ?? me.FindItem("item_solar_crest");
+
+                    if (ethereal == null)
+                        ethereal = me.FindItem("item_ethereal_blade");
+
+                    if (blink == null)
+                        blink = me.FindItem("item_blink");
+
+                    if (soulring == null)
+                        soulring = me.FindItem("item_soul_ring");
+
+                    if (cheese == null)
+                        cheese = me.FindItem("item_cheese");
+
+                    if (halberd == null)
+                        halberd = me.FindItem("item_heavens_halberd");
+
+                    if (abyssal == null)
+                        abyssal = me.FindItem("item_abyssal_blade");
+
+                    if (mjollnir == null)
+                        mjollnir = me.FindItem("item_mjollnir");
+                    var linkens = target.Modifiers.Any(x => x.Name == "modifier_item_spheretarget") || target.Inventory.Items.Any(x => x.Name == "item_sphere");
+                    var ModifEther = target.Modifiers.Any(y => y.Name == "modifier_item_ethereal_blade_slow");
+
+
+
+
+
+                    if (target.IsVisible && me.Distance2D(target) <= 1200)
                     {
                         if (Q.CanBeCasted() &&
                             blink.CanBeCasted()  &&
@@ -141,6 +185,19 @@ namespace TinyAutoCombo
                             Utils.Sleep(250 + Game.Ping, "shiva");
                         } // Shiva Item end
 
+                        if ( // Medall
+                       medall != null &&
+                       medall.CanBeCasted() &&
+                       me.CanCast() &&
+                       !target.IsMagicImmune() &&
+                       Utils.SleepCheck("Medall") &&
+                       me.Distance2D(target) <= 500
+                       )
+                        {
+                            medall.UseAbility(target);
+                            Utils.Sleep(250 + Game.Ping, "Medall");
+                        } // Medall Item end
+
                         if (// MOM
                             mom != null &&
                             mom.CanBeCasted() &&
@@ -183,6 +240,38 @@ namespace TinyAutoCombo
                             Utils.Sleep(250 + Game.Ping, "halberd");
                         } // Hellbard Item end
 
+
+
+
+                        if (// ethereal
+                       ethereal != null &&
+                       ethereal.CanBeCasted() &&
+                       me.CanCast() &&
+                       !linkens &&
+                       !target.IsMagicImmune() &&
+                       Utils.SleepCheck("ethereal")
+                      )
+                        {
+                            ethereal.UseAbility(target);
+                            Utils.Sleep(150 + Game.Ping, "ethereal");
+                        } // ethereal Item end
+
+                        if (// Dagon
+                           dagon    != null     &&
+                           ethereal != null     &&
+                           ModifEther           &&
+                           dagon.CanBeCasted()  &&
+                           me.CanCast()         &&
+                           !target.IsMagicImmune() &&
+                           (dagon.CanBeCasted() &&
+                           Utils.SleepCheck("dagon"))
+                          )
+                        {
+                            dagon.UseAbility(target);
+                            Utils.Sleep(150 + Game.Ping, "dagon");
+                        } // Dagon Item end
+
+
                         if ( // Mjollnir
                             mjollnir != null &&
                             mjollnir.CanBeCasted() &&
@@ -199,6 +288,7 @@ namespace TinyAutoCombo
 
                         if (// Dagon
                             dagon != null &&
+                            ethereal == null &&
                             dagon.CanBeCasted() &&
                             me.CanCast() &&
                             !target.IsMagicImmune() &&
@@ -209,20 +299,7 @@ namespace TinyAutoCombo
                             dagon.UseAbility(target);
                             Utils.Sleep(150 + Game.Ping, "dagon");
                         } // Dagon Item end
-
-                        if (
-                            // Stick
-                            (stick != null && stick.CanBeCasted()) ||
-                            (wand != null && wand.CanBeCasted()) ||
-                            (cheese != null && cheese.CanBeCasted()) &&
-                            Utils.SleepCheck("stick") &&
-                            me.Distance2D(target) <= 700)
-                        {
-                            stick.UseAbility();
-                            wand.UseAbility();
-                            cheese.UseAbility();
-                            Utils.Sleep(150 + Game.Ping, "stick");
-                        } // Stick Item end
+                        
 
                         if (// Satanic 
                             satanic != null &&
