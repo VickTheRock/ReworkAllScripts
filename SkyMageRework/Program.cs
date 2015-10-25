@@ -175,7 +175,7 @@ namespace SkyMageRework
                         )
                     {
                         Q.UseAbility(target);
-                        Utils.Sleep(150, "Q");
+                        Utils.Sleep(200, "Q");
                     }
                     
                     if (
@@ -308,7 +308,7 @@ namespace SkyMageRework
                        )
                     {
                         dagon.UseAbility(target);
-                        Utils.Sleep(150 + Game.Ping, "dagon");
+                        Utils.Sleep(200 + Game.Ping, "dagon");
                     } // Dagon Item end
 
                     if (// Dagon
@@ -323,7 +323,7 @@ namespace SkyMageRework
                        )
                     {
                         dagon.UseAbility(target);
-                        Utils.Sleep(150 + Game.Ping, "dagon");
+                        Utils.Sleep(200 + Game.Ping, "dagon");
                     } // Dagon Item end
 
                     if (// ethereal
@@ -337,7 +337,7 @@ namespace SkyMageRework
                        )
                     {
                         ethereal.UseAbility(target);
-                        Utils.Sleep(150 + Game.Ping, "ethereal");
+                        Utils.Sleep(200 + Game.Ping, "ethereal");
                     } // ethereal Item end
 
 
@@ -354,7 +354,7 @@ namespace SkyMageRework
                        )
                     {
                         dagon.UseAbility(target);
-                        Utils.Sleep(150 + Game.Ping, "dagon");
+                        Utils.Sleep(200 + Game.Ping, "dagon");
                     } // Dagon Item end
 
                     if (// Dagon
@@ -368,7 +368,7 @@ namespace SkyMageRework
                       )
                     {
                         dagon.UseAbility(target);
-                        Utils.Sleep(150 + Game.Ping, "dagon");
+                        Utils.Sleep(200 + Game.Ping, "dagon");
                     } // Dagon Item end
 
                     if (
@@ -379,11 +379,11 @@ namespace SkyMageRework
                          me.Distance2D(target) <= 700)
                      {
                          cheese.UseAbility();
-                         Utils.Sleep(150 + Game.Ping, "cheese");
+                         Utils.Sleep(200 + Game.Ping, "cheese");
                     } // cheese Item end
                 }
 
-                Utils.Sleep(130, "activated");
+                Utils.Sleep(200, "activated");
             }
         }
 
