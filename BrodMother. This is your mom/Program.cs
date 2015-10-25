@@ -215,7 +215,7 @@ namespace This_is_your_Mom
                                     spiderDmg = Spiderlings.Count(y => y.Distance2D(enemy) < 800) * spiderling.MinimumDamage + 20;
 
                                     if ((enemy.Position.Distance2D(spiderling.Position)) <= 800 &&
-                                        enemy.Team != me.Team && enemy.Health > 0 && enemy.Health < Math.Floor(spiderDmg * (1 - enemy.DamageResist))+450)
+                                        enemy.Team != me.Team && enemy.Health > 0 && enemy.Health < Math.Floor(spiderDmg * (1 - enemy.DamageResist))+100)
                                     {
                                         spiderling.Attack(enemy);
                                     }
