@@ -21,7 +21,8 @@ namespace This_is_your_Mom
         private static Ability Q, R;
         private static Item mom, abyssal, Soul, orchid, shiva, halberd, mjollnir, satanic, dagon, medall, orhid, sheep, cheese;
         private static Font txt, not;
-        private static int spiderDenies = 63;
+        private static int spiderDenies = 58;
+        private static int spiderDmgStatick = 155;
         private static int spiderDmg;
         private static ParticleEffect rangeDisplay;
         private static Key keyCHASING = Key.F;
@@ -88,8 +89,6 @@ namespace This_is_your_Mom
             }
 
             if (toggle.isActive && Utils.SleepCheck("combo") && !Game.IsPaused)
-
-                if (toggle.isActive && Utils.SleepCheck("combo") && !Game.IsPaused)
             {
                 if (Q == null)
                     Q = me.Spellbook.SpellQ;
@@ -108,7 +107,7 @@ namespace This_is_your_Mom
                 var creeps = ObjectMgr.GetEntities<Creep>().Where(creep => (creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral ||
                 (creep.ClassID == ClassID.CDOTA_Unit_VisageFamiliar && creep.Team == me.GetEnemyTeam()) || (creep.ClassID == ClassID.CDOTA_Unit_SpiritBear && creep.Team == me.GetEnemyTeam()) || (creep.ClassID == ClassID.CDOTA_BaseNPC_Invoker_Forged_Spirit &&
                 creep.Team == me.GetEnemyTeam()) || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep &&
-                creep.IsAlive && creep.IsVisible && creep.IsSpawned) && creep.Health <= 299).ToList();
+                creep.IsAlive && creep.IsVisible && creep.IsSpawned) && creep.Health <= 259).ToList();
 
                 var creepQ = ObjectMgr.GetEntities<Creep>().Where(creep => (creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral ||
                 creep.ClassID == ClassID.CDOTA_Unit_SpiritBear || creep.ClassID == ClassID.CDOTA_BaseNPC_Invoker_Forged_Spirit || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep &&
@@ -116,121 +115,141 @@ namespace This_is_your_Mom
 
                 var Spiderlings = ObjectMgr.GetEntities<Unit>().Where(spiderlings => spiderlings.ClassID == ClassID.CDOTA_Unit_Broodmother_Spiderling).ToList();
 
-                    // Autodenies
-                    if (Utils.SleepCheck("attacking1") && Utils.SleepCheck("attacking") && toggleLasthit.isActive)
-                        foreach (var Spider in Spiderlings)
+               
+                // Creep Q lasthit
+                if(toggleQ.isActive)
+                foreach (var creep in creepQ)
+                {
+                    if (Q.CanBeCasted() && creep.Health <= Math.Floor((spiderQ[spiderlingsLevel]) * (1 - creep.MagicDamageResist)) && creep.Health > 45 && creep.Team != me.Team)
+                    {
+                        if (Q.CanBeCasted() && creep.Position.Distance2D(me.Position) <= 600 && Utils.SleepCheck("QQQ"))
                         {
-                            if (Spider.Health > 0 && Spider.Health <= spiderDenies)
-                                foreach (var spiderlings in Spiderlings)
-                                {
-                                    if (Spider.Position.Distance2D(spiderlings.Position) <= 500 && Utils.SleepCheck(spiderlings.Handle.ToString()))
-                                    {
-                                        spiderlings.Attack(Spider);
-                                        Utils.Sleep(700, spiderlings.Handle.ToString());
-                                        Utils.Sleep(700, "attacking1");
-                                    }
-                                }
-                        }
+                            if (Soul != null && Soul.CanBeCasted())
+                            {
+                                Soul.UseAbility();
+                                Utils.Sleep(300, "QQQ");
+                            }
+                            else
+                                Q.UseAbility(creep);
+                            Utils.Sleep(300, "QQQ");
 
-                    // Creep Q lasthit
+                        }
+                    }
+                }
+                if (toggleQ.isActive)
                     foreach (var creep in creepQ)
+                {
+                    if (me.Mana < Q.ManaCost && creep.Health <= Math.Floor((spiderQ[spiderlingsLevel]) * (1 - creep.MagicDamageResist)) && creep.Health > 55 && creep.Team != me.Team)
                     {
-                        if (Q.CanBeCasted() && creep.Health <= Math.Floor((spiderQ[spiderlingsLevel]) * (1 - creep.MagicDamageResist)) && creep.Health > 30 && creep.Team != me.Team)
+                        if (creep.Position.Distance2D(me.Position) <= 600 && Utils.SleepCheck("QQQ"))
                         {
-                            if (Q.CanBeCasted() && creep.Position.Distance2D(me.Position) <= 600 && Utils.SleepCheck("QQQ"))
+                            if (Soul != null && Soul.CanBeCasted())
                             {
-                                if (Soul != null && Soul.CanBeCasted())
-                                {
-                                    Soul.UseAbility();
-                                    Utils.Sleep(300, "QQQ");
-                                }
-                                else
-                                    Q.UseAbility(creep);
+                                Soul.UseAbility();
                                 Utils.Sleep(300, "QQQ");
-
                             }
+
                         }
                     }
-
-                    // Enemy Q lasthit
-                    foreach (var enemy in enemies)
+                }
+                // Enemy Q lasthit
+                foreach (var enemy in enemies)
+                {
+                    if (Q.CanBeCasted() && enemy.Health <= (spiderQ[spiderlingsLevel]) && enemy.Health > 0)
                     {
-                        if (Q.CanBeCasted() && enemy.Health <= (spiderQ[spiderlingsLevel]) && enemy.Health > 0)
+                        if (enemy.Position.Distance2D(me.Position) <= 600 && Utils.SleepCheck("QQQ"))
                         {
-                            if (enemy.Position.Distance2D(me.Position) <= 600 && Utils.SleepCheck("QQQ"))
+                            if (Soul.CanBeCasted() && Soul != null)
                             {
-                                if (Soul.CanBeCasted() && Soul != null)
-                                {
-                                    Soul.UseAbility();
-                                    Utils.Sleep(300, "QQQ");
-                                }
-                                else
-                                    Q.UseAbility(enemy);
+                                Soul.UseAbility();
                                 Utils.Sleep(300, "QQQ");
-
                             }
+                            else
+                                Q.UseAbility(enemy);
+                            Utils.Sleep(300, "QQQ");
+
                         }
                     }
+                }
 
-                    // Auto spider deny and lasthit
-                    if (Utils.SleepCheck("attacking") && toggleLasthit.isActive)
+
+                // Autodenies
+                if (Utils.SleepCheck("attacking1") && toggleLasthit.isActive)
+                {
+                    foreach (var Spider in Spiderlings)
                     {
-                        foreach (var creep in creeps)
-                        {
-                            var Spiderling = ObjectMgr.GetEntities<Unit>().FirstOrDefault(x => x.ClassID == ClassID.CDOTA_Unit_Broodmother_Spiderling && x.IsAlive && x.IsControllable && x.Team == me.Team);
-
-                            foreach (var spiderling in Spiderlings)
+                        if (Spider.Health > 0 && Spider.Health <= spiderDenies)
+                            foreach (var spiderlings in Spiderlings)
                             {
-                                if (creep != null)
+                                if (Spider.Position.Distance2D(spiderlings.Position) <= 500 && Utils.SleepCheck(spiderlings.Handle.ToString()))
                                 {
-                                    spiderDmg = Spiderlings.Count(y => y.Distance2D(creep) < 500) * spiderling.MinimumDamage + 30;
+                                    spiderlings.Attack(Spider);
+                                    Utils.Sleep(700, spiderlings.Handle.ToString());
+                                   
+                                }
+                            }
+                    }
+                    Utils.Sleep(700, "attacking1");
+                }
 
-                                    if (creep.Position.Distance2D(spiderling.Position) <= 800 &&
-                                        creep.Team != me.Team && creep.Health > 0 && creep.Health < Math.Floor(spiderDmg * (1 - creep.DamageResist)))
-                                    {
-                                        {
-                                            spiderling.Attack(creep);
-                                        }
-                                    }
-                                    else if (creep.Position.Distance2D(spiderling.Position) <= 500 &&
-                                        creep.Team == me.Team && creep.Health > 0 && creep.Health < Math.Floor(spiderDmg * (1 - creep.DamageResist)))
+                // Auto spider deny and lasthit
+                if (Utils.SleepCheck("attacking") && toggleLasthit.isActive)
+                {
+                    foreach (var creep in creeps)
+                    {
+                        var Spiderling = ObjectMgr.GetEntities<Unit>().FirstOrDefault(x => x.ClassID == ClassID.CDOTA_Unit_Broodmother_Spiderling && x.IsAlive && x.IsControllable && x.Team == me.Team);
+
+                        foreach (var spiderling in Spiderlings)
+                        {
+                            if (creep != null)
+                            {
+
+                                if (creep.Position.Distance2D(spiderling.Position) <= 800 &&
+                                    creep.Team != me.Team && creep.Health > 0 && creep.Health < Math.Floor(spiderDmgStatick * (1 - creep.DamageResist)))
+                                {
                                     {
                                         spiderling.Attack(creep);
                                     }
                                 }
-                            }
-                        }
-                        Utils.Sleep(850, "attacking");
-                    }
-
-                    // Auto spider enemy lasthit
-                    if (Utils.SleepCheck("attacking_enemy") && toggleLasthit.isActive)
-                    {
-                        foreach (var enemy in enemies)
-                        {
-                            foreach (var spiderling in Spiderlings)
-                            {
-                                if (enemy != null)
+                                else if (creep.Position.Distance2D(spiderling.Position) <= 500 &&
+                                    creep.Team == me.Team && creep.Health > 0 && creep.Health < Math.Floor(spiderDmgStatick * (1 - creep.DamageResist)))
                                 {
-                                    spiderDmg = Spiderlings.Count(y => y.Distance2D(enemy) < 800) * spiderling.MinimumDamage + 20;
-
-                                    if ((enemy.Position.Distance2D(spiderling.Position)) <= 800 &&
-                                        enemy.Team != me.Team && enemy.Health > 0 && enemy.Health < Math.Floor(spiderDmg * (1 - enemy.DamageResist))+50)
-                                    {
-                                        spiderling.Attack(enemy);
-                                    }
+                                    spiderling.Attack(creep);
                                 }
                             }
                         }
-                        Utils.Sleep(750, "attacking_enemy");
                     }
+                    Utils.Sleep(850, "attacking");
+                }
 
-                    if (activChase)
-                        Chasing();
-                    if (activCombo)
-                        ChasingAll();
+                // Auto spider enemy lasthit
+                if (Utils.SleepCheck("attacking_enemy") && toggleLasthit.isActive)
+                {
+                    foreach (var enemy in enemies)
+                    {
+                        foreach (var spiderling in Spiderlings)
+                        {
+                            if (enemy != null)
+                            {
+                                spiderDmg = Spiderlings.Count(y => y.Distance2D(enemy) < 800) * spiderling.MinimumDamage + 20;
 
-                    Utils.Sleep(290, "combo");
+                                if ((enemy.Position.Distance2D(spiderling.Position)) <= 800 &&
+                                    enemy.Team != me.Team && enemy.Health > 0 && enemy.Health < Math.Floor(spiderDmg * (1 - enemy.DamageResist)) + 50)
+                                {
+                                    spiderling.Attack(enemy);
+                                }
+                            }
+                        }
+                    }
+                    Utils.Sleep(750, "attacking_enemy");
+                }
+
+                if (activChase)
+                    Chasing();
+                if (activCombo)
+                    ChasingAll();
+
+                Utils.Sleep(290, "combo");
             }
         }
 
@@ -239,7 +258,7 @@ namespace This_is_your_Mom
             if (Utils.SleepCheck("All"))
             {
                 var me = ObjectMgr.LocalHero;
-                var target = me.ClosestToMouseTarget(1000);
+                var target = me.ClosestToMouseTarget(1500);
                 var Spiderlings = ObjectMgr.GetEntities<Unit>().Where(spiderlings => spiderlings.ClassID == ClassID.CDOTA_Unit_Broodmother_Spiderling).ToList();
                 {
                     if (target != null && target.IsAlive && !target.IsIllusion && chasing.isActive)
@@ -250,8 +269,6 @@ namespace This_is_your_Mom
                                 if (Spider.Distance2D(target) <= 1000 && (Utils.SleepCheck("combo")))
                                 {
                                     Spider.Attack(target);
-
-
                                 }
                             Utils.Sleep(750, "combo");
                         }
@@ -282,36 +299,37 @@ namespace This_is_your_Mom
             {
 
                 var me = ObjectMgr.LocalHero;
-                var target = me.ClosestToMouseTarget(1000);
+                var target = me.ClosestToMouseTarget(1500);
                 var Spiderlings = ObjectMgr.GetEntities<Unit>().Where(spiderlings => spiderlings.ClassID == ClassID.CDOTA_Unit_Broodmother_Spiderling).ToList();
 
 
                 {
-                    if (target != null && target.IsAlive && !target.IsIllusion && Utils.SleepCheck("combo") && chasing.isActive)
+                    if (target != null && target.IsAlive && !target.IsIllusion  && chasing.isActive)
 
                     {
                         {
                             if (Utils.SleepCheck("combing"))
                                 foreach (var Spider in Spiderlings)
                                 {
-                                    if (Spider.Distance2D(target) <= 1000)
+                                    if (Spider.Distance2D(target) <= 1500)
                                     {
                                         Spider.Attack(target);
 
                                     }
 
                                 }
-                            Utils.Sleep(750, "combing");
+                            Utils.Sleep(550, "combing");
                         }
 
                     }
-                    else
-                    {
+                    if (Utils.SleepCheck("combo"))
                         foreach (var Spider in Spiderlings)
                         {
-                            Spider.Move(Game.MousePosition);
+                            if (Spider.Distance2D(target) >= 1500)
+                            {
+                                Spider.Move(Game.MousePosition);
+                            }
                         }
-                    }
                     Utils.Sleep(700, "combo");
 
 
@@ -544,7 +562,7 @@ namespace This_is_your_Mom
                     } // Satanic Item end
                 }
             }
-            Utils.Sleep(250, "All");
+            Utils.Sleep(290, "All");
         }
 
 
@@ -582,7 +600,3 @@ namespace This_is_your_Mom
         }
     }
 }
-
-
-
-
