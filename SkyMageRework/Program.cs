@@ -14,7 +14,7 @@ namespace SkyMageRework
     {
         
         private static bool activated;
-        private static Item orchid, sheep, vail, soulring, arcane, blink, shiva, dagon, atos, ethereal, cheese ;
+        private static Item orchid, sheep, vail, soulring, arcane, blink, shiva, dagon, atos, ethereal, cheese, ghost ;
         private static Ability Q, W, E, R;
         private static bool toggle;
         private static bool blinkToggle = true; 
@@ -79,50 +79,38 @@ namespace SkyMageRework
 				}
           
             //spell
-            if (Q == null)
                 Q = me.Spellbook.SpellQ;
-
-            if (W == null)
+            
                 W = me.Spellbook.SpellW;
-
-            if (E == null)
+            
                 E = me.Spellbook.SpellE;
-
-            if (R == null)
+            
                 R = me.Spellbook.SpellR;
 
             // Item
-            if (ethereal == null)
                 ethereal = me.FindItem("item_ethereal_blade");
-
-            if (sheep == null)
+            
                 sheep = target.ClassID == ClassID.CDOTA_Unit_Hero_Tidehunter ? null : me.FindItem("item_sheepstick");
-
-            if (vail == null)
+            
                 vail = me.FindItem("item_veil_of_discord");
-
-            if (cheese == null)
+            
                 cheese = me.FindItem("item_cheese");
 
-            if (orchid == null)
+                ghost = me.FindItem("item_ghost");
+            
                 orchid = me.FindItem("item_orchid");
                 
-            if (atos == null)
                 atos = me.FindItem("item_rod_of_atos");
-
-            if (soulring == null)
+            
                 soulring = me.FindItem("item_soul_ring");
-
-            if (arcane == null)
+            
                 arcane = me.FindItem("item_arcane_boots");
-
-            if (blink == null)
+            
                 blink = me.FindItem("item_blink");
-
-            if (shiva == null)
+            
                 shiva = me.FindItem("item_shivas_guard");
 
-        	dagon = me.GetDagon();
+              	dagon = me.GetDagon();
             
       
             
@@ -225,6 +213,19 @@ namespace SkyMageRework
                     {
                         arcane.UseAbility();
                     } // Arcane Boots Item end
+
+                    if (//Ghost
+                        ghost != null                         &&
+                        ghost.CanBeCasted()                   &&
+                        me.CanCast()                          &&
+                        (me.Position.Distance2D(target) < 300 &&
+                        me.MaximumHealth / me.Health <= 0.7)  ||
+                        me.MaximumHealth/me.Health <= 0.3     &&
+                        Utils.SleepCheck("Ghost"))
+                    {
+                        ghost.UseAbility();
+                        Utils.Sleep(250, "Ghost");
+                    }
 
                     if (// Shiva Item
                         shiva != null               &&
