@@ -59,13 +59,13 @@ namespace ControlCreep_By_Vick
         {
             var me = ObjectMgr.LocalHero;
 
-            var target = me.ClosestToMouseTarget(200);
+            var target = me.ClosestToMouseTarget(1200);
 
             if (target == null)
             {
                 return;
             }
-            if (activated && target.IsAlive && !target.IsInvul() && Game.MousePosition.Distance2D(target) <= 1000)
+            if (activated && target.IsAlive && !target.IsInvul() && Game.MousePosition.Distance2D(target) <= 1000 || target.Distance2D(me) <= 600)
             {
 
                 //spell
