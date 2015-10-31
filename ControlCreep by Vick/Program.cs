@@ -375,7 +375,7 @@ namespace ControlCreep_By_Vick
                         var damageModif = v.Modifiers.FirstOrDefault(x => x.Name == "modifier_visage_summon_familiars_damage_charge");
 
 
-                        if (target.Position.Distance2D(v.Position) < 1550 && v.MaximumHealth / v.Health < 0.27 && v.Spellbook.Spell1.CanBeCasted() &&
+                        if (target.Position.Distance2D(v.Position) < 1550 && v.Health < 5 && v.Spellbook.Spell1.CanBeCasted() &&
                             Utils.SleepCheck(v.Handle.ToString()))
                         {
                             v.Spellbook.Spell1.UseAbility();
