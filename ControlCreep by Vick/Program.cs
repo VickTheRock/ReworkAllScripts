@@ -73,9 +73,10 @@ namespace ControlCreep_By_Vick
                 var CheckSetka = target.Modifiers.Any(y => y.Name == "modifier_dark_troll_warlord_ensnare");
                 var Neutrals = ObjectMgr.GetEntities<Creep>().Where(creep => (creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral || creep.ClassID == ClassID.CDOTA_BaseNPC_Invoker_Forged_Spirit || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep &&
                  creep.IsAlive && creep.IsVisible && creep.IsSpawned) && creep.Team == me.GetEnemyTeam()).ToList();
+                var Neutral = ObjectMgr.GetEntities<Creep>().Where(creep => ( creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral &&
+                 creep.IsAlive ) && creep.Team == me.GetEnemyTeam()).ToList();
 
-
-                var troll = ObjectMgr.GetEntities<Unit>().Where(unit => unit.Name == "npc_dota_neutral_dark_troll_warlord").ToList();
+                var troll = ObjectMgr.GetEntities<Creep>().Where(unit => unit.Name == "npc_dota_neutral_dark_troll_warlord").ToList();
                 if (troll == null)
                 {
                     return;
@@ -100,7 +101,7 @@ namespace ControlCreep_By_Vick
                 
 
 
-                var lizard = ObjectMgr.GetEntities<Unit>().Where(unit => unit.Name == "npc_dota_neutral_big_thunder_lizard").ToList();
+                var lizard = ObjectMgr.GetEntities<Creep>().Where(unit => unit.Name == "npc_dota_neutral_big_thunder_lizard").ToList();
                 if (lizard == null)
                 {
                     return;
@@ -132,7 +133,7 @@ namespace ControlCreep_By_Vick
                 
 
 
-                var centaur = ObjectMgr.GetEntities<Unit>().Where(unit => unit.Name == "npc_dota_neutral_centaur_khan").ToList();
+                var centaur = ObjectMgr.GetEntities<Creep>().Where(unit => unit.Name == "npc_dota_neutral_centaur_khan").ToList();
                 if (centaur == null)
                 {
                     return;
@@ -156,7 +157,7 @@ namespace ControlCreep_By_Vick
                     }
                 
 
-                var satyr = ObjectMgr.GetEntities<Unit>().Where(unit => unit.Name == "npc_dota_neutral_satyr_hellcaller").ToList();
+                var satyr = ObjectMgr.GetEntities<Creep>().Where(unit => unit.Name == "npc_dota_neutral_satyr_hellcaller").ToList();
                 if (satyr == null)
                 {
                     return;
@@ -181,7 +182,7 @@ namespace ControlCreep_By_Vick
                     }
                 
 
-                var ursa = ObjectMgr.GetEntities<Unit>().Where(unit => unit.Name == "npc_dota_neutral_polar_furbolg_ursa_warrior").ToList();
+                var ursa = ObjectMgr.GetEntities<Creep>().Where(unit => unit.Name == "npc_dota_neutral_polar_furbolg_ursa_warrior").ToList();
                 if (ursa == null)
                 {
                     return;
@@ -259,7 +260,7 @@ namespace ControlCreep_By_Vick
                         }
                     }
                 
-                var Necronomicons = ObjectMgr.GetEntities<Unit>().Where(x => (x.ClassID == ClassID.CDOTA_BaseNPC_Creep)
+                var Necronomicons = ObjectMgr.GetEntities<Creep>().Where(x => (x.ClassID == ClassID.CDOTA_BaseNPC_Creep)
                         && x.IsAlive && x.IsControllable);
                 if (Necronomicons == null)
                 {
@@ -270,13 +271,14 @@ namespace ControlCreep_By_Vick
 
 
                         var archer = ObjectMgr.GetEntities<Unit>().Where(unit => unit.Name == "npc_dota_necronomicon_archer").ToList();
-                        if (archer == null && target.Position.Distance2D(v.Position) <= 650 && v.Spellbook.SpellQ.CanBeCasted() &&
+                        if (archer != null && target.Position.Distance2D(v.Position) <= 650 && v.Spellbook.SpellQ.CanBeCasted() &&
                             Utils.SleepCheck(v.Handle.ToString()))
 
                         {
                             v.Spellbook.SpellQ.UseAbility(target);
                             Utils.Sleep(300, v.Handle.ToString());
                         }
+
                         if (target.Position.Distance2D(v.Position) < 1550 &&
                            Utils.SleepCheck(v.Handle.ToString()))
                         {
@@ -363,7 +365,7 @@ namespace ControlCreep_By_Vick
                             Utils.Sleep(700, v.Handle.ToString());
                         }
 
-                        if (target.Position.Distance2D(v.Position) < 340 && ((damageModif.StackCount < 1) && (me.MovementSpeed < target.MovementSpeed) && !target.IsStunned()) && v.Spellbook.Spell1.CanBeCasted() &&
+                        if (target.Position.Distance2D(v.Position) < 340 && ((damageModif.StackCount < 1)  && !target.IsStunned()) && v.Spellbook.Spell1.CanBeCasted() &&
                             Utils.SleepCheck(v.Handle.ToString()))
                         {
                             v.Spellbook.Spell1.UseAbility();
@@ -517,7 +519,7 @@ namespace ControlCreep_By_Vick
                 
 
 
-                var Wolf = ObjectMgr.GetEntities<Unit>().Where(x => (x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral)
+                var Wolf = ObjectMgr.GetEntities<Creep>().Where(x => (x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral)
                      && x.IsAlive && x.IsControllable);
                 if (Wolf == null)
                 {
@@ -586,12 +588,12 @@ namespace ControlCreep_By_Vick
 
             if (activated)
             {
-                txt.DrawText(null, "Creep Control On BackSpace", 1200, 30, Color.Aqua);
+                txt.DrawText(null, "Creep Control On BackSpace", 1200, 27, Color.Aqua);
             }
 
             if (!activated)
             {
-                txt.DrawText(null, "Creep Control Off BackSpace", 1200, 30, Color.Aqua);
+                txt.DrawText(null, "Creep Control Off BackSpace", 1200, 27, Color.Aqua);
             }
         }
 
