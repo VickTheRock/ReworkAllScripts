@@ -17,7 +17,7 @@ namespace ControlCreep_By_Vick
         private static Item midas;
         private static Font txt;
         private static Font not;
-        private static Key KeyControl = Key.Back;
+        private static Key KeyControl = Key.Z;
 
 
         static void Main(string[] args)
