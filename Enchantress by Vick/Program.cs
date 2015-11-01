@@ -110,7 +110,7 @@ namespace Enchantress
             
                 shiva = me.FindItem("item_shivas_guard");
 
-              	dagon = me.GetDagon();
+              	 dagon = me.Inventory.Items.FirstOrDefault(item => item.Name.Contains("item_dagon"));
 
                 staff = me.FindItem("item_force_staff");
 

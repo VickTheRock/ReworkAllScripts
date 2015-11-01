@@ -90,7 +90,7 @@ namespace TinyAutoCombo
                     if (shiva == null)
                         shiva = me.FindItem("item_shivas_guard");
 
-                    dagon = me.GetDagon();
+                    dagon = me.Inventory.Items.FirstOrDefault(item => item.Name.Contains("item_dagon"));
 
                     if (arcane == null)
                         arcane = me.FindItem("item_arcane_boots");
@@ -287,7 +287,7 @@ namespace TinyAutoCombo
 
                         if (// Dagon
                             dagon != null &&
-                            ethereal == null &&
+                            ethereal == null || !ethereal.CanBeCasted() &&
                             dagon.CanBeCasted() &&
                             me.CanCast() &&
                             !target.IsMagicImmune() &&
@@ -304,10 +304,23 @@ namespace TinyAutoCombo
                             satanic != null &&
                             me.Health / me.MaximumHealth <= 0.3 &&
                             satanic.CanBeCasted() &&
-                            me.Distance2D(target) <= 700)
+                            me.Distance2D(target) <= 700 &&
+                            Utils.SleepCheck("Satanic")
+                            )
                         {
                             satanic.UseAbility();
+                            Utils.Sleep(350 + Game.Ping, "Satanic");
                         } // Satanic Item end
+
+                        if (// Attack
+                            target != null &&
+                           me.Position.Distance2D(target.Position) <= 400 || (Game.MousePosition.Distance2D(target) <=400 && me.Position.Distance2D(target.Position) <= 1200) &&
+                            Utils.SleepCheck("Attack")
+                           )
+                        {
+                           me.Attack(target);
+                            Utils.Sleep(350 + Game.Ping, "Attack");
+                        } // Attack
                     }
                 }
             }

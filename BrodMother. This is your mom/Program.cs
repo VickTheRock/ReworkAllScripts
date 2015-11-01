@@ -385,7 +385,7 @@ namespace This_is_your_Mom
                     if (shiva == null)
                         shiva = me.FindItem("item_shivas_guard");
 
-                    dagon = me.GetDagon();
+                    dagon = me.Inventory.Items.FirstOrDefault(item => item.Name.Contains("item_dagon"));
 
                     if (mom == null)
                         mom = me.FindItem("item_mask_of_madness");

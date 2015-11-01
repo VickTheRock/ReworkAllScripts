@@ -98,7 +98,7 @@ namespace EmberSpirit
                 if (satanic == null)
                     satanic = me.FindItem("item_satanic");
                 
-                    dagon = me.GetDagon();
+                    dagon = me.Inventory.Items.FirstOrDefault(item => item.Name.Contains("item_dagon"));
 
                 if (halberd == null)
                     halberd = me.FindItem("item_heavens_halberd");
