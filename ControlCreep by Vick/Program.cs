@@ -294,10 +294,12 @@ namespace ControlCreep_By_Vick
                 {
                     return;
                 }
-                    foreach (var v in spiritbear)
+                 var aghanim = me.FindItem("item_phase_boots");
+                foreach (var v in spiritbear)
+                    if ((!me.AghanimState() && me.Position.Distance2D(v) <= 1200) || me.AghanimState())
                     {
 
-
+                        
                         var abyssal = v.FindItem("item_abyssal_blade");
                         var mjollnir = v.FindItem("item_mjollnir");
                         var boots = v.FindItem("item_phase_boots");
