@@ -588,12 +588,12 @@ namespace ControlCreep_By_Vick
 
             if (activated)
             {
-                txt.DrawText(null, "Creep Control On BackSpace", 1200, 30, Color.Aqua);
+                txt.DrawText(null, "Creep Control On BackSpace", 1200, 27, Color.Aqua);
             }
 
             if (!activated)
             {
-                txt.DrawText(null, "Creep Control Off BackSpace", 1200, 30, Color.Aqua);
+                txt.DrawText(null, "Creep Control Off BackSpace", 1200, 27, Color.Aqua);
             }
         }
 
