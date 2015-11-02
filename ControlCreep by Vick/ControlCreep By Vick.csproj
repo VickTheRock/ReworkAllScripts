@@ -8,7 +8,7 @@
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ControlCreep_by_Vick</RootNamespace>
-    <AssemblyName>ControlCreep_by_Vic</AssemblyName>
+    <AssemblyName>ControlCreep_by_Vick</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
