@@ -639,16 +639,16 @@ namespace EmberSpirit
 
             if (activated )
             {
-                txt.DrawText(null, "Ember#: Comboing!", 4, 150, Color.Green);
+                txt.DrawText(null, "Ember#: Comboing!", 4, 170, Color.Green);
             }
 
             if (!activated)
             {
-                txt.DrawText(null, "Ember#: go combo  [" + KeyCombo + "] for toggle combo", 4, 150, Color.Aqua);
+                txt.DrawText(null, "Ember#: go combo  [" + KeyCombo + "] for toggle combo", 4, 170, Color.Aqua);
             }
             if (togleQW)
             {
-                txt.DrawText(null, "Ember#: ComboingQW!", 4, 150, Color.Green);
+                txt.DrawText(null, "Ember#: ComboingQW!", 4, 190, Color.Green);
             }
 
             if (!togleQW)
