@@ -328,22 +328,20 @@ namespace Tuskar
                         Utils.Sleep(120 + Game.Ping, "W");
                     }
 
-                    var enemyHeroes = ObjectMgr.GetEntities<Hero>()
-                    .Where(  x => x.Team == me.GetEnemyTeam() && !x.IsIllusion && x.IsAlive && x.IsVisible
-                            && x.Distance2D(Game.MousePosition) <= 1000 && !x.IsMagicImmune());
                     var Sigl = ObjectMgr.GetEntities<Unit>().Where(x => (x.ClassID == ClassID.CDOTA_BaseNPC_Tusk_Sigil)
-                        && x.IsAlive  && x.IsControllable);
-
-                    foreach (var enemy in enemyHeroes)
+                        && x.IsAlive && x.IsControllable);
+                if (Sigl == null)
+                {
+                    return;
+                }
+                    foreach (var v in Sigl)
                     {
-                        foreach (var SigVar in Sigl)
+
+                        if (target.Position.Distance2D(v.Position) < 1550 &&
+                            Utils.SleepCheck(v.Handle.ToString()))
                         {
-                            if (enemy.Position.Distance2D(SigVar.Position) < 500 &&
-                                Utils.SleepCheck(SigVar.Handle.ToString()))
-                            {
-                                SigVar.Follow(enemy);
-                                Utils.Sleep(700, SigVar.Handle.ToString());
-                            }
+                            v.Follow(target);
+                            Utils.Sleep(700, v.Handle.ToString());
                         }
                     }
                     
