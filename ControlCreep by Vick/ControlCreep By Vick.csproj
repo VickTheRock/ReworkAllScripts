@@ -7,8 +7,8 @@
     <ProjectGuid>{215A36CA-85EA-4638-8C18-03D7BBAF1820}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ControlCreep</RootNamespace>
-    <AssemblyName>ControlCreep</AssemblyName>
+    <RootNamespace>ControlCreep_by_Vick</RootNamespace>
+    <AssemblyName>ControlCreep_by_Vick</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -52,20 +52,20 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Ensage">
-      <HintPath>c:\users\blect\desktop\game\System\Ensage.dll</HintPath>
+      <HintPath>C:\Users\BlecT\Desktop\Game\System\Ensage.dll</HintPath>
     </Reference>
     <Reference Include="Ensage.Common">
-      <HintPath>c:\users\blect\desktop\game\System\Ensage.Common.dll</HintPath>
+      <HintPath>C:\Users\BlecT\Desktop\Game\System\Ensage.Common.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>c:\users\blect\desktop\game\System\Newtonsoft.Json.dll</HintPath>
+      <HintPath>C:\Users\BlecT\Desktop\Game\System\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX">
-      <HintPath>c:\users\blect\desktop\game\System\SharpDX.dll</HintPath>
+      <HintPath>C:\Users\BlecT\Desktop\Game\System\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Direct3D9">
-      <HintPath>c:\users\blect\desktop\game\System\SharpDX.Direct3D9.dll</HintPath>
+      <HintPath>C:\Users\BlecT\Desktop\Game\System\SharpDX.Direct3D9.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

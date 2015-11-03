@@ -91,7 +91,7 @@ namespace Tuskar
                     if (satanic == null)
                         satanic = me.FindItem("item_satanic");
 
-                    dagon = me.Inventory.Items.FirstOrDefault(item => item.Name.Contains("item_dagon"));
+                        dagon = me.Inventory.Items.FirstOrDefault(item => item.Name.Contains("item_dagon"));
 
                     if (halberd == null)
                         halberd = me.FindItem("item_heavens_halberd");
@@ -116,17 +116,17 @@ namespace Tuskar
 
                     if (shiva == null)
                         shiva = me.FindItem("item_shivas_guard");
-
+                    
 
                     var linkens = target.Modifiers.Any(x => x.Name == "modifier_item_spheretarget") || target.Inventory.Items.Any(x => x.Name == "item_sphere");
                     var ModifW = me.Modifiers.Any(x => x.Name == "modifier_tusk_snowball_movement");
                     var ModifWW = me.Modifiers.All(x => x.Name == "modifier_tusk_snowball_movement");
                     var ModifInv = me.Modifiers.All(x => x.Name == "modifier_item_invisibility_edge_windwalk");
                     var medallModiff = target.Modifiers.Any(x => x.Name == "modifier_item_medallion_of_courage_armor_reduction") || target.Modifiers.Any(x => x.Name == "modifier_item_solar_crest_armor_reduction");
-
+                    
 
                     if (
-                        ModifInv &&
+                        ModifInv             &&
                         Utils.SleepCheck("invi")
                         )
                     {
@@ -135,12 +135,12 @@ namespace Tuskar
                     }
 
                     if ( // Q Skill
-                        Q != null &&
-                        Q.CanBeCasted() &&
-                        me.CanCast() &&
+                        Q != null                    &&
+                        Q.CanBeCasted()              &&
+                        me.CanCast()                 &&
                         !ModifInv &&
-                        ModifW &&
-                        !target.IsMagicImmune() &&
+                        ModifW                       &&
+                        !target.IsMagicImmune()      &&
                         me.Distance2D(target) <= 300 &&
                         Utils.SleepCheck("Q")
                         )
@@ -152,8 +152,8 @@ namespace Tuskar
 
 
                     if (//R Skill
-
-
+                       
+                       
                        R != null &&
                        medallModiff &&
                        R.CanBeCasted() &&
@@ -180,22 +180,22 @@ namespace Tuskar
                         Utils.Sleep(150 + Game.Ping, "R");
                     } // R Skill end
 
-
-                    if ( // E Skill
-                    E != null &&
-                    E.CanBeCasted() &&
-                    !ModifInv &&
-                    me.CanCast() &&
-                    ModifW &&
-                    !target.IsMagicImmune() &&
-                    Utils.SleepCheck("E") &&
-                    me.Distance2D(target) <= 200
-                    )
+                   
+                        if ( // E Skill
+                        E != null               &&
+                        E.CanBeCasted()         &&
+                        !ModifInv               &&
+                        me.CanCast()            &&
+                        ModifW                  &&
+                        !target.IsMagicImmune() &&
+                        Utils.SleepCheck("E")   &&
+                        me.Distance2D(target) <= 200
+                        )
                     {
                         E.UseAbility();
                         Utils.Sleep(350 + Game.Ping, "E");
                     } // E Skill end
-
+                   
 
                     if (// SoulRing Item 
                         soulring != null &&
@@ -243,7 +243,7 @@ namespace Tuskar
 
                     if ( // Medall
                         medall != null &&
-                        medall.CanBeCasted() &&
+                        medall.CanBeCasted() && 
                         !ModifInv &&
                         Utils.SleepCheck("Medall") &&
                         me.Distance2D(target) <= 500
@@ -330,10 +330,10 @@ namespace Tuskar
 
                     var Sigl = ObjectMgr.GetEntities<Unit>().Where(x => (x.ClassID == ClassID.CDOTA_BaseNPC_Tusk_Sigil)
                         && x.IsAlive && x.IsControllable);
-                    if (Sigl == null)
-                    {
-                        return;
-                    }
+                if (Sigl == null)
+                {
+                    return;
+                }
                     foreach (var v in Sigl)
                     {
 
@@ -344,15 +344,15 @@ namespace Tuskar
                             Utils.Sleep(700, v.Handle.ToString());
                         }
                     }
-
-
+                    
+                    
                 }
             }
         }
 
 
 
-
+       
 
 
         private static void Game_OnWndProc(WndEventArgs args)
@@ -382,7 +382,7 @@ namespace Tuskar
             if (player == null || player.Team == Team.Observer || me.ClassID != ClassID.CDOTA_Unit_Hero_Tusk)
                 return;
 
-            if (activated)
+            if (activated )
             {
                 txt.DrawText(null, "Tusk#: Combo Active", 5, 190, Color.Firebrick);
             }
@@ -391,8 +391,8 @@ namespace Tuskar
             {
                 txt.DrawText(null, "Tusk#: go combo  [" + KeyCombo + "] for toggle combo D", 5, 190, Color.Aqua);
             }
-
-
+            
+            
         }
 
         static void Drawing_OnPostReset(EventArgs args)
@@ -408,6 +408,6 @@ namespace Tuskar
         }
     }
 }
-
-
-
+ 
+ 
+ 

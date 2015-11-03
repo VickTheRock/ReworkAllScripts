@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 
-[assembly: Guid("10c4f5eb-1c96-4425-3152-3aafb4e919e0")]
+[assembly: Guid("10c4f6eb-1c96-4425-9152-7aafb4e949e0")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -33,5 +33,5 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 
-[assembly: AssemblyVersion("0.0.5.2")]
-[assembly: AssemblyFileVersion("0.0.5.2")]
+[assembly: AssemblyVersion("0.0.5.21")]
+[assembly: AssemblyFileVersion("0.0.5.21")]
