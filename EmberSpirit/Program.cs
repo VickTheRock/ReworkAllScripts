@@ -21,8 +21,8 @@ namespace EmberSpirit
       //  private static bool Altcombo;
         private static Font txt;
         private static Font not;
-        private static Key KeyCombo = Key.D;
-        private const Key TogleQW = Key.W;
+        private static Key KeyCombo = Key.C;
+        private const Key TogleQW = Key.Z;
        // private const Key Altthisshit = Key.F;
         private static bool loaded;
         static void Main(string[] args)
