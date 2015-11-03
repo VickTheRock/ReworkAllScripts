@@ -225,10 +225,10 @@ namespace This_is_your_Mom
                         {
                             if (enemy != null)
                             {
-                                spiderDmg = Spiderlings.Count(y => y.Distance2D(enemy) < 800) * spiderling.MinimumDamage + 20;
+                                spiderDmg = Spiderlings.Count(y => y.Distance2D(enemy) < 800) * spiderling.MinimumDamage;
 
                                 if ((enemy.Position.Distance2D(spiderling.Position)) <= 800 &&
-                                    enemy.Team != me.Team && enemy.Health > 0 && enemy.Health < Math.Floor(spiderDmg * (1 - enemy.DamageResist)) + 50 && Utils.SleepCheck(spiderling.Handle.ToString()))
+                                    enemy.Team != me.Team && enemy.Health > 0 && enemy.Health < Math.Floor(spiderDmg * (1 - enemy.DamageResist))  && Utils.SleepCheck(spiderling.Handle.ToString()))
                                 {
                                     spiderling.Attack(enemy);
                                     Utils.Sleep(500, spiderling.Handle.ToString());
