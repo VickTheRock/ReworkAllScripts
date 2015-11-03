@@ -76,42 +76,41 @@ namespace Enchantress
 				{
                 return;
 				}
-          
+
             //spell
-            
+            if (W == null)
                 W = me.Spellbook.SpellW;
-            
+            if (E == null)
                 E = me.Spellbook.SpellE;
-            
+            if (R == null)
                 R = me.Spellbook.SpellR;
 
             // Item
+            if (ethereal == null)
                 ethereal = me.FindItem("item_ethereal_blade");
-            
+            if (sheep == null)
                 sheep = target.ClassID == ClassID.CDOTA_Unit_Hero_Tidehunter ? null : me.FindItem("item_sheepstick");
-            
+            if (vail == null)
                 vail = me.FindItem("item_veil_of_discord");
-            
+            if (cheese == null)
                 cheese = me.FindItem("item_cheese");
-
+            if (mom == null)
                 mom = me.FindItem("item_mask_of_madness");
-
+            if (ghost == null)
                 ghost = me.FindItem("item_ghost");
-            
+            if (orchid == null)
                 orchid = me.FindItem("item_orchid");
-                
+            if (atos == null)
                 atos = me.FindItem("item_rod_of_atos");
-            
+            if (soulring == null)
                 soulring = me.FindItem("item_soul_ring");
-            
+            if (arcane == null)
                 arcane = me.FindItem("item_arcane_boots");
-            
+            if (blink == null)
                 blink = me.FindItem("item_blink");
-            
+            if (shiva == null)
                 shiva = me.FindItem("item_shivas_guard");
-
-              	 dagon = me.Inventory.Items.FirstOrDefault(item => item.Name.Contains("item_dagon"));
-
+            if (staff == null)
                 staff = me.FindItem("item_force_staff");
 
 

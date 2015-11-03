@@ -5,12 +5,14 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
-[assembly: AssemblyTitle("This is your Mom#")]
+[assembly: AssemblyTitle("SkyMageRework#")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("EnsageSharp")]
-[assembly: AssemblyProduct("This is your Mom#")]
-[assembly: AssemblyCopyright("This is Vick!")]
+[assembly: AssemblyProduct("SkyMageRework#")]
+[assembly: AssemblyCopyright("By Vick/ Only Love MazaiPC")]
+[assembly: AssemblyTrademark("EnsageSharp")]
+[assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
@@ -20,7 +22,7 @@ using System.Runtime.InteropServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 
-[assembly: Guid("10c4f6eb-1c96-4425-9152-3aafb4e949e0")]
+[assembly: Guid("63a3de29-1c36-4325-9152-7380e0416dec")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -33,5 +35,5 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 
-[assembly: AssemblyVersion("0.0.0.4")]
-[assembly: AssemblyFileVersion("0.0.0.4")]
+[assembly: AssemblyVersion("0.0.6.3")]
+[assembly: AssemblyFileVersion("0.0.6.3")]
