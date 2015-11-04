@@ -434,6 +434,12 @@ namespace ControlCreep_By_Vick
                         v.Spellbook.SpellQ.UseAbility(target.Position);
                         Utils.Sleep(400, v.Handle.ToString());
                     }
+                    if (target.Position.Distance2D(v.Position) < 900 && v.Spellbook.SpellE.CanBeCasted() &&
+                        Utils.SleepCheck(v.Handle.ToString()))
+                    {
+                        v.Spellbook.SpellE.UseAbility();
+                        Utils.Sleep(400, v.Handle.ToString());
+                    }
                     if (target.Position.Distance2D(v.Position) < 850 && v.Spellbook.SpellR.CanBeCasted() &&
                        Utils.SleepCheck(v.Handle.ToString()))
                     {
