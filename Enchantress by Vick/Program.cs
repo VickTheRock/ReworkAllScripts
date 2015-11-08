@@ -115,20 +115,22 @@ namespace Enchantress
 
 
         var linkens = target.Modifiers.Any(x => x.Name == "modifier_item_spheretarget") || target.Inventory.Items.Any(x => x.Name == "item_sphere");
-            var ModifRod = target.Modifiers.Any(y => y.Name == "modifier_item_rod_of_atos_debuf");
+            var ModifRod = target.Modifiers.Any(y => y.Name == "modifier_item_rod_of_atos_debuff");
             var ModifEther = target.Modifiers.Any(y => y.Name == "modifier_item_ethereal_blade_slow");
             var ModifVail = target.Modifiers.Any(y => y.Name == "modifier_item_veil_of_discord_debuff");
-            
+            var Wmodif = target.Modifiers.Any(y => y.Name == "modifier_enchantress_enchant_slow");
 
 
-            if (activated && toggle && me.IsAlive && target.IsAlive && Utils.SleepCheck("activated"))
+			if (activated && me.IsAlive && target.IsAlive && Utils.SleepCheck("activated"))
             {
                 var noBlade = target.Modifiers.Any(y => y.Name == "modifier_item_blade_mail_reflect");
                 if ( target.IsVisible && me.Distance2D(target) <= 2300 && !noBlade)
                 {
                     if (
                         W!= null                     &&
-                        W.CanBeCasted()              &&
+						W.CanBeCasted()              &&
+						me.Distance2D(target) >= 400 &&
+						!ModifRod					 &&
                         me.CanCast()                 &&
                         !linkens                     &&
                         Utils.SleepCheck("W"))
@@ -158,8 +160,8 @@ namespace Enchantress
                         E.CanBeCasted()                        &&
                         me.CanCast()                           &&
                         me.Position.Distance2D(target) <= 1200 &&
-                        me.MaximumHealth/me.Health <= 0.6      &&
-                        Utils.SleepCheck("E"))
+						(me.Health <= (me.MaximumHealth * 0.7)) &&
+						Utils.SleepCheck("E"))
                     {
                         E.UseAbility();
                         Utils.Sleep(200, "E");
@@ -212,9 +214,9 @@ namespace Enchantress
                         ghost != null                         &&
                         ghost.CanBeCasted()                   &&
                         me.CanCast()                          &&
-                        (me.Position.Distance2D(target) < 300 &&
-                        me.MaximumHealth / me.Health <= 0.7)  ||
-                        me.MaximumHealth/me.Health <= 0.3     &&
+                        (me.Position.Distance2D(target) <= 200 &&
+						me.Health <= (me.MaximumHealth * 0.7) ||
+						me.Health <= (me.MaximumHealth * 0.3)) &&
                         Utils.SleepCheck("Ghost"))
                     {
                         ghost.UseAbility();
@@ -294,7 +296,8 @@ namespace Enchantress
                         me.CanCast()             &&
                         !target.IsMagicImmune()  &&
                         !linkens                 &&
-                        Utils.SleepCheck("atos") &&
+						!Wmodif				 &&
+						Utils.SleepCheck("atos") &&
                         me.Distance2D(target) <= 2000
                         )
                     {
@@ -329,9 +332,20 @@ namespace Enchantress
                         dagon.UseAbility(target);
                         Utils.Sleep(200 + Game.Ping, "dagon");
                     } // Dagon Item end
-                    
 
-                    if (
+					if (// Attack
+						(R.Level <=0 ||
+						target.IsMagicImmune()) &&
+						me.Distance2D(target) <= 1500 &&
+						Utils.SleepCheck("Attack")
+					   )
+					{
+						me.Attack(target);
+						Utils.Sleep(250 + Game.Ping, "Attack");
+					} // Attack
+
+
+					if (
                          // cheese
                          cheese != null             && 
                          cheese.CanBeCasted()       &&
@@ -370,13 +384,13 @@ namespace Enchantress
             {
                 DrawBox(2, 37, 560, 54, 1, new ColorBGRA(0, 0, 100, 100));
                 DrawFilledBox(2, 37, 560, 54, new ColorBGRA(0, 0, 0, 100));
-                DrawShadowText("Enchantress#: Enabled\nBlink on/off(P): " + blinkToggle + " | UseUlt on/off(H): " + useUltimate + " | [" + keyCombo + "] for combo \n[" + toggleKey + "] For toggle combo | [" + blinkToggleKey + "] For toggle blink ", 4, 37, Color.Violet, txt);
+                DrawShadowText("Enchantress#: MENU\nBlink on/off(P): " + blinkToggle + " | UseUlt on/off(H): " + useUltimate + " | [" + keyCombo + "] for combo \n[" + toggleKey + "] For toggle combo | [" + blinkToggleKey + "] For toggle blink ", 4, 37, Color.Violet, txt);
             }
             if (!toggle)
             {
                 DrawBox(2, 37, 185, 20, 1, new ColorBGRA(0, 0, 100, 100));
                 DrawFilledBox(2, 37, 185, 20, new ColorBGRA(0, 0, 0, 100));
-                DrawShadowText("Enchantress#: Disabled | [" + toggleKey + "] for toggle", 4, 37, Color.Turquoise, txt);
+                DrawShadowText("Open MENU | [" + toggleKey + "]", 4, 37, Color.Turquoise, txt);
             }
         }
 
