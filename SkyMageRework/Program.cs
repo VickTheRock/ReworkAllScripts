@@ -219,8 +219,8 @@ namespace SkyMageRework
                         ghost.CanBeCasted()                   &&
                         me.CanCast()                          &&
                         (me.Position.Distance2D(target) < 300 &&
-                        me.MaximumHealth / me.Health <= 0.7)  ||
-                        me.MaximumHealth/me.Health <= 0.3     &&
+                        me.Health <= (me.MaximumHealth * 0.7))  ||
+                        me.Health <= (me.MaximumHealth * 0.3) &&
                         Utils.SleepCheck("Ghost"))
                     {
                         ghost.UseAbility();
@@ -377,6 +377,7 @@ namespace SkyMageRework
                          cheese != null             && 
                          cheese.CanBeCasted()       &&
                          Utils.SleepCheck("cheese") &&
+                         me.Health <= (me.MaximumHealth * 0.3) &&
                          me.Distance2D(target) <= 700)
                      {
                          cheese.UseAbility();
