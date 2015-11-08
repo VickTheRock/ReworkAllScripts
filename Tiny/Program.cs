@@ -155,7 +155,7 @@ namespace TinyAutoCombo
 
                         if (// SoulRing Item 
                             soulring != null &&
-                            me.Health / me.MaximumHealth <= 0.4 &&
+                            me.Health >= (me.MaximumHealth * 0.3) &&
                             me.Mana <= Q.ManaCost &&
                             soulring.CanBeCasted())
                         {
@@ -302,7 +302,7 @@ namespace TinyAutoCombo
 
                         if (// Satanic 
                             satanic != null &&
-                            me.Health / me.MaximumHealth <= 0.3 &&
+                            me.Health <= (me.MaximumHealth * 0.3) &&
                             satanic.CanBeCasted() &&
                             me.Distance2D(target) <= 700 &&
                             Utils.SleepCheck("Satanic")
