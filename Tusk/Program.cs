@@ -72,7 +72,7 @@ namespace Tuskar
 
             if (activated)
             {
-                if (target.IsAlive && !target.IsInvul() && !me.IsInvisible() && !target.IsIllusion)
+                if (target.IsAlive  && !me.IsInvisible() && !target.IsIllusion)
                 {
                     if (Q == null)
                         Q = me.Spellbook.SpellQ;
