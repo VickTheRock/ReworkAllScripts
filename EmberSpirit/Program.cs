@@ -271,7 +271,7 @@ namespace EmberSpirit
 
                 if (// Satanic 
                     satanic != null &&
-                    me.Health / me.MaximumHealth <= 0.3 &&
+                    me.Health <= (me.MaximumHealth * 0.3) &&
                     satanic.CanBeCasted() &&
                     me.Distance2D(target) <= 400)
                 {
