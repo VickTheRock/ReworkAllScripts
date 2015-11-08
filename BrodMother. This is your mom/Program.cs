@@ -17,11 +17,11 @@ namespace This_is_your_Mom
         private static bool activChase;
         private static bool toggle;
         private static Item mom, abyssal, Soul, orchid, shiva, halberd, mjollnir, satanic, dagon, medall, orhid, sheep, cheese;
-        private static Ability Q, R;
+        private static Ability Q, W, R;
         private static Hero me;
         private static Hero target;
-        private static int spiderDenies = 62;
-        private static int spiderDmgStatick = 165;
+        private static int spiderDenies = 65;
+        private static int spiderDmgStatick = 175;
         private static readonly uint[] spiderQ = { 74, 149, 224, 299 };
         private static readonly uint[] SoulLvl = { 120, 190, 270, 360 };
         private static int spiderDmg;
@@ -34,7 +34,7 @@ namespace This_is_your_Mom
         private static Key keyCOMBO = Key.D;
         private static Key toggleKey = Key.D5;
         private static Key toggleLasthitKey = Key.D7;
-        private static Key UseQ = Key.D6;
+        private static Key UseQ = Key.Q;
 
 
         static void Main(string[] args)
@@ -82,7 +82,7 @@ namespace This_is_your_Mom
                 return;
             }
 
-            if (toggleLasthit && !activCombo && !activChase && Utils.SleepCheck("combo"))
+            if (toggleLasthit && !activCombo && !activChase && Utils.SleepCheck("combo") && !Game.IsPaused)
             {
                 if (Q == null)
                     Q = me.Spellbook.SpellQ;
@@ -118,7 +118,7 @@ namespace This_is_your_Mom
                         {
                             if (Q.CanBeCasted() && creep.Position.Distance2D(me.Position) <= 600 && Utils.SleepCheck("QQQ"))
                             {
-                                if (Soul != null && Soul.CanBeCasted())
+                                if (Soul != null && Soul.CanBeCasted() && me.Health >=400)
                                 {
                                     Soul.UseAbility();
                                     Utils.Sleep(300, "QQQ");
@@ -137,8 +137,8 @@ namespace This_is_your_Mom
                         {
                             if (creep.Position.Distance2D(me.Position) <= 600 && Utils.SleepCheck("QQQ"))
                             {
-                                if (Soul != null && Soul.CanBeCasted())
-                                {
+								if (Soul != null && Soul.CanBeCasted() && me.Health >= 400)
+								{
                                     Soul.UseAbility();
                                     Utils.Sleep(300, "QQQ");
                                 }
@@ -153,23 +153,20 @@ namespace This_is_your_Mom
                     {
                         if (enemy.Position.Distance2D(me.Position) <= 600 && Utils.SleepCheck("QQQ"))
                         {
-                            if (Soul.CanBeCasted() && Soul != null)
-                            {
+							if (Soul != null && Soul.CanBeCasted() && me.Health >= 400)
+							{
                                 Soul.UseAbility();
-                                Utils.Sleep(300, "QQQ");
                             }
                             else
-                                Q.UseAbility(enemy);
-                            Utils.Sleep(300, "QQQ");
-
+                                Q.UseAbility(target);
+                            
                         }
-                    }
+						Utils.Sleep(300, "QQQ");
+					}
                 }
 
 
                 // Autodenies
-                if (Utils.SleepCheck("attacking1"))
-                {
                     foreach (var Spider in Spiderlings)
                     {
                         if (Spider.Health > 0 && Spider.Health <= spiderDenies)
@@ -183,11 +180,8 @@ namespace This_is_your_Mom
                                 }
                             }
                     }
-                    Utils.Sleep(700, "attacking1");
-                }
 
                 // Auto spider deny and lasthit
-                {
                     foreach (var creep in creeps)
                     {
                         var Spiderling = ObjectMgr.GetEntities<Unit>().FirstOrDefault(x => x.ClassID == ClassID.CDOTA_Unit_Broodmother_Spiderling && x.IsAlive && x.IsControllable && x.Team == me.Team);
@@ -214,7 +208,6 @@ namespace This_is_your_Mom
                             }
                         }
                     }
-                }
 
                 // Auto spider enemy lasthit
                 if (Utils.SleepCheck("attacking_enemy"))
@@ -320,8 +313,8 @@ namespace This_is_your_Mom
                         if (Q == null)
                             Q = me.Spellbook.SpellQ;
 
-                        /*  if (W == null) ///////It will be added later//////////
-                              W = me.Spellbook.SpellW; */
+                        if (W == null) ///////It will be added later//////////
+                              W = me.Spellbook.SpellW; 
 
                         if (R == null)
                             R = me.Spellbook.SpellR;
@@ -534,16 +527,33 @@ namespace This_is_your_Mom
                             satanic.UseAbility();
                             Utils.Sleep(250 + Game.Ping, "Satanic");
                         } // Satanic Item end
-                        if (//Attack
+
+                        if    (//Attack
                               me.Distance2D(target) <= 1900 &&
                                Utils.SleepCheck("Attack")
                                )
-
                         {
                            me.Attack(target);
                             Utils.Sleep(300 + Game.Ping, "Attack");
                         } // Attack
-                    }
+
+
+					/***************************************WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW**********************************/
+					var SpideWeb = ObjectMgr.GetEntities<Unit>().Where(web => web.ClassID == ClassID.CDOTA_Unit_Broodmother_Web).ToList();
+					var Web = target.Distance2D(SpideWeb.First());
+					{
+						if (Web > 1100 && target != null && W != null && target.IsAlive && !target.IsIllusion)
+						{
+							foreach (var web in SpideWeb)
+								if (web.Distance2D(target) >= 1100 && me.Distance2D(target) <= 600 && Utils.SleepCheck(web.Handle.ToString()) && W.CanBeCasted())
+								{
+									W.UseAbility(target.Position);
+									Utils.Sleep(500, web.Handle.ToString());
+								}
+						}
+					}
+					/******************************************************************************************************************/
+				}
             }
         }
 
@@ -558,14 +568,21 @@ namespace This_is_your_Mom
             if (player == null || player.Team == Team.Observer || me.ClassID != ClassID.CDOTA_Unit_Hero_Broodmother)
                 return;
 
-            if (activChase || activCombo)
+            if (!useQ)
             {
                 DrawBox(2, 510, 110, 20, 1, new ColorBGRA(0, 0, 90, 90));
                 DrawFilledBox(2, 510, 110, 20, new ColorBGRA(0, 0, 0, 100));
-                DrawShadowText("  Brood#: Active!", 4, 510, Color.Goldenrod, txt);
+                DrawShadowText("  Q DISABLE", 4, 510, Color.Goldenrod, txt);
             }
 
-            if (toggle)
+			if (activChase || activCombo)
+			{
+				DrawBox(2, 510, 110, 20, 1, new ColorBGRA(0, 0, 90, 90));
+				DrawFilledBox(2, 510, 110, 20, new ColorBGRA(0, 0, 0, 100));
+				DrawShadowText("  Brood#: Active!", 4, 510, Color.Goldenrod, txt);
+			}
+
+			if (toggle)
             {
                 DrawBox(2, 530, 440, 54, 1, new ColorBGRA(0, 0, 90, 90));
                 DrawFilledBox(2, 530, 440, 54, new ColorBGRA(0, 0, 0, 100));
