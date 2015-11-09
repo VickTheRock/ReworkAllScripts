@@ -563,7 +563,7 @@ namespace ControlCreep_By_Vick
                     }
 
 
-				if (me.ClassID != ClassID.CDOTA_Unit_Hero_Juggernaut)
+			/*	if (me.ClassID != ClassID.CDOTA_Unit_Hero_Juggernaut)
 				{
 					return;
 				}
@@ -585,7 +585,7 @@ namespace ControlCreep_By_Vick
 							Utils.Sleep(50, v.Handle.ToString());
 						}
 					}
-				}
+				}*/
 			}
         }
 
