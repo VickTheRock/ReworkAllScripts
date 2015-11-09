@@ -548,7 +548,7 @@ namespace This_is_your_Mom
 								if (web.Distance2D(target) >= 1100 && me.Distance2D(target) <= 600 && Utils.SleepCheck(web.Handle.ToString()) && W.CanBeCasted())
 								{
 									W.UseAbility(target.Position);
-									Utils.Sleep(500, web.Handle.ToString());
+									Utils.Sleep(5000, web.Handle.ToString());
 								}
 						}
 					}
