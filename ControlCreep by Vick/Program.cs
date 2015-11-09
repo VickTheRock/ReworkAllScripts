@@ -400,14 +400,6 @@ namespace ControlCreep_By_Vick
 								}
 							}
 						}
-					}
-				if (spiritbear == null)
-				{
-					return;
-				}
-				foreach (var v in spiritbear)
-					if ((!me.AghanimState() && me.Position.Distance2D(v) <= 1200) || me.AghanimState())
-					{
 						if (target != null)
 						{
 							if (target.Position.Distance2D(v.Position) < 1550 &&
@@ -683,7 +675,9 @@ namespace ControlCreep_By_Vick
             }
         }
 
-        static void Drawing_OnPostReset(EventArgs args)
+
+
+		static void Drawing_OnPostReset(EventArgs args)
         {
             txt.OnResetDevice();
             not.OnResetDevice();
