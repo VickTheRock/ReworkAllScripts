@@ -222,9 +222,11 @@ namespace ControlCreep_By_Vick
                             Utils.Sleep(700, v.Handle.ToString());
                         }
                     }
-                
 
-                var InvForgeds = ObjectMgr.GetEntities<Unit>().Where(x => (x.ClassID == ClassID.CDOTA_BaseNPC_Invoker_Forged_Spirit)
+				
+
+
+				var InvForgeds = ObjectMgr.GetEntities<Unit>().Where(x => (x.ClassID == ClassID.CDOTA_BaseNPC_Invoker_Forged_Spirit)
                         && x.IsAlive && x.IsControllable);
                 if (InvForgeds == null)
                 {
@@ -559,8 +561,32 @@ namespace ControlCreep_By_Vick
                             Utils.Sleep(700, v.Handle.ToString());
                         }
                     }
-                
-            }
+
+
+				if (me.ClassID != ClassID.CDOTA_Unit_Hero_Juggernaut)
+				{
+					return;
+				}
+				{
+					var Jugger = ObjectMgr.GetEntities<Unit>().Where(x => (x.ClassID == ClassID.CDOTA_BaseNPC_Additive)
+					   && x.IsAlive && x.IsControllable);
+
+					if (Jugger == null)
+					{
+						return;
+					}
+					foreach (var v in Jugger)
+					{
+
+						if (me.Position.Distance2D(v.Position) < 550 &&
+							Utils.SleepCheck(v.Handle.ToString()))
+						{
+							v.Move(me.Position);
+							Utils.Sleep(50, v.Handle.ToString());
+						}
+					}
+				}
+			}
         }
 
 
