@@ -14,7 +14,7 @@ namespace ControlCreep_By_Vick
     {
 
         private static bool activated;
-        private static Item midas;
+        private static Item midas, abyssal, mjollnir, boots, medall, mom;
         private static Font txt;
         private static Font not;
         private static Key KeyControl = Key.Back;
@@ -61,10 +61,34 @@ namespace ControlCreep_By_Vick
 
             var target = me.ClosestToMouseTarget(1200);
 
-            if (target == null)
+
+			if (activated && me.IsAlive)
+			{
+				
+				var HealingWard = ObjectMgr.GetEntities<Unit>().Where(x => (x.ClassID == ClassID.CDOTA_BaseNPC_Additive)
+						&& x.IsAlive && x.IsControllable && x.Team == me.Team);
+
+				foreach (var w in HealingWard)
+				{
+					if (me.Position.Distance2D(w.Position) > 5 && Utils.SleepCheck(w.Handle.ToString()))
+					{
+						w.Move(me.Position);
+						Utils.Sleep(30, w.Handle.ToString());
+					}
+				}
+			}
+
+
+
+			if (target == null)
             {
                 return;
             }
+
+
+
+
+
             if (activated && target.IsAlive && !target.IsInvul() && (Game.MousePosition.Distance2D(target) <= 1000 || target.Distance2D(me) <= 600))
             {
 
@@ -75,8 +99,20 @@ namespace ControlCreep_By_Vick
                  creep.IsAlive && creep.IsVisible && creep.IsSpawned) && creep.Team == me.GetEnemyTeam()).ToList();
                 var Neutral = ObjectMgr.GetEntities<Creep>().Where(creep => ( creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral &&
                  creep.IsAlive ) && creep.Team == me.GetEnemyTeam()).ToList();
+				
 
-                var troll = ObjectMgr.GetEntities<Creep>().Where(unit => unit.Name == "npc_dota_neutral_dark_troll_warlord").ToList();
+
+
+
+
+
+
+
+
+
+
+
+				var troll = ObjectMgr.GetEntities<Creep>().Where(unit => unit.Name == "npc_dota_neutral_dark_troll_warlord").ToList();
                 if (troll == null)
                 {
                     return;
@@ -117,7 +153,7 @@ namespace ControlCreep_By_Vick
                             v.Spellbook.SpellQ.UseAbility();
                             Utils.Sleep(700, v.Handle.ToString());
                         }
-                        if (target.Position.Distance2D(v.Position) < 550 && v.Spellbook.SpellQ.CanBeCasted() &&
+                        if (target.Position.Distance2D(v.Position) < 550 && v.Spellbook.SpellW.CanBeCasted() &&
                             Utils.SleepCheck(v.Handle.ToString()))
                         {
                             v.Spellbook.SpellW.UseAbility();
@@ -194,7 +230,7 @@ namespace ControlCreep_By_Vick
                             Utils.SleepCheck(v.Handle.ToString()))
                         {
                             v.Spellbook.SpellQ.UseAbility();
-                            Utils.Sleep(300, v.Handle.ToString());
+                            Utils.Sleep(160, v.Handle.ToString());
                         }
 
                         if (target.Position.Distance2D(v.Position) < 1550 &&
@@ -296,62 +332,96 @@ namespace ControlCreep_By_Vick
                 {
                     return;
                 }
-                 var aghanim = me.FindItem("item_phase_boots");
                 foreach (var v in spiritbear)
                     if ((!me.AghanimState() && me.Position.Distance2D(v) <= 1200) || me.AghanimState())
-                    {
+	                {
+						
 
-                        
-                        var abyssal = v.FindItem("item_abyssal_blade");
-                        var mjollnir = v.FindItem("item_mjollnir");
-                        var boots = v.FindItem("item_phase_boots");
-                        midas = v.FindItem("item_hand_of_midas");
+						if (abyssal == null)
+							abyssal = v.FindItem("item_abyssal_blade");
 
+						if (mjollnir == null)
+							mjollnir = v.FindItem("item_mjollnir");
 
-                        if (target.Position.Distance2D(v.Position) < 1550 && boots.CanBeCasted() &&
+						if (boots == null)
+							boots = v.FindItem("item_phase_boots");
+
+						if (midas == null)
+							midas = v.FindItem("item_hand_of_midas");
+
+						if (mom == null)
+							mom = v.FindItem("item_mask_of_madness");
+
+						if (medall == null)
+							medall = v.FindItem("item_medallion_of_courage");
+						
+
+						if (boots !=null && target.Position.Distance2D(v.Position) < 1550 && boots.CanBeCasted() &&
                             Utils.SleepCheck(v.Handle.ToString()))
                         {
                             v.FindItem("item_phase_boots").UseAbility();
-                            Utils.Sleep(700, v.Handle.ToString());
+                            Utils.Sleep(350, v.Handle.ToString());
                         }
-                        if (target.Position.Distance2D(v.Position) < 525 && mjollnir.CanBeCasted() &&
+                        if (mjollnir != null && target.Position.Distance2D(v.Position) < 525 && mjollnir.CanBeCasted() &&
                             Utils.SleepCheck(v.Handle.ToString()))
                         {
                             v.FindItem("item_mjollnir").UseAbility(v);
-                            Utils.Sleep(700, v.Handle.ToString());
+                            Utils.Sleep(350, v.Handle.ToString());
                         }
-                        if (target.Position.Distance2D(v.Position) < 170 && abyssal.CanBeCasted() &&
+
+						if (medall != null && target.Position.Distance2D(v.Position) < 525 && medall.CanBeCasted()  &&
+						   Utils.SleepCheck(v.Handle.ToString()))
+						{
+							v.FindItem("item_medallion_of_courage").UseAbility(target);
+							Utils.Sleep(350, v.Handle.ToString());
+						}
+
+						if (mom != null && target.Position.Distance2D(v.Position) < 525 && mom.CanBeCasted() &&
+						   Utils.SleepCheck(v.Handle.ToString()))
+						{
+							v.FindItem("item_mask_of_madness").UseAbility();
+							Utils.Sleep(350, v.Handle.ToString());
+						}
+						if (abyssal != null && target.Position.Distance2D(v.Position) < 170 && abyssal.CanBeCasted() &&
                             Utils.SleepCheck(v.Handle.ToString()))
                         {
                             v.FindItem("item_abyssal_blade").UseAbility(target);
-                            Utils.Sleep(700, v.Handle.ToString());
+                            Utils.Sleep(350, v.Handle.ToString());
                         }
-                        if (target.Position.Distance2D(v.Position) < 525 && mjollnir.CanBeCasted() &&
-                            Utils.SleepCheck(v.Handle.ToString()))
-                        {
-                            v.FindItem("item_mjollnir").UseAbility(v);
-                            Utils.Sleep(700, v.Handle.ToString());
-                        }
+						if (midas != null)
+						{
+							foreach (var f in Neutrals)
+							{
+								if (target.Position.Distance2D(f.Position) < 650 && midas.CanBeCasted() &&
+									Utils.SleepCheck(f.Handle.ToString()))
+								{
+									v.FindItem("item_hand_of_midas").UseAbility(f);
+									Utils.Sleep(350, f.Handle.ToString());
+								}
+							}
+						}
+					}
+				if (spiritbear == null)
+				{
+					return;
+				}
+				foreach (var v in spiritbear)
+					if ((!me.AghanimState() && me.Position.Distance2D(v) <= 1200) || me.AghanimState())
+					{
+						if (target != null)
+						{
+							if (target.Position.Distance2D(v.Position) < 1550 &&
+						   Utils.SleepCheck(v.Handle.ToString()))
+							{
+								v.Attack(target);
+								Utils.Sleep(350, v.Handle.ToString());
+							}
+						}
 
-                        foreach (var f in Neutrals)
-                        {
-                            if (target.Position.Distance2D(f.Position) < 650 && midas.CanBeCasted() &&
-                                Utils.SleepCheck(f.Handle.ToString()))
-                            {
-                                v.FindItem("item_hand_of_midas").UseAbility(f);
-                                Utils.Sleep(700, f.Handle.ToString());
-                            }
-                        }
-                        if (target.Position.Distance2D(v.Position) < 1550 &&
-                        Utils.SleepCheck(v.Handle.ToString()))
-                        {
-                            v.Attack(target);
-                            Utils.Sleep(700, v.Handle.ToString());
-                        }
-                    }
-                
+					}
 
-                var Familliar = ObjectMgr.GetEntities<Unit>().Where(x => (x.ClassID == ClassID.CDOTA_Unit_VisageFamiliar)
+
+					var Familliar = ObjectMgr.GetEntities<Unit>().Where(x => (x.ClassID == ClassID.CDOTA_Unit_VisageFamiliar)
                       && x.IsAlive && x.IsControllable);
                 if (Familliar == null)
                 {
@@ -366,20 +436,20 @@ namespace ControlCreep_By_Vick
                             Utils.SleepCheck(v.Handle.ToString()))
                         {
                             v.Spellbook.Spell1.UseAbility();
-                            Utils.Sleep(700, v.Handle.ToString());
+                            Utils.Sleep(200, v.Handle.ToString());
                         }
 
                         if (target.Position.Distance2D(v.Position) < 340 && ((damageModif.StackCount < 1)  && !target.IsStunned()) && v.Spellbook.Spell1.CanBeCasted() &&
                             Utils.SleepCheck(v.Handle.ToString()))
                         {
                             v.Spellbook.Spell1.UseAbility();
-                            Utils.Sleep(700, v.Handle.ToString());
+                            Utils.Sleep(600, v.Handle.ToString());
                         }
                         if (target.Position.Distance2D(v.Position) < 1550 &&
                            Utils.SleepCheck(v.Handle.ToString()))
                         {
                             v.Attack(target);
-                            Utils.Sleep(700, v.Handle.ToString());
+                            Utils.Sleep(400, v.Handle.ToString());
                         }
                     }
                 
@@ -430,7 +500,13 @@ namespace ControlCreep_By_Vick
                             v.Spellbook.SpellQ.UseAbility(target.Position);
                             Utils.Sleep(400, v.Handle.ToString());
                         }
-                        if (target.Position.Distance2D(v.Position) < 850 && v.Spellbook.SpellR.CanBeCasted() &&
+					if (target.Position.Distance2D(v.Position) < 900 && v.Spellbook.SpellE.CanBeCasted() &&
+						Utils.SleepCheck(v.Handle.ToString()))
+					{
+						v.Spellbook.SpellE.UseAbility();
+						Utils.Sleep(400, v.Handle.ToString());
+					}
+					if (target.Position.Distance2D(v.Position) < 850 && v.Spellbook.SpellR.CanBeCasted() &&
                            Utils.SleepCheck(v.Handle.ToString()))
                         {
                             v.Spellbook.SpellR.UseAbility(target);
@@ -562,30 +638,12 @@ namespace ControlCreep_By_Vick
                         }
                     }
 
+				
+				
 
-			/*	if (me.ClassID != ClassID.CDOTA_Unit_Hero_Juggernaut)
-				{
-					return;
-				}
-				{
-					var Jugger = ObjectMgr.GetEntities<Unit>().Where(x => (x.ClassID == ClassID.CDOTA_BaseNPC_Additive)
-					   && x.IsAlive && x.IsControllable);
 
-					if (Jugger == null)
-					{
-						return;
-					}
-					foreach (var v in Jugger)
-					{
 
-						if (me.Position.Distance2D(v.Position) < 550 &&
-							Utils.SleepCheck(v.Handle.ToString()))
-						{
-							v.Move(me.Position);
-							Utils.Sleep(50, v.Handle.ToString());
-						}
-					}
-				}*/
+
 			}
         }
 
