@@ -72,7 +72,7 @@ namespace Tuskar
 
             if (activated)
             {
-                if (target.IsAlive  && !me.IsInvisible() && !target.IsIllusion)
+                if (target.IsAlive && !target.IsInvul() && !me.IsInvisible() && !target.IsIllusion)
                 {
                     if (Q == null)
                         Q = me.Spellbook.SpellQ;
@@ -167,7 +167,23 @@ namespace Tuskar
                         Utils.Sleep(150 + Game.Ping, "R");
                     } // R Skill end
 
-                    if (//R Skill
+					if (//R Skill
+
+
+					   R != null &&
+						target.IsMagicImmune() &&
+					   R.CanBeCasted() &&
+					   me.CanCast() &&
+					   !linkens &&
+					   me.Distance2D(target) <= 350 &&
+					   Utils.SleepCheck("R")
+					   )
+					{
+						R.UseAbility(target);
+						Utils.Sleep(150 + Game.Ping, "R");
+					} // R Skill end
+
+					if (//R Skill
                         medall == null &&
                         R != null &&
                         R.CanBeCasted() &&
@@ -307,7 +323,7 @@ namespace Tuskar
 
                     if (// Satanic 
                         satanic != null &&
-                        me.Health <= (me.MaximumHealth * 0.3) &&
+                        me.Health / me.MaximumHealth <= 0.3 &&
                         satanic.CanBeCasted() && !ModifInv &&
                         me.Distance2D(target) <= 300
                         )
