@@ -323,7 +323,7 @@ namespace Tuskar
 
                     if (// Satanic 
                         satanic != null &&
-                        me.Health / me.MaximumHealth <= 0.3 &&
+                        me.Health <= (me.MaximumHealth * 0.3) &&
                         satanic.CanBeCasted() && !ModifInv &&
                         me.Distance2D(target) <= 300
                         )
