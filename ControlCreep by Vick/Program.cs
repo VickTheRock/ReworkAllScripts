@@ -63,7 +63,7 @@ namespace ControlCreep_By_Vick
 			}
 		
 
-            var target = me.ClosestToMouseTarget(800);
+            var target = me.ClosestToMouseTarget(1200);
 
 
 			if (activated && me.IsAlive)
@@ -83,12 +83,8 @@ namespace ControlCreep_By_Vick
 					}
 				}
 				
-				
-				if (target == null)
-            {
-                return;
-            }
 			
+				
 				var ogre = ObjectMgr.GetEntities<Unit>().Where(unit => unit.Name == "npc_dota_neutral_ogre_magi").ToList();
 				if (ogre == null)
 				{
@@ -96,11 +92,14 @@ namespace ControlCreep_By_Vick
 				}
 				foreach (var v in ogre)
 				{
-					var teamarm = ObjectMgr.GetEntities<Hero>().Where(u => u.Modifiers.Any(m => m.Name == ("modifier_ogre_magi_frost_armor")&& u.Team == me.Team && u.Distance2D(v) <= 700)) ;
+
+					var teamarm =ObjectMgr.GetEntities<Hero>().Where(ally =>
+					ally.Team == me.Team && ally.IsAlive && !ally.IsIllusion && v.Distance2D(ally) <= 1500).ToList();
+					
                        var armor = v.Spellbook.SpellQ;
-					foreach (var u in teamarm)
+					foreach  (var u in teamarm)
 					{
-						if (teamarm.Any() && armor.CanBeCasted() && Utils.SleepCheck(v.Handle.ToString()))
+						if (!u.Modifiers.Any(y => y.Name == "modifier_ogre_magi_frost_armor") && armor.CanBeCasted() && Utils.SleepCheck(v.Handle.ToString()))
 						{
 							armor.UseAbility(u);
 							Utils.Sleep(400, v.Handle.ToString());
