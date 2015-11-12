@@ -63,7 +63,7 @@ namespace ControlCreep_By_Vick
 			}
 		
 
-            var target = me.ClosestToMouseTarget(1200);
+            var target = me.ClosestToMouseTarget(800);
 
 
 			if (activated && me.IsAlive)
