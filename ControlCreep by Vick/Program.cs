@@ -56,24 +56,61 @@ namespace ControlCreep_By_Vick
 
 
         public static void Game_OnUpdate(EventArgs args)
-        {
-            var me = ObjectMgr.LocalHero;
+        {	var me = ObjectMgr.LocalHero;
+			if (!Game.IsInGame || me == null)
+			{
+				return;
+			}
+		
 
             var target = me.ClosestToMouseTarget(1200);
 
 
 			if (activated && me.IsAlive)
 			{
-				
-				var HealingWard = ObjectMgr.GetEntities<Unit>().Where(x => (x.ClassID == ClassID.CDOTA_BaseNPC_Additive)
+				if(me.ClassID == ClassID.CDOTA_Unit_Hero_Juggernaut)
+				{
+						var HealingWard = ObjectMgr.GetEntities<Unit>().Where(x => (x.ClassID == ClassID.CDOTA_BaseNPC_Additive)
 						&& x.IsAlive && x.IsControllable && x.Team == me.Team);
 
-				foreach (var w in HealingWard)
-				{
-					if (me.Position.Distance2D(w.Position) > 5 && Utils.SleepCheck(w.Handle.ToString()))
+					foreach (var w in HealingWard)
 					{
-						w.Move(me.Position);
-						Utils.Sleep(30, w.Handle.ToString());
+						if (me.Position.Distance2D(w.Position) > 5 && Utils.SleepCheck(w.Handle.ToString()))
+						{
+							w.Move(me.Position);
+							Utils.Sleep(30, w.Handle.ToString());
+						}
+					}
+				}
+				
+				
+				if (target == null)
+            {
+                return;
+            }
+			
+				var ogre = ObjectMgr.GetEntities<Unit>().Where(unit => unit.Name == "npc_dota_neutral_ogre_magi").ToList();
+				if (ogre == null)
+				{
+					return;
+				}
+				foreach (var v in ogre)
+				{
+					var teamarm = ObjectMgr.GetEntities<Hero>().Where(u => u.Modifiers.Any(m => m.Name == ("modifier_ogre_magi_frost_armor")&& u.Team == me.Team && u.Distance2D(v) <= 700)) ;
+                       var armor = v.Spellbook.SpellQ;
+					foreach (var u in teamarm)
+					{
+						if (teamarm.Any() && armor.CanBeCasted() && Utils.SleepCheck(v.Handle.ToString()))
+						{
+							armor.UseAbility(u);
+							Utils.Sleep(400, v.Handle.ToString());
+						}
+					}
+					if (target.Position.Distance2D(v.Position) < 900 &&
+							Utils.SleepCheck(v.Handle.ToString()))
+					{
+						v.Attack(target);
+						Utils.Sleep(700, v.Handle.ToString());
 					}
 				}
 			}
@@ -121,7 +158,7 @@ namespace ControlCreep_By_Vick
                     {
 
 
-                        if (target.Position.Distance2D(v.Position) < 550 && (!CheckSetka || !CheckStun || target.IsHexed() || target.IsStunned()) && v.Spellbook.SpellQ.CanBeCasted() &&
+                        if (target.Position.Distance2D(v.Position) < 550 && (!CheckSetka || !CheckStun || !target.IsHexed() || !target.IsStunned()) && v.Spellbook.SpellQ.CanBeCasted() &&
                             Utils.SleepCheck(v.Handle.ToString()))
                         {
                             v.Spellbook.SpellQ.UseAbility(target);
@@ -177,7 +214,7 @@ namespace ControlCreep_By_Vick
                     foreach (var v in centaur)
                     {
 
-                        if (target.Position.Distance2D(v.Position) < 200 && (!CheckSetka || !CheckStun || target.IsHexed() || target.IsStunned()) && v.Spellbook.SpellQ.CanBeCasted() &&
+                        if (target.Position.Distance2D(v.Position) < 200 && (!CheckSetka || !CheckStun || !target.IsHexed() || !target.IsStunned()) && v.Spellbook.SpellQ.CanBeCasted() &&
                             Utils.SleepCheck(v.Handle.ToString()))
                         {
                             v.Spellbook.SpellQ.UseAbility();
@@ -599,20 +636,44 @@ namespace ControlCreep_By_Vick
                 }
                     foreach (var v in Wolf)
                     {
-
-                        if (target.Position.Distance2D(v.Position) < 1550 &&
+					if (target.Position.Distance2D(v.Position) < 900 && v.Spellbook.SpellQ.CanBeCasted() && (!CheckSetka || !CheckStun || !target.IsHexed() ||!target.IsStunned()) &&
+							Utils.SleepCheck(v.Handle.ToString()))
+					{
+						v.Spellbook.SpellQ.UseAbility(target);
+						Utils.Sleep(400, v.Handle.ToString());
+					}
+					if (target.Position.Distance2D(v.Position) < 1550 &&
                             Utils.SleepCheck(v.Handle.ToString()))
                         {
                             v.Attack(target);
                             Utils.Sleep(700, v.Handle.ToString());
                         }
                     }
-                
+
+				
+			var harpy = ObjectMgr.GetEntities<Unit>().Where(unit => unit.Name == "npc_dota_neutral_harpy_storm").ToList();
+				if (harpy == null)
+				{
+					return;
+				}
+				foreach (var v in harpy)
+				{
+					if (target.Position.Distance2D(v.Position) < 900 && v.Spellbook.SpellQ.CanBeCasted() &&
+							Utils.SleepCheck(v.Handle.ToString()))
+					{
+						v.Spellbook.SpellQ.UseAbility(target);
+						Utils.Sleep(400, v.Handle.ToString());
+					}
+					if (target.Position.Distance2D(v.Position) < 1550 &&
+						Utils.SleepCheck(v.Handle.ToString()))
+					{
+						v.Attack(target);
+						Utils.Sleep(700, v.Handle.ToString());
+					}
+				}
 
 
-
-
-                var SerpentWard = ObjectMgr.GetEntities<Unit>().Where(x => (x.ClassID == ClassID.CDOTA_BaseNPC_ShadowShaman_SerpentWard)
+				var SerpentWard = ObjectMgr.GetEntities<Unit>().Where(x => (x.ClassID == ClassID.CDOTA_BaseNPC_ShadowShaman_SerpentWard)
                     && x.IsAlive && x.IsControllable);
                 if (SerpentWard == null)
                 {
@@ -629,15 +690,8 @@ namespace ControlCreep_By_Vick
                             Utils.Sleep(700, v.Handle.ToString());
                         }
                     }
-
-				
-				
-
-
-
-
 			}
-        }
+		}
 
 
 
