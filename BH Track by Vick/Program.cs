@@ -14,7 +14,6 @@ namespace ControlCreep_By_Vick
     {
 
         private static bool activated;
-        private static Item midas, abyssal, mjollnir, boots, medall, mom;
         private static Font txt;
         private static Font not;
         private static Key keyTrack = Key.Home;
