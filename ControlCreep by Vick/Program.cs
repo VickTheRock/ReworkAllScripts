@@ -17,7 +17,7 @@ namespace ControlCreep_By_Vick
         private static Item midas, abyssal, mjollnir, boots, medall, mom;
         private static Font txt;
         private static Font not;
-        private static Key KeyControl = Key.Back;
+        private static Key KeyControl = Key.Space;
 
 
         static void Main(string[] args)
