@@ -14,7 +14,7 @@ namespace EmberSpirit
     internal class Program
     {
 
-        private static Item mom, abyssal, soulring, arcane, shiva, halberd, mjollnir, satanic, dagon;
+        private static Item mom, abyssal, soulring, arcane, shiva, halberd, mjollnir, satanic, dagon, orchid;
         private static Ability Q, W, E, R, D;
         private static bool activated;
         private static bool togleQW;
@@ -121,7 +121,7 @@ namespace EmberSpirit
                 if (shiva == null)
                     shiva = me.FindItem("item_shivas_guard");
 
-
+                orchid = me.FindItem("item_orchid");
 
                 if ( // Q Skill
                         Q != null &&
@@ -173,7 +173,15 @@ namespace EmberSpirit
                     R.UseAbility(target.Position);
                     Utils.Sleep(90 + Game.Ping, "R");
                 } // R Skill end
-
+                
+                if (orchid != null 
+                && orchid.CanBeCasted() 
+                && me.Distance2D(target) <= 900 
+                && Utils.SleepCheck("orchid"))
+					{
+						orchid.UseAbility(target);
+						Utils.Sleep(100 + Game.Ping, "orchid");
+					}
                 if (// SoulRing Item 
                     soulring != null &&
                     me.Health / me.MaximumHealth <= 0.4 &&
