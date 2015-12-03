@@ -230,12 +230,11 @@ namespace Tuskar
                     } // R Skill end
 
                    
-                        if ( // E Skill
+                    if ( // E Skill
                         E != null               &&
                         E.CanBeCasted()         &&
                         !ModifInv               &&
                         me.CanCast()            &&
-                        ModifW                  &&
                         !target.IsMagicImmune() &&
                         Utils.SleepCheck("E")   &&
                         me.Distance2D(target) <= 200
