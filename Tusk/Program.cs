@@ -97,7 +97,7 @@ namespace Tuskar
 					}
 					foreach (Unit v in unitToSnow)
 					{
-						if (ModifW && v.Distance2D(me) < 200 && !v.Modifiers.Any(z => z.Name == "modifier_tusk_snowball_movement_friendly") && !v.IsInvul() && !v.IsAttackImmune() && v.IsAlive && Utils.SleepCheck(v.Handle.ToString()))
+						if (ModifW && v.Distance2D(me) < 400 && !v.Modifiers.Any(z => z.Name == "modifier_tusk_snowball_movement_friendly") && !v.IsInvul() && !v.IsAttackImmune() && v.IsAlive && Utils.SleepCheck(v.Handle.ToString()))
 						{
 							me.Attack(v);
 							Utils.Sleep(100, v.Handle.ToString());
