@@ -71,8 +71,41 @@ namespace Tuskar
             }
 
             if (activated)
-            {
-                if (target.IsAlive && !target.IsInvul() && !me.IsInvisible() && !target.IsIllusion)
+			{
+				var ModifW = me.Modifiers.Any(x => x.Name == "modifier_tusk_snowball_movement");
+
+				var teamarm = ObjectMgr.GetEntities<Hero>().Where(ally =>
+							 ally.Team == me.Team && ally.IsAlive && me.Distance2D(ally) <= 400
+							 && !ally.Modifiers.Any(x => x.Name == "modifier_tusk_snowball_movement_friendly"));
+
+				var unitToSnow = ObjectMgr.GetEntities<Unit>().Where(x => ((x.ClassID == ClassID.CDOTA_BaseNPC_Invoker_Forged_Spirit
+				|| x.ClassID == ClassID.CDOTA_Unit_SpiritBear || x.ClassID == ClassID.CDOTA_BaseNPC_Warlock_Golem
+				|| x.ClassID == ClassID.CDOTA_Unit_Broodmother_Spiderling || x.ClassID == ClassID.CDOTA_BaseNPC_Creep)
+				&& !x.IsAttackImmune() && !x.IsInvul() && x.IsVisible && x.IsAlive && me.Distance2D(x) <= 400)
+				   && x.IsAlive && x.IsControllable
+				   && !x.Modifiers.Any(z => z.Name == "modifier_tusk_snowball_movement_friendly") && !x.Modifiers.Any(z => z.Name == "modifier_tusk_snowball_movement"));
+				if (ModifW)
+				{
+
+					foreach (Hero v in teamarm.ToList())
+					{
+						if (ModifW && v.Distance2D(me) < 400 && !v.Modifiers.Any(z => z.Name == "modifier_tusk_snowball_movement_friendly") && !v.IsInvul() && !v.IsAttackImmune() && v.IsAlive && Utils.SleepCheck(v.Handle.ToString()))
+						{
+							me.Attack(v);
+							Utils.Sleep(100, v.Handle.ToString());
+						}
+					}
+					foreach (Unit v in unitToSnow)
+					{
+						if (ModifW && v.Distance2D(me) < 200 && !v.Modifiers.Any(z => z.Name == "modifier_tusk_snowball_movement_friendly") && !v.IsInvul() && !v.IsAttackImmune() && v.IsAlive && Utils.SleepCheck(v.Handle.ToString()))
+						{
+							me.Attack(v);
+							Utils.Sleep(100, v.Handle.ToString());
+						}
+					}
+				}
+			
+				if (target.IsAlive && !target.IsInvul() && !me.IsInvisible() && !target.IsIllusion)
                 {
                     if (Q == null)
                         Q = me.Spellbook.SpellQ;
@@ -119,7 +152,7 @@ namespace Tuskar
                     
 
                     var linkens = target.Modifiers.Any(x => x.Name == "modifier_item_spheretarget") || target.Inventory.Items.Any(x => x.Name == "item_sphere");
-                    var ModifW = me.Modifiers.Any(x => x.Name == "modifier_tusk_snowball_movement");
+                   
                     var ModifWW = me.Modifiers.All(x => x.Name == "modifier_tusk_snowball_movement");
                     var ModifInv = me.Modifiers.All(x => x.Name == "modifier_item_invisibility_edge_windwalk");
                     var medallModiff = target.Modifiers.Any(x => x.Name == "modifier_item_medallion_of_courage_armor_reduction") || target.Modifiers.Any(x => x.Name == "modifier_item_solar_crest_armor_reduction");
@@ -343,26 +376,42 @@ namespace Tuskar
                         W.UseAbility();
                         Utils.Sleep(120 + Game.Ping, "W");
                     }
+					var Sigl = ObjectMgr.GetEntities<Unit>().Where(x => (x.ClassID == ClassID.CDOTA_BaseNPC_Tusk_Sigil)
+																								  && x.IsAlive && x.IsControllable);
+					if (Sigl == null)
+					{
+						return;
+					}
+					foreach (var v in Sigl)
+					{
 
-                    var Sigl = ObjectMgr.GetEntities<Unit>().Where(x => (x.ClassID == ClassID.CDOTA_BaseNPC_Tusk_Sigil)
-                        && x.IsAlive && x.IsControllable);
-                if (Sigl == null)
-                {
-                    return;
-                }
-                    foreach (var v in Sigl)
-                    {
-
-                        if (target.Position.Distance2D(v.Position) < 1550 &&
-                            Utils.SleepCheck(v.Handle.ToString()))
-                        {
-                            v.Follow(target);
-                            Utils.Sleep(700, v.Handle.ToString());
-                        }
-                    }
-                    
-                    
-                }
+						if (target.Position.Distance2D(v.Position) < 1550 &&
+							Utils.SleepCheck(v.Handle.ToString()))
+						{
+							v.Follow(target);
+							Utils.Sleep(350, v.Handle.ToString());
+						}
+					}
+					if (
+						(!me.CanAttack()
+						|| me.Distance2D(target) >= 140)
+						&& me.NetworkActivity != NetworkActivity.Attack
+						&& me.Distance2D(target) <= 800
+						&& Utils.SleepCheck("Move"))
+					{
+						me.Move(target.Predict(300));
+						Utils.Sleep(390 + Game.Ping, "Move");
+					}
+					else if (
+					   me.Distance2D(target) <= 145
+					   && me.CanAttack()
+					   && Utils.SleepCheck("R")
+					   )
+					{
+						me.Attack(target);
+						Utils.Sleep(150 + Game.Ping, "R");
+					}
+				}
             }
         }
 
