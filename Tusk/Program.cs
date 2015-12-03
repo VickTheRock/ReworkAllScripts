@@ -81,7 +81,7 @@ namespace Tuskar
 				var unitToSnow = ObjectMgr.GetEntities<Unit>().Where(x => ((x.ClassID == ClassID.CDOTA_BaseNPC_Invoker_Forged_Spirit
 				|| x.ClassID == ClassID.CDOTA_Unit_SpiritBear || x.ClassID == ClassID.CDOTA_BaseNPC_Warlock_Golem
 				|| x.ClassID == ClassID.CDOTA_Unit_Broodmother_Spiderling || x.ClassID == ClassID.CDOTA_BaseNPC_Creep)
-				&& !x.IsAttackImmune() && !x.IsInvul() && x.IsVisible && x.IsAlive && me.Distance2D(x) <= 400)
+				&& !x.IsAttackImmune() && !x.IsInvul() && x.IsVisible && x.IsAlive && me.Distance2D(x) <= 395)
 				   && x.IsAlive && x.IsControllable
 				   && !x.Modifiers.Any(z => z.Name == "modifier_tusk_snowball_movement_friendly") && !x.Modifiers.Any(z => z.Name == "modifier_tusk_snowball_movement"));
 				if (ModifW)
@@ -89,7 +89,7 @@ namespace Tuskar
 
 					foreach (Hero v in teamarm.ToList())
 					{
-						if (ModifW && v.Distance2D(me) < 400 && !v.Modifiers.Any(z => z.Name == "modifier_tusk_snowball_movement_friendly") && !v.IsInvul() && !v.IsAttackImmune() && v.IsAlive && Utils.SleepCheck(v.Handle.ToString()))
+						if (ModifW && v.Distance2D(me) < 395 && !v.Modifiers.Any(z => z.Name == "modifier_tusk_snowball_movement_friendly") && !v.IsInvul() && !v.IsAttackImmune() && v.IsAlive && Utils.SleepCheck(v.Handle.ToString()))
 						{
 							me.Attack(v);
 							Utils.Sleep(100, v.Handle.ToString());
@@ -97,7 +97,7 @@ namespace Tuskar
 					}
 					foreach (Unit v in unitToSnow)
 					{
-						if (ModifW && v.Distance2D(me) < 400 && !v.Modifiers.Any(z => z.Name == "modifier_tusk_snowball_movement_friendly") && !v.IsInvul() && !v.IsAttackImmune() && v.IsAlive && Utils.SleepCheck(v.Handle.ToString()))
+						if (ModifW && v.Distance2D(me) < 395 && !v.Modifiers.Any(z => z.Name == "modifier_tusk_snowball_movement_friendly") && !v.IsInvul() && !v.IsAttackImmune() && v.IsAlive && Utils.SleepCheck(v.Handle.ToString()))
 						{
 							me.Attack(v);
 							Utils.Sleep(100, v.Handle.ToString());
