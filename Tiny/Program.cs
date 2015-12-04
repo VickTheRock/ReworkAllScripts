@@ -175,9 +175,8 @@ namespace TinyAutoCombo
                             shiva.CanBeCasted() &&
                             me.CanCast() &&
                             !target.IsMagicImmune() &&
-                            (shiva.CanBeCasted() &&
                             Utils.SleepCheck("shiva") &&
-                            me.Distance2D(target) <= 600)
+                            me.Distance2D(target) <= 600
                             )
                         {
                             shiva.UseAbility();
@@ -201,9 +200,8 @@ namespace TinyAutoCombo
                             mom != null &&
                             mom.CanBeCasted() &&
                             me.CanCast() &&
-                            (mom.CanBeCasted() &&
                             Utils.SleepCheck("mom") &&
-                            me.Distance2D(target) <= 700)
+                            me.Distance2D(target) <= 700
                             )
                         {
                             mom.UseAbility();
@@ -216,9 +214,8 @@ namespace TinyAutoCombo
                             abyssal.CanBeCasted() &&
                             me.CanCast() &&
                             !target.IsMagicImmune() &&
-                            (abyssal.CanBeCasted() &&
                             Utils.SleepCheck("abyssal") &&
-                            me.Distance2D(target) <= 400)
+                            me.Distance2D(target) <= 400
                             )
                         {
                             abyssal.UseAbility(target);
@@ -230,9 +227,8 @@ namespace TinyAutoCombo
                             halberd.CanBeCasted() &&
                             me.CanCast() &&
                             !target.IsMagicImmune() &&
-                            (halberd.CanBeCasted() &&
                             Utils.SleepCheck("halberd") &&
-                            me.Distance2D(target) <= 700)
+                            me.Distance2D(target) <= 700
                             )
                         {
                             halberd.UseAbility(target);
@@ -262,8 +258,7 @@ namespace TinyAutoCombo
                            dagon.CanBeCasted()  &&
                            me.CanCast()         &&
                            !target.IsMagicImmune() &&
-                           (dagon.CanBeCasted() &&
-                           Utils.SleepCheck("dagon"))
+                           Utils.SleepCheck("dagon")
                           )
                         {
                             dagon.UseAbility(target);
@@ -276,9 +271,8 @@ namespace TinyAutoCombo
                             mjollnir.CanBeCasted() &&
                             me.CanCast() &&
                             !target.IsMagicImmune() &&
-                            (mjollnir.CanBeCasted() &&
                             Utils.SleepCheck("mjollnir") &&
-                            me.Distance2D(target) <= 900)
+                            me.Distance2D(target) <= 900
                            )
                         {
                             mjollnir.UseAbility(me);
@@ -287,12 +281,11 @@ namespace TinyAutoCombo
 
                         if (// Dagon
                             dagon != null &&
-                            ethereal == null || !ethereal.CanBeCasted() &&
+                            (ethereal == null || !ethereal.CanBeCasted()) &&
                             dagon.CanBeCasted() &&
                             me.CanCast() &&
                             !target.IsMagicImmune() &&
-                            (dagon.CanBeCasted() &&
-                            Utils.SleepCheck("dagon"))
+                            Utils.SleepCheck("dagon")
                            )
                         {
                             dagon.UseAbility(target);
@@ -312,15 +305,26 @@ namespace TinyAutoCombo
                             Utils.Sleep(350 + Game.Ping, "Satanic");
                         } // Satanic Item end
 
-                        if (// Attack
-                            target != null &&
-                           me.Position.Distance2D(target.Position) <= 400 || (Game.MousePosition.Distance2D(target) <=400 && me.Position.Distance2D(target.Position) <= 1200) &&
-                            Utils.SleepCheck("Attack")
-                           )
-                        {
-                           me.Attack(target);
-                            Utils.Sleep(350 + Game.Ping, "Attack");
-                        } // Attack
+                        if (
+						(!me.CanAttack()
+						|| me.Distance2D(target) >= 150)
+						&& me.NetworkActivity != NetworkActivity.Attack
+						&& me.Distance2D(target) <= 800
+						&& Utils.SleepCheck("Move"))
+					{
+						me.Move(target.Predict(500));
+						Utils.Sleep(390 + Game.Ping, "Move");
+					}
+					else if (
+					   me.Distance2D(target) <= 150
+					   && !R.CanBeCasted()
+					   && me.CanAttack()
+					   && Utils.SleepCheck("R")
+					   )
+					{
+						me.Attack(target);
+						Utils.Sleep(240 + Game.Ping, "R");
+					}
                     }
                 }
             }
