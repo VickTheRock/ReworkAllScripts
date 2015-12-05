@@ -1,4 +1,3 @@
-//ONLY LOVE MazaiPC ;) 
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -16,7 +15,7 @@ namespace TinyAutoCombo
     {
         private static bool activated;
         private static Item soulring, arcane, blink, shiva, dagon, mjollnir, mom, halberd, abyssal, ethereal, cheese, satanic, medall;
-        private static Ability Q, W;
+        private static Ability Q, W, R;
         private static Font txt;
         private static Font not;
         private static Key KeyCombo = Key.D;
@@ -73,7 +72,7 @@ namespace TinyAutoCombo
                 }
                 if (target.IsAlive && !target.IsInvul())
                 {
-                  
+
 
                     //spell
                     if (Q == null)
@@ -81,6 +80,9 @@ namespace TinyAutoCombo
 
                     if (W == null)
                         W = me.Spellbook.SpellW;
+
+                    if (R == null)
+                        R = me.Spellbook.SpellR;
 
 
                     // item 
@@ -131,7 +133,7 @@ namespace TinyAutoCombo
                     if (target.IsVisible && me.Distance2D(target) <= 1200)
                     {
                         if (Q.CanBeCasted() &&
-                            blink.CanBeCasted()  &&
+                            blink.CanBeCasted() &&
                             me.Position.Distance2D(target.Position) > 300 &&
                             Utils.SleepCheck("blink"))
                         {
@@ -145,7 +147,7 @@ namespace TinyAutoCombo
                             Q.UseAbility(target.Position);
                             Utils.Sleep(90, "Q");
                         }
-                        if (W.CanBeCasted()                 &&
+                        if (W.CanBeCasted() &&
                             me.Position.Distance2D(target.Position) < 280 &&
                             Utils.SleepCheck("W"))
                         {
@@ -221,7 +223,7 @@ namespace TinyAutoCombo
                             abyssal.UseAbility(target);
                             Utils.Sleep(250 + Game.Ping, "abyssal");
                         } // Abyssal Item end
-                        
+
                         if ( // Hellbard
                             halberd != null &&
                             halberd.CanBeCasted() &&
@@ -252,11 +254,11 @@ namespace TinyAutoCombo
                         } // ethereal Item end
 
                         if (// Dagon
-                           dagon    != null     &&
-                           ethereal != null     &&
-                           ModifEther           &&
-                           dagon.CanBeCasted()  &&
-                           me.CanCast()         &&
+                           dagon != null &&
+                           ethereal != null &&
+                           ModifEther &&
+                           dagon.CanBeCasted() &&
+                           me.CanCast() &&
                            !target.IsMagicImmune() &&
                            Utils.SleepCheck("dagon")
                           )
@@ -291,7 +293,7 @@ namespace TinyAutoCombo
                             dagon.UseAbility(target);
                             Utils.Sleep(150 + Game.Ping, "dagon");
                         } // Dagon Item end
-                        
+
 
                         if (// Satanic 
                             satanic != null &&
@@ -306,30 +308,30 @@ namespace TinyAutoCombo
                         } // Satanic Item end
 
                         if (
-						(!me.CanAttack()
-						|| me.Distance2D(target) >= 150)
-						&& me.NetworkActivity != NetworkActivity.Attack
-						&& me.Distance2D(target) <= 800
-						&& Utils.SleepCheck("Move"))
-					{
-						me.Move(target.Predict(500));
-						Utils.Sleep(390 + Game.Ping, "Move");
-					}
-					else if (
-					   me.Distance2D(target) <= 150
-					   && !R.CanBeCasted()
-					   && me.CanAttack()
-					   && Utils.SleepCheck("R")
-					   )
-					{
-						me.Attack(target);
-						Utils.Sleep(240 + Game.Ping, "R");
-					}
+                        (!me.CanAttack()
+                        || me.Distance2D(target) >= 150)
+                        && me.NetworkActivity != NetworkActivity.Attack
+                        && me.Distance2D(target) <= 800
+                        && Utils.SleepCheck("Move"))
+                        {
+                            me.Move(target.Predict(500));
+                            Utils.Sleep(390 + Game.Ping, "Move");
+                        }
+                        else if (
+                           me.Distance2D(target) <= 150
+                           && !R.CanBeCasted()
+                           && me.CanAttack()
+                           && Utils.SleepCheck("R")
+                           )
+                        {
+                            me.Attack(target);
+                            Utils.Sleep(240 + Game.Ping, "R");
+                        }
                     }
                 }
             }
         }
-      
+
 
 
 
@@ -346,8 +348,8 @@ namespace TinyAutoCombo
                     activated = false;
                 }
 
-               
-                
+
+
             }
         }
 
@@ -367,7 +369,7 @@ namespace TinyAutoCombo
             if (player == null || player.Team == Team.Observer || me.ClassID != ClassID.CDOTA_Unit_Hero_Tiny)
                 return;
 
-            if (activated )
+            if (activated)
             {
                 txt.DrawText(null, "Tiny#: Comboing!", 4, 150, Color.Green);
             }
@@ -376,8 +378,8 @@ namespace TinyAutoCombo
             {
                 txt.DrawText(null, "Tiny#: go combo  [" + KeyCombo + "] for toggle combo", 4, 150, Color.Aqua);
             }
-            
-            
+
+
         }
 
         static void Drawing_OnPostReset(EventArgs args)
@@ -393,6 +395,3 @@ namespace TinyAutoCombo
         }
     }
 }
- 
- 
- 
