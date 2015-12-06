@@ -317,7 +317,6 @@ namespace TinyAutoCombo
 					}
 					else if (
 					   me.Distance2D(target) <= 150
-					   && !R.CanBeCasted()
 					   && me.CanAttack()
 					   && Utils.SleepCheck("R")
 					   )
