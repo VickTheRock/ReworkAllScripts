@@ -130,24 +130,28 @@ namespace TinyAutoCombo
 
                     if (target.IsVisible && me.Distance2D(target) <= 1200)
                     {
-                        if (Q.CanBeCasted() &&
-                            blink.CanBeCasted()  &&
-                            me.Position.Distance2D(target.Position) > 300 &&
+                        if (Q.CanBeCasted() 
+                            && Q != null
+                            && blink != null
+                            && blink.CanBeCasted()  
+                            && me.Position.Distance2D(target.Position) > 300 &&
                             Utils.SleepCheck("blink"))
                         {
                             blink.UseAbility(target.Position);
                             Utils.Sleep(250, "blink");
                         }
-                        if (Q.CanBeCasted() &&
-                            me.Position.Distance2D(target.Position) < 350 &&
+                        if(Q.CanBeCasted()
+                        && Q != null
+                        && me.Position.Distance2D(target.Position) < 350 &&
                             Utils.SleepCheck("Q"))
                         {
                             Q.UseAbility(target.Position);
                             Utils.Sleep(90, "Q");
                         }
-                        if (W.CanBeCasted()                 &&
-                            me.Position.Distance2D(target.Position) < 280 &&
-                            Utils.SleepCheck("W"))
+                        if (W.CanBeCasted() 
+                            &&  W != null
+                            && me.Position.Distance2D(target.Position) < 280 
+                            && Utils.SleepCheck("W"))
                         {
                             W.UseAbility(target);
                             Utils.Sleep(60, "W");
