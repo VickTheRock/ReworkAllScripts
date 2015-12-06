@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-
+using System.Collections.Generic;
 using Ensage;
 using SharpDX;
 using Ensage.Common.Extensions;
@@ -19,7 +19,7 @@ namespace This_is_your_Mom
         private static Item mom, abyssal, Soul, orchid, shiva, halberd, mjollnir, satanic, dagon, medall, orhid, sheep, cheese;
         private static Ability Q, W, R;
         private static Hero me;
-        private static Hero target;
+        private static Hero target, e;
         private static int spiderDenies = 65;
         private static int spiderDmgStatick = 175;
         private static readonly uint[] spiderQ = { 74, 149, 224, 299 };
@@ -539,22 +539,26 @@ namespace This_is_your_Mom
 
 
 					/***************************************WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW**********************************/
-					var SpideWeb = ObjectMgr.GetEntities<Unit>().Where(web => web.ClassID == ClassID.CDOTA_Unit_Broodmother_Web).ToList();
-					var Web = target.Distance2D(SpideWeb.First());
+
+
+					List<Unit> SpideWeb = ObjectMgr.GetEntities<Unit>().Where(web => web.ClassID == ClassID.CDOTA_Unit_Broodmother_Web).ToList();
+
+					e = ObjectMgr.GetEntities<Hero>()
+					.Where(x => x.IsAlive && x.Team != me.Team && !x.IsIllusion) 
+					.OrderBy(x => x.Position.Distance2D(SpideWeb.OrderBy(y => x.Position.Distance2D(y.Position)).FirstOrDefault().Position))
+					.FirstOrDefault();
+
+					if (e.Distance2D(SpideWeb.FirstOrDefault()) > 1100 && e != null && W != null && e.IsAlive && !e.IsIllusion)
 					{
-						if (Web > 1100 && target != null && W != null && target.IsAlive && !target.IsIllusion)
+						if (e.Distance2D(SpideWeb.FirstOrDefault()) >= 1100 && me.Distance2D(e) <= 600 && Utils.SleepCheck(e.Handle.ToString()) && W.CanBeCasted())
 						{
-							foreach (var web in SpideWeb)
-								if (web.Distance2D(target) >= 1100 && me.Distance2D(target) <= 600 && Utils.SleepCheck(web.Handle.ToString()) && W.CanBeCasted())
-								{
-									W.UseAbility(target.Position);
-									Utils.Sleep(5000, web.Handle.ToString());
-								}
+							W.UseAbility(e.Position);
+							Utils.Sleep(4000, e.Handle.ToString());
 						}
 					}
-					/******************************************************************************************************************/
+					/***************************************WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW**********************************/
 				}
-            }
+			}
         }
 
 
