@@ -19,7 +19,7 @@ namespace TinyAutoCombo
         private static Ability Q, W;
         private static Font txt;
         private static Font not;
-        private static Key KeyCombo = Key.D;
+        private static Key KeyCombo = Key.Z;
         private static bool loaded;
         private static Hero me;
         private static Hero target;
