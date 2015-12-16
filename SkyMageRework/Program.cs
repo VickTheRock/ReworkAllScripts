@@ -355,20 +355,21 @@ namespace SkyMageRework
 								} // sheep Item end
 								
 								if (// Dagon
-									me.CanCast()
-									&& dagon != null 
-									&& (ModifEther 
-									|| ethereal.Cooldown < 17)
-                                    && !target.IsLinkensProtected()
-									&& dagon.CanBeCasted()
-									&& !target.IsMagicImmune()
-									&& !stoneModif
-									&& Utils.SleepCheck("dagon")
-								   )
-								{
-									dagon.UseAbility(target);
-									Utils.Sleep(200 + Game.Ping, "dagon");
-								} // Dagon Item end
+										me.CanCast()
+										&& dagon != null
+										&& (ethereal == null
+										||(ModifEther
+										|| ethereal.Cooldown < 17))
+										&& !target.IsLinkensProtected()
+										&& dagon.CanBeCasted()
+										&& !target.IsMagicImmune()
+										&& !stoneModif
+										&& Utils.SleepCheck("dagon")
+									   )
+									{
+										dagon.UseAbility(target);
+										Utils.Sleep(200 + Game.Ping, "dagon");
+									} // Dagon Item end
 
 								if (
 									 // cheese
