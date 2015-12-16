@@ -125,300 +125,303 @@ namespace SkyMageRework
             
 
 
-            if (activated && toggle && me.IsAlive && target.IsAlive && Utils.SleepCheck("activated"))
-            {
-                var noBlade = target.Modifiers.Any(y => y.Name == "modifier_item_blade_mail_reflect");
-                if ( target.IsVisible && me.Distance2D(target) <= 2300 && !noBlade)
-                {
-                    if (
-                        W!= null                     &&
-                        W.CanBeCasted()              &&
-                        me.CanCast()                 &&
-                        me.Distance2D(target) < 1370 &&
-                        Utils.SleepCheck("W"))
-                    {
-                        W.UseAbility();
-                        Utils.Sleep(300, "W");
-                    }
+            if (activated && me.IsAlive && target.IsAlive && Utils.SleepCheck("activated"))
+			{
+				var noBlade = target.Modifiers.Any(y => y.Name == "modifier_item_blade_mail_reflect");
+				if (target.IsVisible && me.Distance2D(target) <= 2300 && !noBlade)
+				{
+					if (
+									  Q != null
+									  && Q.CanBeCasted()
+									  && (target.IsLinkensProtected()
+									  || !target.IsLinkensProtected())
+									  && me.CanCast()
+									  && me.Distance2D(target) < 1400
+									  && !stoneModif
+									  && Utils.SleepCheck("Q")
+						)
+					{
+						Q.UseAbility(target);
+						Utils.Sleep(200, "Q");
+					}
+					if ( // atos Blade
+                                   atos != null
+								  && atos.CanBeCasted() 
+								  && me.CanCast()
+                                  && !target.IsLinkensProtected()
+								  && !target.IsMagicImmune()
+								  && Utils.SleepCheck("atos")
+								  && me.Distance2D(target) <= 2000
+								   )
+					{
+						atos.UseAbility(target);
+						Utils.Sleep(250 + Game.Ping, "atos");
+					} // atos Item end
+					if (
+									W != null
+									&& target.IsVisible
+									&& W.CanBeCasted()
+									&& me.CanCast()
+									&& me.Distance2D(target) < 900 &&
+									Utils.SleepCheck("W"))
+					{
+						W.UseAbility();
+						Utils.Sleep(300, "W");
+					}
+					if (
+                                  blink != null
+								  && Q.CanBeCasted()
+								  && me.CanCast()
+								  && blinkToggle
+								  && blink.CanBeCasted()
+								  && me.Distance2D(target) > 1000
+								  && !stoneModif
+								  && Utils.SleepCheck("blink")
+						)
+					{
+						blink.UseAbility(target.Position);
+						Utils.Sleep(250, "blink");
+					}
+					if (
+						   E != null
+						   && E.CanBeCasted()
+						   && me.CanCast() 
+                           && !target.IsLinkensProtected()
+						   && me.Position.Distance2D(target) < 1400
+						   && !stoneModif
+						   && Utils.SleepCheck("E"))
+					{
+						E.UseAbility(target);
+						Utils.Sleep(200, "E");
+					}
+					if(!E.CanBeCasted() || E == null)
+					{
+						if ( // orchid
+								  orchid != null
+								  && orchid.CanBeCasted()
+								  && me.CanCast()
+								  && !target.IsLinkensProtected()
+								  && !target.IsMagicImmune()
+								  && Utils.SleepCheck("orchid")
+								  && me.Distance2D(target) <= 1400
+								  && !stoneModif
+							)
+						{
+							orchid.UseAbility(target);
+							Utils.Sleep(250 + Game.Ping, "orchid");
+						} // orchid Item end
+						if (!orchid.CanBeCasted() || orchid == null)
+						{
+							if ( // vail
+                                   vail != null
+								  && vail.CanBeCasted()
+								  && me.CanCast() 
+                                  && !target.IsMagicImmune()
+								  && Utils.SleepCheck("vail")
+								  && me.Distance2D(target) <= 1500
+								  )
+							{
+								vail.UseAbility(target.Position);
+								Utils.Sleep(250 + Game.Ping, "vail");
+							} // orchid Item end
+							if (!vail.CanBeCasted() || vail == null)
+							{
+								if (// ethereal
+									   ethereal != null
+									   && ethereal.CanBeCasted()
+									   && me.CanCast()
+									   && !target.IsLinkensProtected()
+									   && !target.IsMagicImmune()
+									   && !stoneModif
+									   && Utils.SleepCheck("ethereal")
+									  )
+								{
+									ethereal.UseAbility(target);
+									Utils.Sleep(200 + Game.Ping, "ethereal");
+								} // ethereal Item end
+								if (!ethereal.CanBeCasted() || ethereal == null)
+								{ 
+								if (
+									W != null 
+									&& target.IsVisible
+									&& W.CanBeCasted() 
+									&& !target.IsMagicImmune()
+                                    && me.CanCast()
+									&& me.Distance2D(target) < 1370 &&
+									Utils.SleepCheck("W"))
+								{
+									W.UseAbility();
+									Utils.Sleep(300, "W");
+								}
 
-                    if (
-                        blink!= null        &&
-                        Q.CanBeCasted()     &&
-                        me.CanCast()        &&
-                        blinkToggle         &&
-                        blink.CanBeCasted() &&
-                        me.Distance2D(target) > 1000 &&
-                        Utils.SleepCheck("blink")
-                        )
-                    {
-                        blink.UseAbility(target.Position);
-                        Utils.Sleep(250, "blink");
-                    }
-                    if (
-                        Q!= null                     &&
-                        Q.CanBeCasted()              &&
-                        me.CanCast()                 &&
-                        me.Distance2D(target) < 1100 &&
-                        Utils.SleepCheck("Q")
-                        )
-                    {
-                        Q.UseAbility(target);
-                        Utils.Sleep(200, "Q");
-                    }
-                    
-                    if (
-                        E!= null                              &&
-                        E.CanBeCasted()                       &&
-                        me.CanCast()                          &&
-                        me.Position.Distance2D(target) < 1200 &&
-                        !linkens                              &&
-                        Utils.SleepCheck("E"))
-                    {
-                        E.UseAbility(target);
-                        Utils.Sleep(200, "E");
-                    }
-                     if (
-                        R!=null                                 &&
-                        R.CanBeCasted()                         &&
-                        me.CanCast()                            &&
-                         useUltimate                            &&
-                         !ModifR                                &&
-                         (ModifW                                ||
-                         ModifEther                             ||
-                         ModifRod)                              &&
-                         me.Position.Distance2D(target) < 1200 &&
-                         Utils.SleepCheck("R"))
-                     {
-                         R.UseAbility(target.Position);
-                         Utils.Sleep(330, "R");
-                     }
 
-                    if (// SoulRing Item 
-                        soulring != null                    &&
-                        soulring.CanBeCasted()              &&
-                        me.CanCast()                        &&
-                        me.Health / me.MaximumHealth <= 0.4 &&
-                        me.Mana <= R.ManaCost               
-                        )
-                    {
-                        soulring.UseAbility();
-                    } // SoulRing Item end
+								if (
+                                     Q != null
+									&& Q.CanBeCasted()
+									&& me.CanCast()
+									&& me.Distance2D(target) < 1400
+									&& !stoneModif
+									&& Utils.SleepCheck("Q")
+									)
+								{
+									Q.UseAbility(target);
+									Utils.Sleep(200, "Q");
+								}
 
-                    if (// Arcane Boots Item
-                        arcane != null &&
-                        arcane.CanBeCasted() &&
-                        me.CanCast() &&
-                        me.Mana <= R.ManaCost 
-                        )
-                    {
-                        arcane.UseAbility();
-                    } // Arcane Boots Item end
 
-                    if (//Ghost
-                        ghost != null                         &&
-                        ghost.CanBeCasted()                   &&
-                        me.CanCast()                          &&
-                        (me.Position.Distance2D(target) < 300 &&
-                        me.Health <= (me.MaximumHealth * 0.7))  ||
-                        me.Health <= (me.MaximumHealth * 0.3) &&
-                        Utils.SleepCheck("Ghost"))
-                    {
-                        ghost.UseAbility();
-                        Utils.Sleep(250, "Ghost");
-                    }
+								if (
+                                   R != null
+								   && R.CanBeCasted()
+								   && me.CanCast()
+								   && useUltimate
+								   && !ModifR 
+								   && (ModifW
+								   || ModifEther
+								   || ModifRod)
+								   && me.Position.Distance2D(target) < 1200
+								   && !stoneModif
+								   && Utils.SleepCheck("R"))
+								{
+									R.UseAbility(target.Predict(100));
+									Utils.Sleep(330, "R");
+								}
 
-                    if (// Shiva Item
-                        shiva != null               &&
-                        shiva.CanBeCasted()         &&
-                        me.CanCast()                &&
-                        !target.IsMagicImmune()     &&
-                        Utils.SleepCheck("shiva")   &&
-                        me.Distance2D(target) <= 600
-                        )
-                        
-                    {
-                        shiva.UseAbility();
-                        Utils.Sleep(250 + Game.Ping, "shiva");
-                    } // Shiva Item end
+								if (// SoulRing Item 
+									soulring != null
+									&& soulring.CanBeCasted()
+									&& me.CanCast()
+									&& me.Health / me.MaximumHealth <= 0.5
+									&& me.Mana <= R.ManaCost
+									)
+								{
+									soulring.UseAbility();
+								} // SoulRing Item end
 
-                    if ( // vail
-                        vail != null             &&
-                        vail.CanBeCasted()       &&
-                        me.CanCast()             &&
-                        !target.IsMagicImmune()  &&
-                        Utils.SleepCheck("vail") &&
-                        me.Distance2D(target) <= 1500
-                        )
-                    {
-                        vail.UseAbility(target.Position);
-                        Utils.Sleep(250 + Game.Ping, "vail");
-                    } // orchid Item end
+								if (// Arcane Boots Item
+									arcane != null
+									&& arcane.CanBeCasted()
+									&& me.CanCast()
+									&& me.Mana <= R.ManaCost
+									)
+								{
+									arcane.UseAbility();
+								} // Arcane Boots Item end
 
-                    if ( // orchid
-                        orchid != null             &&
-                        orchid.CanBeCasted()       &&
-                        me.CanCast()               &&
-                        !target.IsMagicImmune()    &&
-                        !linkens                   &&
-                        Utils.SleepCheck("orchid") &&
-                        me.Distance2D(target) <= 1000
-                        )
-                    {
-                        orchid.UseAbility(target);
-                        Utils.Sleep(250 + Game.Ping, "orchid");
-                    } // orchid Item end
+								if (//Ghost
+									ghost != null
+									&& ghost.CanBeCasted()
+									&& me.CanCast()
+									&& ((me.Position.Distance2D(target) < 300
+									&& me.Health <= (me.MaximumHealth * 0.7))
+									|| me.Health <= (me.MaximumHealth * 0.3))
+									&& Utils.SleepCheck("Ghost"))
+								{
+									ghost.UseAbility();
+									Utils.Sleep(250, "Ghost");
+								}
 
-                    if ( // sheep
-                        sheep != null             &&
-                        sheep.CanBeCasted()       &&
-                        me.CanCast()              &&
-                        !target.IsMagicImmune()   &&
-                        !linkens                  &&
-                        Utils.SleepCheck("sheep") &&
-                        me.Distance2D(target) <= 900
-                        )
-                    {
-                        sheep.UseAbility(target);
-                        Utils.Sleep(250 + Game.Ping, "sheep");
-                    } // sheep Item end
 
-                    if ( // atos Blade
-                        atos != null             &&
-                        atos.CanBeCasted()       &&
-                        me.CanCast()             &&
-                        !target.IsMagicImmune()  &&
-                        !linkens                 &&
-                        Utils.SleepCheck("atos") &&
-                        me.Distance2D(target) <= 2000
-                        )
-                    {
-                        atos.UseAbility(target);
-                        Utils.Sleep(250 + Game.Ping, "atos");
-                    } // atos Item end
+								if (// Shiva Item
+									shiva != null 
+									&& shiva.CanBeCasted()
+									&& me.CanCast()
+									&& !target.IsMagicImmune()
+									&& Utils.SleepCheck("shiva")
+									&& me.Distance2D(target) <= 600
+									)
 
-                    if (// Dagon
-                        vail != null            &&
-                        ModifVail               &&
-                        me.CanCast()            &&
-                        dagon != null           &&
-                        dagon.CanBeCasted()     &&
-                        ModifEther              &&
-                        !linkens                &&
-                        !target.IsMagicImmune() &&
-                        Utils.SleepCheck("dagon")
-                       )
-                    {
-                        dagon.UseAbility(target);
-                        Utils.Sleep(200 + Game.Ping, "dagon");
-                    } // Dagon Item end
-
-                    if (// Dagon
-                        ethereal != null        &&
-                        dagon != null           &&
-                        dagon.CanBeCasted()     &&
-                        ModifEther              &&
-                        me.CanCast()            &&
-                        !linkens                &&
-                        !target.IsMagicImmune() &&
-                        Utils.SleepCheck("dagon")
-                       )
-                    {
-                        dagon.UseAbility(target);
-                        Utils.Sleep(200 + Game.Ping, "dagon");
-                    } // Dagon Item end
-
-                    if (// ethereal
-                        ethereal != null        &&
-                        ethereal.CanBeCasted()  &&
-                        ModifE                  &&
-                        me.CanCast()            &&
-                        !linkens                &&
-                        !target.IsMagicImmune() &&
-                        Utils.SleepCheck("ethereal")
-                       )
-                    {
-                        ethereal.UseAbility(target);
-                        Utils.Sleep(200 + Game.Ping, "ethereal");
-                    } // ethereal Item end
+								{
+									shiva.UseAbility();
+									Utils.Sleep(250 + Game.Ping, "shiva");
+								} // Shiva Item end
 
 
 
 
-                    if (// Dagon
-                         ethereal == null        &&
-                        dagon != null            &&
-                        dagon.CanBeCasted()      &&
-                        me.CanCast()             &&
-                        !linkens                 &&
-                        !target.IsMagicImmune()  &&
-                        Utils.SleepCheck("dagon")
-                       )
-                    {
-                        dagon.UseAbility(target);
-                        Utils.Sleep(200 + Game.Ping, "dagon");
-                    } // Dagon Item end
 
-                    if (// Dagon
-                        vail == null &&
-                       dagon != null &&
-                       dagon.CanBeCasted() &&
-                       me.CanCast() &&
-                       !linkens &&
-                       !target.IsMagicImmune() &&
-                       Utils.SleepCheck("dagon")
-                      )
-                    {
-                        dagon.UseAbility(target);
-                        Utils.Sleep(200 + Game.Ping, "dagon");
-                    } // Dagon Item end
+								if ( // sheep
+									sheep != null 
+                                    && sheep.CanBeCasted() 
+                                    && me.CanCast() 
+                                    && !target.IsLinkensProtected()
+									&& !target.IsMagicImmune() 
+                                    && Utils.SleepCheck("sheep")
+									&& me.Distance2D(target) <= 1400
+									&& !stoneModif
+									)
+								{
+									sheep.UseAbility(target);
+									Utils.Sleep(250 + Game.Ping, "sheep");
+								} // sheep Item end
+								
+								if (// Dagon
+									me.CanCast()
+									&& dagon != null 
+									&& (ModifEther 
+									|| ethereal.Cooldown < 17)
+                                    && !target.IsLinkensProtected()
+									&& dagon.CanBeCasted()
+									&& !target.IsMagicImmune()
+									&& !stoneModif
+									&& Utils.SleepCheck("dagon")
+								   )
+								{
+									dagon.UseAbility(target);
+									Utils.Sleep(200 + Game.Ping, "dagon");
+								} // Dagon Item end
 
-                    if (
-                         // cheese
-                         cheese != null             && 
-                         cheese.CanBeCasted()       &&
-                         Utils.SleepCheck("cheese") &&
-                         me.Health <= (me.MaximumHealth * 0.3) &&
-                         me.Distance2D(target) <= 700)
-                     {
-                         cheese.UseAbility();
-                         Utils.Sleep(200 + Game.Ping, "cheese");
-                    } // cheese Item end
-                }
+								if (
+									 // cheese
+									 cheese != null
+									 && cheese.CanBeCasted()
+									 && Utils.SleepCheck("cheese")
+									 && me.Health <= (me.MaximumHealth * 0.3)
+									 && me.Distance2D(target) <= 700)
+								{
+									cheese.UseAbility();
+									Utils.Sleep(200 + Game.Ping, "cheese");
+								} // cheese Item end
 
-                Utils.Sleep(200, "activated");
-            }
+								}
+							}
+						}
+					}
+				}
+				Utils.Sleep(200, "activated");
+			}
         }
 
         static void Drawing_OnEndScene(EventArgs args)
-        {
-            if (Drawing.Direct3DDevice9 == null || Drawing.Direct3DDevice9.IsDisposed || !Game.IsInGame)
-                return;
+		{
+			if (Drawing.Direct3DDevice9 == null || Drawing.Direct3DDevice9.IsDisposed || !Game.IsInGame)
+				return;
 
-            var player = ObjectMgr.LocalPlayer;
-            var me = ObjectMgr.LocalHero;
-            if (player == null || player.Team == Team.Observer || me.ClassID != ClassID.CDOTA_Unit_Hero_Skywrath_Mage)
-                return;
+			var player = ObjectMgr.LocalPlayer;
+			var me = ObjectMgr.LocalHero;
+			if (player == null || player.Team == Team.Observer || me.ClassID != ClassID.CDOTA_Unit_Hero_Skywrath_Mage)
+				return;
 
-            if (activated && toggle)
-            {
-                DrawBox(2, 37, 110, 20, 1, new ColorBGRA(0, 0, 100, 100));
-                DrawFilledBox(2, 37, 110, 20, new ColorBGRA(0, 0, 0, 100));
-                DrawShadowText("SkyWrath#: Comboing!", 4, 37, Color.Violet, txt);
-            }
-
-            if (toggle && !activated)
-            {
-                DrawBox(2, 37, 560, 54, 1, new ColorBGRA(0, 0, 100, 100));
-                DrawFilledBox(2, 37, 560, 54, new ColorBGRA(0, 0, 0, 100));
-                DrawShadowText("SkyWrath#: Enabled\nBlink on/off(P): " + blinkToggle + " | UseUlt on/off(H): " + useUltimate + " | [" + keyCombo + "] for combo \n[" + toggleKey + "] For toggle combo | [" + blinkToggleKey + "] For toggle blink | [" + UseUltimate + "] For toggle UseUlt ", 4, 37, Color.Violet, txt);
-            }
-            if (!toggle)
-            {
-                DrawBox(2, 37, 185, 20, 1, new ColorBGRA(0, 0, 100, 100));
-                DrawFilledBox(2, 37, 185, 20, new ColorBGRA(0, 0, 0, 100));
-                DrawShadowText("SkyWrath#: Disabled | [" + toggleKey + "] for toggle", 4, 37, Color.Turquoise, txt);
-            }
-        }
+			if (activated)
+			{
+				DrawBox(2, 510, 130, 20, 1, new ColorBGRA(0, 0, 100, 100));
+				DrawFilledBox(2, 510, 130, 20, new ColorBGRA(0, 0, 0, 100));
+				DrawShadowText("SkyWrath#: Comboing!", 4, 510, Color.DeepPink, txt);
+			}
+		
+			if (toggle && !activated)
+			{
+				DrawBox(2, 530, 410, 54, 1, new ColorBGRA(0, 0, 100, 100));
+				DrawFilledBox(2, 530, 410, 54, new ColorBGRA(0, 0, 0, 100));
+				DrawShadowText("SkyWrath#: Enabled\nBlink on/off(P): " + blinkToggle + " | UseUlt on/off(H): " + useUltimate + " | [" + keyCombo + "] for combo \n[" + toggleKey + "] For toggle combo | [" + blinkToggleKey +
+					"] For toggle blink | [" + UseUltimate + "] For toggle UseUlt ", 4, 530, Color.OrangeRed, txt);
+			}
+			if (!toggle)
+			{
+				DrawBox(2, 530, 125, 20, 1, new ColorBGRA(0, 0, 100, 100));
+				DrawFilledBox(2, 530, 125, 20, new ColorBGRA(0, 0, 0, 100));
+				DrawShadowText("Open MENU |-->[" + toggleKey + "]", 4, 530, Color.DeepPink, txt);
+			}
+		}
 
         private static void Game_OnWndProc(WndEventArgs args)
         {
