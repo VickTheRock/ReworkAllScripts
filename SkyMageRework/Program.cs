@@ -122,7 +122,7 @@ namespace SkyMageRework
             var ModifRod = target.Modifiers.Any(y => y.Name == "modifier_item_rod_of_atos_debuf");
             var ModifEther = target.Modifiers.Any(y => y.Name == "modifier_item_ethereal_blade_slow");
             var ModifVail = target.Modifiers.Any(y => y.Name == "modifier_item_veil_of_discord_debuff");
-            
+            var stoneModif = target.Modifiers.Any(y => y.Name == "modifier_medusa_stone_gaze_stone");
 
 
             if (activated && me.IsAlive && target.IsAlive && Utils.SleepCheck("activated"))
