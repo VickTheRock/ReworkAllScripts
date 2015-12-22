@@ -206,7 +206,7 @@ namespace Zetta
 						if (// SoulRing Item 
 							soulring != null &&
 							me.Health >= (me.MaximumHealth * 0.3) &&
-							me.Mana <= dagon.ManaCost &&
+							me.Mana <= E.ManaCost+150 &&
 							soulring.CanBeCasted())
 						{
 							soulring.UseAbility();
@@ -214,7 +214,7 @@ namespace Zetta
 
 						if (// Arcane Boots Item
 							arcane != null &&
-							me.Mana <= Q.ManaCost &&
+							me.Mana <= W.ManaCost+150 &&
 							arcane.CanBeCasted())
 						{
 							arcane.UseAbility();
@@ -469,7 +469,7 @@ namespace Zetta
 					if (// SoulRing Item 
 						soul != null &&
 						v.Health >= (v.MaximumHealth * 0.3) &&
-						v.Mana <= dag.ManaCost &&
+						v.Mana <= E.ManaCost+150 &&
 						soul.CanBeCasted())
 					{
 						soul.UseAbility();
@@ -477,7 +477,7 @@ namespace Zetta
 
 					if (// Arcane Boots Item
 						arc != null &&
-						v.Mana <= qm.ManaCost &&
+						v.Mana <= E.ManaCost+150 &&
 						arc.CanBeCasted())
 					{
 						arc.UseAbility();
