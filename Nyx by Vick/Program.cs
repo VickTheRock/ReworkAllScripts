@@ -103,7 +103,7 @@ namespace Nyx_by_Vick
 					vail = me.FindItem("item_veil_of_discord");
 
 					if (medall == null)
-                        medall = me.FindItem("item_shivas_guard") ?? me.FindItem("item_solar_crest");
+                        medall = me.FindItem("item_medallion_of_courage") ?? me.FindItem("item_solar_crest");
 
                     if (ethereal == null)
                         ethereal = me.FindItem("item_ethereal_blade");
