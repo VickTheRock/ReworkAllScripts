@@ -118,18 +118,19 @@ namespace Zetta
 
 					Item mjollnir = me.FindItem("item_mjollnir");
 
+					Item manta = me.FindItem("item_manta");
+
 					//Boolean linkens = target.IsLinkensProtected();
 					Boolean ModifEther = target.Modifiers.Any(y => y.Name == "modifier_item_ethereal_blade_slow");
 					Boolean stoneModif = target.Modifiers.Any(y => y.Name == "modifier_medusa_stone_gaze_stone");
 
-
-					
-			
+		
 
 
 					if (me.Distance2D(target) <= 1200)
 					{
-						if (R.CanBeCasted()
+						if (R != null
+						&& R.CanBeCasted()
 						  && me.Position.Distance2D(target.Position) < me.AttackRange
 						  && Utils.SleepCheck("R"))
 						{
@@ -137,7 +138,9 @@ namespace Zetta
 							Utils.Sleep(500, "R");
 						}
 						if (
-							Q.CanBeCasted()
+							Q != null
+						&& blink != null
+						&& Q.CanBeCasted()
 							&& blink.CanBeCasted()
 							&& me.Position.Distance2D(target.Position) < 1150
 							&& me.Position.Distance2D(target.Position) > 400
@@ -146,8 +149,8 @@ namespace Zetta
 							blink.UseAbility(target.Position);
 							Utils.Sleep(250, "blink");
 						}
-						if (
-							Q.CanBeCasted()
+						if (Q != null
+						    && Q.CanBeCasted()
 							&& me.Position.Distance2D(target.Position)
 							< 900
 							&& Utils.SleepCheck("Q"))
@@ -156,7 +159,8 @@ namespace Zetta
 							Utils.Sleep(150, "Q");
 						}
 						if (
-							W.CanBeCasted()
+							W != null
+						    && W.CanBeCasted()
 							&& me.Position.Distance2D(target.Position) < 400
 							&& target.NetworkActivity == NetworkActivity.Attack
 							&& me.NetworkActivity != NetworkActivity.Move
@@ -165,7 +169,9 @@ namespace Zetta
 							W.UseAbility(me.Position);
 							Utils.Sleep(150, "W");
 						}
-						if (E.CanBeCasted()
+						if (
+							E != null
+						  && E.CanBeCasted()
 						  && me.Position.Distance2D(target.Position) < 1600
 						  && Utils.SleepCheck("W"))
 						{
@@ -203,10 +209,20 @@ namespace Zetta
 							Utils.Sleep(150, "dagon");
 						} // Dagon Item end
 
+						if (
+							manta.CanBeCasted()
+							&& me.Position.Distance2D(target.Position)
+							< me.AttackRange+50
+							&& Utils.SleepCheck("manta"))
+						{
+							manta.UseAbility();
+							Utils.Sleep(150, "manta");
+						}
+
 						if (// SoulRing Item 
 							soulring != null &&
 							me.Health >= (me.MaximumHealth * 0.3) &&
-							me.Mana <= E.ManaCost+150 &&
+							me.Mana <= W.ManaCost + 150 &&
 							soulring.CanBeCasted())
 						{
 							soulring.UseAbility();
@@ -214,7 +230,7 @@ namespace Zetta
 
 						if (// Arcane Boots Item
 							arcane != null &&
-							me.Mana <= W.ManaCost+150 &&
+							me.Mana <= E.ManaCost+150 &&
 							arcane.CanBeCasted())
 						{
 							arcane.UseAbility();
@@ -387,18 +403,22 @@ namespace Zetta
 
 					Item mjoll = v.FindItem("item_mjollnir");
 
+					Item manta = v.FindItem("item_manta");
 
 
-
-					if (rm.CanBeCasted()
-								  && v.Position.Distance2D(e.Position) < v.AttackRange
-								  && Utils.SleepCheck("rm"))
+					if (
+						rm != null
+						&& rm.CanBeCasted()
+						&& v.Position.Distance2D(e.Position) < v.AttackRange
+						 && Utils.SleepCheck("rm"))
 					{
 						rm.UseAbility();
 						Utils.Sleep(500, "rm");
 					}
 					if (
-						qm.CanBeCasted()
+						qm != null
+						&& bl != null
+						&& qm.CanBeCasted()
 						&& bl.CanBeCasted()
 						&& v.Position.Distance2D(e.Position) < 1150
 						&& v.Position.Distance2D(e.Position) > 400
@@ -408,7 +428,8 @@ namespace Zetta
 						Utils.Sleep(250, "bl");
 					}
 					if (
-						qm.CanBeCasted()
+						qm != null
+						&& qm.CanBeCasted()
 						&& v.Position.Distance2D(e.Position)
 						< 900
 						&& Utils.SleepCheck("qm"))
@@ -417,7 +438,8 @@ namespace Zetta
 						Utils.Sleep(150, "qm");
 					}
 					if (
-						wm.CanBeCasted()
+						wm != null
+					    && wm.CanBeCasted()
 						&& v.Position.Distance2D(e.Position) < 400
 						&& e.NetworkActivity == NetworkActivity.Attack
 						&& v.NetworkActivity != NetworkActivity.Move
@@ -426,7 +448,9 @@ namespace Zetta
 						wm.UseAbility(v.Position);
 						Utils.Sleep(150, "wm");
 					}
-					if (em.CanBeCasted()
+					if (
+						em != null
+					  && em.CanBeCasted()
 					  && v.Position.Distance2D(e.Position) < 1600
 					  && Utils.SleepCheck("wm"))
 					{
@@ -469,7 +493,7 @@ namespace Zetta
 					if (// SoulRing Item 
 						soul != null &&
 						v.Health >= (v.MaximumHealth * 0.3) &&
-						v.Mana <= E.ManaCost+150 &&
+						v.Mana <= wm.ManaCost + 150 &&
 						soul.CanBeCasted())
 					{
 						soul.UseAbility();
@@ -477,7 +501,7 @@ namespace Zetta
 
 					if (// Arcane Boots Item
 						arc != null &&
-						v.Mana <= E.ManaCost+150 &&
+						v.Mana <= wm.ManaCost+150 &&
 						arc.CanBeCasted())
 					{
 						arc.UseAbility();
@@ -495,7 +519,16 @@ namespace Zetta
 						shiv.UseAbility();
 						Utils.Sleep(250, "shiv");
 					} // Shiva Item end
-
+					if (
+							manta != null
+							&& manta.CanBeCasted()
+							&& v.Position.Distance2D(e.Position)
+							< v.AttackRange + 50
+							&& Utils.SleepCheck("manta"))
+					{
+						manta.UseAbility();
+						Utils.Sleep(150, "manta");
+					}
 					if ( // Medall
 				   medal != null &&
 				   medal.CanBeCasted() &&
