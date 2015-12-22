@@ -10,7 +10,7 @@ using Ensage.Common;
 using SharpDX.Direct3D9;
 using System.Windows.Input;
 
-namespace Zetta
+namespace Zet
 {
 	internal class Program
 	{
@@ -19,13 +19,16 @@ namespace Zetta
 		private static Font not;
 		private static Key KeyCombo = Key.D;
 		private static bool loaded;
-		private static Hero me;
+		private static Boolean ModifEther, stoneModif;
+        private static Hero me;
 		private static Hero target;
 		private static ParticleEffect rangeDisplay;
 		static void Main(string[] args)
 		{
 			Game.OnUpdate += Game_OnUpdate;
-			Game.OnWndProc += Game_OnWndProc;
+			Game.OnUpdate += Game_MidasHero;
+			Game.OnUpdate += Game_MidasIllu;
+            Game.OnWndProc += Game_OnWndProc;
 			Console.WriteLine("> Zetta# loaded!");
 
 			txt = new Font(
@@ -61,6 +64,10 @@ namespace Zetta
 			{
 				return;
 			}
+
+			var Illu = ObjectMgr.GetEntities<Unit>().Where(x => (x.ClassID == ClassID.CDOTA_Unit_Hero_ArcWarden && x.IsIllusion) && x.IsAlive && x.IsControllable).ToList();
+
+
 
 			if (activated)
 			{
@@ -106,14 +113,18 @@ namespace Zetta
 					Item halberd = me.FindItem("item_heavens_halberd");
 					
 					Item abyssal = me.FindItem("item_abyssal_blade");
-					
+
+					Item necronomicon = me.FindItem("item_necronomicon");
+
 					Item mjollnir = me.FindItem("item_mjollnir");
 
-					var linkens = target.Modifiers.Any(x => x.Name == "modifier_item_spheretarget") || target.Inventory.Items.Any(x => x.Name == "item_sphere");
-					var ModifEther = target.Modifiers.Any(y => y.Name == "modifier_item_ethereal_blade_slow");
+					//Boolean linkens = target.IsLinkensProtected();
+					Boolean ModifEther = target.Modifiers.Any(y => y.Name == "modifier_item_ethereal_blade_slow");
+					Boolean stoneModif = target.Modifiers.Any(y => y.Name == "modifier_medusa_stone_gaze_stone");
 
 
-
+					
+			
 
 
 					if (me.Distance2D(target) <= 1200)
@@ -158,18 +169,35 @@ namespace Zetta
 						  && me.Position.Distance2D(target.Position) < 1600
 						  && Utils.SleepCheck("W"))
 						{
-							E.UseAbility(target.Predict(4000));
+							E.UseAbility(target.Predict(3000));
 							Utils.Sleep(150, "W");
 						}
-
+						if (// ethereal
+									   ethereal != null
+									   && ethereal.CanBeCasted()
+									   && me.CanCast()
+									   && !target.IsLinkensProtected()
+									   && !target.IsMagicImmune()
+									   && !stoneModif
+									   && Utils.SleepCheck("ethereal")
+									  )
+						{
+							ethereal.UseAbility(target);
+							Utils.Sleep(200, "ethereal");
+						} // ethereal Item end
 
 						if (// Dagon
-						dagon != null
-						&& dagon.CanBeCasted() &&
-						me.CanCast() &&
-						!target.IsMagicImmune() &&
-						Utils.SleepCheck("dagon")
-					   )
+									me.CanCast()
+									&& dagon != null
+									&& (ethereal == null
+									|| (ModifEther
+									|| ethereal.Cooldown < 17))
+									&& !target.IsLinkensProtected()
+									&& dagon.CanBeCasted()
+									&& !target.IsMagicImmune()
+									&& !stoneModif
+									&& Utils.SleepCheck("dagon")
+								   )
 						{
 							dagon.UseAbility(target);
 							Utils.Sleep(150, "dagon");
@@ -205,6 +233,18 @@ namespace Zetta
 							Utils.Sleep(250, "shiva");
 						} // Shiva Item end
 
+						if (// necronomicon Item
+							necronomicon != null &&
+							necronomicon.CanBeCasted() &&
+							me.CanCast() &&
+							!target.IsMagicImmune() &&
+							Utils.SleepCheck("necronomicon") &&
+							me.Distance2D(target) <= 600
+							)
+						{
+							necronomicon.UseAbility();
+							Utils.Sleep(250, "necronomicon");
+						} // necronomicon Item end
 						if ( // Medall
 					   medall != null &&
 					   medall.CanBeCasted() &&
@@ -221,9 +261,8 @@ namespace Zetta
 							mom != null &&
 							mom.CanBeCasted() &&
 							me.CanCast() &&
-							(mom.CanBeCasted() &&
 							Utils.SleepCheck("mom") &&
-							me.Distance2D(target) <= 700)
+							me.Distance2D(target) <= 700
 							)
 						{
 							mom.UseAbility();
@@ -249,9 +288,8 @@ namespace Zetta
 							halberd.CanBeCasted() &&
 							me.CanCast() &&
 							!target.IsMagicImmune() &&
-							(halberd.CanBeCasted() &&
 							Utils.SleepCheck("halberd") &&
-							me.Distance2D(target) <= 700)
+							me.Distance2D(target) <= 700
 							)
 						{
 							halberd.UseAbility(target);
@@ -298,9 +336,6 @@ namespace Zetta
 					}
 
 				}
-
-				var Illu = ObjectMgr.GetEntities<Unit>().Where(x => (x.ClassID == ClassID.CDOTA_Unit_Hero_ArcWarden && x.IsIllusion)
-				&& x.IsAlive && x.IsControllable);
 				if (Illu == null)
 				{
 					return;
@@ -330,6 +365,7 @@ namespace Zetta
 
 					Item dag = v.Inventory.Items.FirstOrDefault(item => item.Name.Contains("item_dagon"));
 
+					Item necro = v.FindItem("item_necronomicon");
 
 					Item arc = v.FindItem("item_arcane_boots");
 
@@ -394,22 +430,41 @@ namespace Zetta
 					  && v.Position.Distance2D(e.Position) < 1600
 					  && Utils.SleepCheck("wm"))
 					{
-						em.UseAbility(e.Predict(4000));
+						em.UseAbility(e.Predict(3000));
 						Utils.Sleep(150, "wm");
 					}
-
-
 					if (// Dagon
-					dag != null
-					&& dag.CanBeCasted() &&
-					v.CanCast() &&
-					!e.IsMagicImmune() &&
-					Utils.SleepCheck("dag")
-				   )
+									me.CanCast()
+									&& dag != null
+									&& (ether == null
+									|| (ModifEther
+									|| ether.Cooldown < 17))
+									&& !target.IsLinkensProtected()
+									&& dag.CanBeCasted()
+									&& !target.IsMagicImmune()
+									&& !stoneModif
+									&& Utils.SleepCheck("dagon")
+								   )
 					{
 						dag.UseAbility(e);
 						Utils.Sleep(150, "dag");
 					} // Dagon Item end
+
+
+					if (// ethereal
+									   ether != null
+									   && ether.CanBeCasted()
+									   && !ModifEther
+									   && me.CanCast()
+									   && !target.IsLinkensProtected()
+									   && !target.IsMagicImmune()
+									   && !stoneModif
+									   && Utils.SleepCheck("ethereal")
+									  )
+					{
+						ether.UseAbility(target);
+						Utils.Sleep(200, "ethereal");
+					} // ethereal Item end
 
 					if (// SoulRing Item 
 						soul != null &&
@@ -457,9 +512,8 @@ namespace Zetta
 						mask != null &&
 						mask.CanBeCasted() &&
 						v.CanCast() &&
-						(mask.CanBeCasted() &&
 						Utils.SleepCheck("mask") &&
-						v.Distance2D(e) <= 700)
+						v.Distance2D(e) <= 700
 						)
 					{
 						mask.UseAbility();
@@ -485,9 +539,8 @@ namespace Zetta
 						halber.CanBeCasted() &&
 						v.CanCast() &&
 						!e.IsMagicImmune() &&
-						(halber.CanBeCasted() &&
 						Utils.SleepCheck("halber") &&
-						v.Distance2D(e) <= 700)
+						v.Distance2D(e) <= 700
 						)
 					{
 						halber.UseAbility(e);
@@ -519,6 +572,19 @@ namespace Zetta
 						Utils.Sleep(350, "Satanic");
 					} // Satanic Item end
 
+					if (// necronomicon Item
+							necro != null &&
+							necro.CanBeCasted() &&
+							me.CanCast() &&
+							!target.IsMagicImmune() &&
+							Utils.SleepCheck("necronomicon") &&
+							me.Distance2D(target) <= 600
+							)
+					{
+						necro.UseAbility();
+						Utils.Sleep(250, "necronomicon");
+					} // necronomicon Item end
+
 					if (
 						v.CanAttack()
 						&& v.Distance2D(e) <= 1200
@@ -537,9 +603,83 @@ namespace Zetta
 					}
 				}
 			}
+			
 		}
-		
 
+		private static void Game_MidasHero(EventArgs args)
+		{
+			var me = ObjectMgr.LocalHero;
+			if (!Game.IsInGame || me.ClassID != ClassID.CDOTA_Unit_Hero_ArcWarden)
+			{
+				return;
+			}
+
+
+
+			var MyHero = ObjectMgr.GetEntities<Hero>().Where(x => (x.ClassID == ClassID.CDOTA_Unit_Hero_ArcWarden) && x.IsAlive && x.IsControllable && !x.IsIllusion).ToList();
+			Creep creepHeroPos = ObjectMgr.GetEntities<Creep>()
+				  .Where(x => ((x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane || x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege
+				  || x.ClassID == ClassID.CDOTA_BaseNPC_Invoker_Forged_Spirit
+				  || x.ClassID == ClassID.CDOTA_BaseNPC_Creep) && x.Team == me.GetEnemyTeam() || (x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral && x.Team != me.Team))
+				  && x.IsAlive && x.IsVisible && x.IsSpawned)
+				  .OrderBy(x => GetDistance2D(x.Position, MyHero.OrderBy(y => GetDistance2D(x.Position, y.Position)).FirstOrDefault().Position))
+				  .FirstOrDefault();
+			Item midas = me.FindItem("item_hand_of_midas");
+			if (MyHero != null)
+			{
+				foreach (var f in MyHero)
+				{
+					if (midas.CanBeCasted())
+					{
+						if (creepHeroPos.Position.Distance2D(f.Position) < 650 && midas.CanBeCasted() &&
+							Utils.SleepCheck(f.Handle.ToString()))
+						{
+							midas.UseAbility(creepHeroPos);
+							Utils.Sleep(500, f.Handle.ToString());
+						}
+						return;
+					}
+				}
+			}
+		}
+
+		private static void Game_MidasIllu(EventArgs args)
+		{
+			var me = ObjectMgr.LocalHero;
+			if (!Game.IsInGame || me.ClassID != ClassID.CDOTA_Unit_Hero_ArcWarden)
+			{
+				return;
+			}
+
+			
+
+			var Illu = ObjectMgr.GetEntities<Unit>().Where(x => (x.ClassID == ClassID.CDOTA_Unit_Hero_ArcWarden && x.IsIllusion) && x.IsAlive && x.IsControllable);
+			Creep creep = ObjectMgr.GetEntities<Creep>()
+				  .Where(x => ((x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane || x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege
+				  || x.ClassID == ClassID.CDOTA_BaseNPC_Invoker_Forged_Spirit
+				  || x.ClassID == ClassID.CDOTA_BaseNPC_Creep) && x.Team == me.GetEnemyTeam() || (x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral && x.Team != me.Team))
+				  && x.IsAlive && x.IsVisible)
+				  .OrderBy(x => GetDistance2D(x.Position, Illu.OrderBy(y => GetDistance2D(x.Position, y.Position)).FirstOrDefault().Position))
+				  .FirstOrDefault();
+			if (Illu != null)
+			{
+
+				foreach (var f in Illu)
+				{
+					Item midaS = f.FindItem("item_hand_of_midas");
+					if (midaS.CanBeCasted())
+					{
+						if (creep.Position.Distance2D(f.Position) < 650 &&
+							Utils.SleepCheck(f.Handle.ToString()))
+						{
+							midaS.UseAbility(creep);
+							Utils.Sleep(500, f.Handle.ToString());
+						}
+						return;
+					}
+				}
+			}
+		}
 
 		static double GetDistance2D(Vector3 A, Vector3 B)
 		{
@@ -583,12 +723,12 @@ namespace Zetta
 
 			if (activated)
 			{
-				txt.DrawText(null, "Zetta#: Comboing!", 4, 150, Color.Green);
+				txt.DrawText(null, "Zet#: Comboing!", 4, 150, Color.Green);
 			}
 
 			if (!activated)
 			{
-				txt.DrawText(null, "Zetta#: go combo  [" + KeyCombo + "] for toggle combo", 4, 150, Color.Aqua);
+				txt.DrawText(null, "Zet#: go combo  [" + KeyCombo + "] for toggle combo", 4, 150, Color.Aqua);
 			}
 
 
