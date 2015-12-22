@@ -10,7 +10,7 @@ using Ensage.Common;
 using SharpDX.Direct3D9;
 using System.Windows.Input;
 
-namespace Zet
+namespace Zetta
 {
 	internal class Program
 	{
@@ -114,7 +114,7 @@ namespace Zet
 					
 					Item abyssal = me.FindItem("item_abyssal_blade");
 
-					Item necronomicon = me.FindItem("item_necronomicon");
+					Item necronomicon = me.FindItem("item_necronomicon")?? me.FindItem("item_necronomicon_2") ?? me.FindItem("item_necronomicon_3");
 
 					Item mjollnir = me.FindItem("item_mjollnir");
 
@@ -365,7 +365,7 @@ namespace Zet
 
 					Item dag = v.Inventory.Items.FirstOrDefault(item => item.Name.Contains("item_dagon"));
 
-					Item necro = v.FindItem("item_necronomicon");
+					Item necro = v.FindItem("item_necronomicon")?? v.FindItem("item_necronomicon_2")?? v.FindItem("item_necronomicon_3");
 
 					Item arc = v.FindItem("item_arcane_boots");
 
@@ -723,12 +723,12 @@ namespace Zet
 
 			if (activated)
 			{
-				txt.DrawText(null, "Zet#: Comboing!", 4, 150, Color.Green);
+				txt.DrawText(null, "Zetta#: Comboing!", 4, 150, Color.Green);
 			}
 
 			if (!activated)
 			{
-				txt.DrawText(null, "Zet#: go combo  [" + KeyCombo + "] for toggle combo", 4, 150, Color.Aqua);
+				txt.DrawText(null, "Zetta#: go combo  [" + KeyCombo + "] for toggle combo", 4, 150, Color.Aqua);
 			}
 
 
