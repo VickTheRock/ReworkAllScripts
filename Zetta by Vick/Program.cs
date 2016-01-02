@@ -17,7 +17,7 @@ namespace Zetta
 		private static bool activated;
 		private static Font txt;
 		private static Font not;
-		private static Key KeyCombo = Key.D;
+		private static Key KeyCombo = Key.G;
 		private static bool loaded;
 		private static Boolean ModifEther, stoneModif;
         private static Hero me;
