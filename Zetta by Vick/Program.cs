@@ -20,7 +20,7 @@ namespace Zetta
 		private static Key KeyCombo = Key.D;
 		private static bool loaded;
 		private static Boolean ModifEther, stoneModif;
-        private static Hero me;
+		private static Hero me;
 		private static Hero target;
 		private static ParticleEffect rangeDisplay;
 		static void Main(string[] args)
@@ -28,7 +28,7 @@ namespace Zetta
 			Game.OnUpdate += Game_OnUpdate;
 			Game.OnUpdate += Game_MidasHero;
 			Game.OnUpdate += Game_MidasIllu;
-            Game.OnWndProc += Game_OnWndProc;
+			Game.OnWndProc += Game_OnWndProc;
 			Console.WriteLine("> Zetta# loaded!");
 
 			txt = new Font(
@@ -81,13 +81,13 @@ namespace Zetta
 
 
 					//spell
-					
+
 					Ability Q = me.Spellbook.SpellQ;
-					
+
 					Ability W = me.Spellbook.SpellW;
-					
+
 					Ability E = me.Spellbook.SpellE;
-				
+
 					Ability R = me.Spellbook.SpellR;
 					// item 
 
@@ -96,25 +96,25 @@ namespace Zetta
 					Item shiva = me.FindItem("item_shivas_guard");
 					Item dagon = me.Inventory.Items.FirstOrDefault(item => item.Name.Contains("item_dagon"));
 
-					
-						Item arcane = me.FindItem("item_arcane_boots");
-				
+
+					Item arcane = me.FindItem("item_arcane_boots");
+
 					Item mom = me.FindItem("item_mask_of_madness");
-					
+
 					Item medall = me.FindItem("item_shivas_guard") ?? me.FindItem("item_solar_crest");
-				
+
 					Item ethereal = me.FindItem("item_ethereal_blade");
 
 					Item blink = me.FindItem("item_blink");
-					
+
 					Item soulring = me.FindItem("item_soul_ring");
-				
+
 					Item cheese = me.FindItem("item_cheese");
 					Item halberd = me.FindItem("item_heavens_halberd");
-					
+
 					Item abyssal = me.FindItem("item_abyssal_blade");
 
-					Item necronomicon = me.FindItem("item_necronomicon")?? me.FindItem("item_necronomicon_2") ?? me.FindItem("item_necronomicon_3");
+					Item necronomicon = me.FindItem("item_necronomicon") ?? me.FindItem("item_necronomicon_2") ?? me.FindItem("item_necronomicon_3");
 
 					Item mjollnir = me.FindItem("item_mjollnir");
 
@@ -124,7 +124,7 @@ namespace Zetta
 					Boolean ModifEther = target.Modifiers.Any(y => y.Name == "modifier_item_ethereal_blade_slow");
 					Boolean stoneModif = target.Modifiers.Any(y => y.Name == "modifier_medusa_stone_gaze_stone");
 
-		
+
 
 
 					if (me.Distance2D(target) <= 1200)
@@ -150,7 +150,7 @@ namespace Zetta
 							Utils.Sleep(250, "blink");
 						}
 						if (Q != null
-						    && Q.CanBeCasted()
+							&& Q.CanBeCasted()
 							&& me.Position.Distance2D(target.Position)
 							< 900
 							&& Utils.SleepCheck("Q"))
@@ -160,7 +160,7 @@ namespace Zetta
 						}
 						if (
 							W != null
-						    && W.CanBeCasted()
+							&& W.CanBeCasted()
 							&& me.Position.Distance2D(target.Position) < 400
 							&& target.NetworkActivity == NetworkActivity.Attack
 							&& me.NetworkActivity != NetworkActivity.Move
@@ -212,7 +212,7 @@ namespace Zetta
 						if (
 							manta.CanBeCasted()
 							&& me.Position.Distance2D(target.Position)
-							< me.AttackRange+50
+							< me.AttackRange + 50
 							&& Utils.SleepCheck("manta"))
 						{
 							manta.UseAbility();
@@ -230,7 +230,7 @@ namespace Zetta
 
 						if (// Arcane Boots Item
 							arcane != null &&
-							me.Mana <= E.ManaCost+150 &&
+							me.Mana <= E.ManaCost + 150 &&
 							arcane.CanBeCasted())
 						{
 							arcane.UseAbility();
@@ -381,7 +381,7 @@ namespace Zetta
 
 					Item dag = v.Inventory.Items.FirstOrDefault(item => item.Name.Contains("item_dagon"));
 
-					Item necro = v.FindItem("item_necronomicon")?? v.FindItem("item_necronomicon_2")?? v.FindItem("item_necronomicon_3");
+					Item necro = v.FindItem("item_necronomicon") ?? v.FindItem("item_necronomicon_2") ?? v.FindItem("item_necronomicon_3");
 
 					Item arc = v.FindItem("item_arcane_boots");
 
@@ -439,7 +439,7 @@ namespace Zetta
 					}
 					if (
 						wm != null
-					    && wm.CanBeCasted()
+						&& wm.CanBeCasted()
 						&& v.Position.Distance2D(e.Position) < 400
 						&& e.NetworkActivity == NetworkActivity.Attack
 						&& v.NetworkActivity != NetworkActivity.Move
@@ -501,7 +501,7 @@ namespace Zetta
 
 					if (// Arcane Boots Item
 						arc != null &&
-						v.Mana <= wm.ManaCost+150 &&
+						v.Mana <= wm.ManaCost + 150 &&
 						arc.CanBeCasted())
 					{
 						arc.UseAbility();
@@ -621,16 +621,17 @@ namespace Zetta
 					if (
 						v.CanAttack()
 						&& v.Distance2D(e) <= 1200
-						&& Utils.SleepCheck(v.Handle.ToString()
-						)
-					{
+						&& Utils.SleepCheck(v.Handle.ToString())
+                        )
+						
+                    {
 						v.Attack(e);
 						Utils.Sleep(400, v.Handle.ToString());
 					}
 
 				}
 			}
-			
+
 		}
 
 		private static void Game_MidasHero(EventArgs args)
@@ -678,7 +679,7 @@ namespace Zetta
 				return;
 			}
 
-			
+
 
 			var Illu = ObjectMgr.GetEntities<Unit>().Where(x => (x.ClassID == ClassID.CDOTA_Unit_Hero_ArcWarden && x.IsIllusion) && x.IsAlive && x.IsControllable);
 			Creep creep = ObjectMgr.GetEntities<Creep>()
