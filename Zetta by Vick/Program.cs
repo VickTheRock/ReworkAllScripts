@@ -156,7 +156,7 @@ namespace Zetta
 							&& Utils.SleepCheck("Q"))
 						{
 							Q.UseAbility(target);
-							Utils.Sleep(150, "Q");
+							Utils.Sleep(250, "Q");
 						}
 						if (
 							W != null
@@ -167,7 +167,7 @@ namespace Zetta
 							&& Utils.SleepCheck("W"))
 						{
 							W.UseAbility(me.Position);
-							Utils.Sleep(150, "W");
+							Utils.Sleep(250, "W");
 						}
 						if (
 							E != null
@@ -176,7 +176,7 @@ namespace Zetta
 						  && Utils.SleepCheck("W"))
 						{
 							E.UseAbility(target.Predict(3000));
-							Utils.Sleep(150, "W");
+							Utils.Sleep(300, "W");
 						}
 						if (// ethereal
 									   ethereal != null
@@ -189,7 +189,7 @@ namespace Zetta
 									  )
 						{
 							ethereal.UseAbility(target);
-							Utils.Sleep(200, "ethereal");
+							Utils.Sleep(300, "ethereal");
 						} // ethereal Item end
 
 						if (// Dagon
@@ -206,7 +206,7 @@ namespace Zetta
 								   )
 						{
 							dagon.UseAbility(target);
-							Utils.Sleep(150, "dagon");
+							Utils.Sleep(230, "dagon");
 						} // Dagon Item end
 
 						if (
@@ -216,7 +216,7 @@ namespace Zetta
 							&& Utils.SleepCheck("manta"))
 						{
 							manta.UseAbility();
-							Utils.Sleep(150, "manta");
+							Utils.Sleep(200, "manta");
 						}
 
 						if (// SoulRing Item 
@@ -435,7 +435,7 @@ namespace Zetta
 						&& Utils.SleepCheck("qm"))
 					{
 						qm.UseAbility(e);
-						Utils.Sleep(150, "qm");
+						Utils.Sleep(300, "qm");
 					}
 					if (
 						wm != null
@@ -446,7 +446,7 @@ namespace Zetta
 						&& Utils.SleepCheck("wm"))
 					{
 						wm.UseAbility(v.Position);
-						Utils.Sleep(150, "wm");
+						Utils.Sleep(300, "wm");
 					}
 					if (
 						em != null
@@ -455,7 +455,7 @@ namespace Zetta
 					  && Utils.SleepCheck("wm"))
 					{
 						em.UseAbility(e.Predict(3000));
-						Utils.Sleep(150, "wm");
+						Utils.Sleep(300, "wm");
 					}
 					if (// Dagon
 									me.CanCast()
@@ -471,7 +471,7 @@ namespace Zetta
 								   )
 					{
 						dag.UseAbility(e);
-						Utils.Sleep(150, "dag");
+						Utils.Sleep(300, "dag");
 					} // Dagon Item end
 
 
@@ -487,7 +487,7 @@ namespace Zetta
 									  )
 					{
 						ether.UseAbility(target);
-						Utils.Sleep(200, "ethereal");
+						Utils.Sleep(300, "ethereal");
 					} // ethereal Item end
 
 					if (// SoulRing Item 
@@ -527,7 +527,7 @@ namespace Zetta
 							&& Utils.SleepCheck("manta"))
 					{
 						manta.UseAbility();
-						Utils.Sleep(150, "manta");
+						Utils.Sleep(250, "manta");
 					}
 					if ( // Medall
 				   medal != null &&
@@ -590,7 +590,7 @@ namespace Zetta
 					   )
 					{
 						mjoll.UseAbility(v);
-						Utils.Sleep(250, "mjoll");
+						Utils.Sleep(300, "mjoll");
 					} // Mjollnir Item end
 
 					if (// Satanic 
@@ -615,25 +615,19 @@ namespace Zetta
 							)
 					{
 						necro.UseAbility();
-						Utils.Sleep(250, "necronomicon");
+						Utils.Sleep(300, "necronomicon");
 					} // necronomicon Item end
 
 					if (
 						v.CanAttack()
 						&& v.Distance2D(e) <= 1200
-						&& Utils.SleepCheck("Attack")
+						&& Utils.SleepCheck(v.Handle.ToString()
 						)
-					{
-						v.Attack(e);
-						Utils.Sleep(350, "Attack");
-					}
-
-					if (e.Position.Distance2D(v.Position) < 1550 &&
-						Utils.SleepCheck(v.Handle.ToString()))
 					{
 						v.Attack(e);
 						Utils.Sleep(400, v.Handle.ToString());
 					}
+
 				}
 			}
 			
