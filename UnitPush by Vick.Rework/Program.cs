@@ -110,7 +110,6 @@ namespace AllUnitPush
 			if (!Game.IsInGame || me == null)
 				return;
 
-			var meepo = ObjectMgr.GetEntities<Meepo>();
             var unit = ObjectMgr.GetEntities<Unit>().Where(x => x.Team == me.Team && x.IsControllable && x.NetworkActivity != NetworkActivity.Move && x.NetworkActivity != NetworkActivity.Attack && x.IsAlive && !x.Equals(me) && x.ClassID != ClassID.CDOTA_Unit_Hero_Meepo).ToList();
 
 
