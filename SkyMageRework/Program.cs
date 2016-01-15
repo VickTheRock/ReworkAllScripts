@@ -124,7 +124,7 @@ namespace SkyMageRework
             var ModifVail = target.Modifiers.Any(y => y.Name == "modifier_item_veil_of_discord_debuff");
             var stoneModif = target.Modifiers.Any(y => y.Name == "modifier_medusa_stone_gaze_stone");
 
-			if (Game.IsKeyDown(keyCode: 49) && Q.CanBeCasted() && target != null)
+			if (Game.IsKeyDown(keyCode: 70) && Q.CanBeCasted() && target != null)
 			{
 				if (
 					Q != null
