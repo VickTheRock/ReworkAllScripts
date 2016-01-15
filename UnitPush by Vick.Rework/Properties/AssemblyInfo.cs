@@ -1,15 +1,15 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
 
-//  General Information about an assembly is controlled through the following 
+// General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
-[assembly: AssemblyTitle("Zetta by Vick#")]
+[assembly: AssemblyTitle("UnitPush by Vick.Rework#")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("EnsageSharp")]
-[assembly: AssemblyProduct("Zetta by Vick#")]
+[assembly: AssemblyProduct("UnitPush by Vick.Rework#")]
 [assembly: AssemblyCopyright("This is Vick!")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
@@ -33,5 +33,5 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 
-[assembly: AssemblyVersion("0.0.0.2")]
-[assembly: AssemblyFileVersion("0.0.0.2")]
+[assembly: AssemblyVersion("0.0.0.1")]
+[assembly: AssemblyFileVersion("0.0.0.1")]

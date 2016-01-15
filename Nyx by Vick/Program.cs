@@ -23,7 +23,6 @@ namespace Nyx_by_Vick
         private static bool loaded;
         private static Hero me;
         private static Hero target;
-        private static ParticleEffect rangeDisplay;
         static void Main(string[] args)
         {
             Game.OnUpdate += Game_OnUpdate;
@@ -103,7 +102,7 @@ namespace Nyx_by_Vick
 					vail = me.FindItem("item_veil_of_discord");
 
 					if (medall == null)
-                        medall = me.FindItem("item_shivas_guard") ?? me.FindItem("item_solar_crest");
+                        medall = me.FindItem("item_medallion_of_courage") ?? me.FindItem("item_solar_crest");
 
                     if (ethereal == null)
                         ethereal = me.FindItem("item_ethereal_blade");
@@ -178,7 +177,9 @@ namespace Nyx_by_Vick
 								Utils.Sleep(250 + Game.Ping, "vail");
 							}
 
-							if (Q.CanBeCasted() &&
+							if (
+								Q != null 
+								&& Q.CanBeCasted() &&
 								blink.CanBeCasted() &&
 								me.Position.Distance2D(target.Position) > 300 &&
 								Utils.SleepCheck("blink"))
@@ -206,14 +207,17 @@ namespace Nyx_by_Vick
 							if ((vail ==null|| !vail.CanBeCasted()) && (ethereal ==null || !ethereal.CanBeCasted()) && !R.CanBeCasted())
 							{
 
-								if (Q.CanBeCasted() &&
-									me.Position.Distance2D(target.Position) < Q.CastRange - 50 &&
+								if (
+									Q != null 
+									&& Q.CanBeCasted() 
+									&& me.Position.Distance2D(target.Position) < Q.CastRange - 50 &&
 									Utils.SleepCheck("Q"))
 								{
 									Q.CastSkillShot(target);
 									Utils.Sleep(90, "Q");
 								}
-								if (W.CanBeCasted()
+								if (W != null 
+									&& W.CanBeCasted()
 									&& me.Position.Distance2D(target.Position) < 800
 									&& Utils.SleepCheck("W"))
 								{

@@ -401,13 +401,13 @@ namespace Pugna
 			{
 				DrawBox(2, 510, 130, 20, 1, new ColorBGRA(0, 0, 100, 100));
 				DrawFilledBox(2, 510, 130, 20, new ColorBGRA(0, 0, 0, 100));
-				DrawShadowText("SkyWrath#: Comboing!", 4, 510, Color.DeepPink, txt);
+				DrawShadowText("Pugna#: Comboing!", 4, 510, Color.DeepPink, txt);
 			}
 			if (toggle && !activated)
 			{
 				DrawBox(2, 530, 410, 54, 1, new ColorBGRA(0, 0, 100, 100));
 				DrawFilledBox(2, 530, 410, 54, new ColorBGRA(0, 0, 0, 100));
-				DrawShadowText("SkyWrath#: Enabled\nBlink on/off(P): " + blinkToggle + " | UseUlt on/off(H): " + useUltimate + " | [" + keyCombo + "] for combo \n[" + toggleKey + "] For toggle combo | [" + blinkToggleKey +
+				DrawShadowText("Pugna#: Enabled\nBlink on/off(P): " + blinkToggle + " | UseUlt on/off(H): " + useUltimate + " | [" + keyCombo + "] for combo \n[" + toggleKey + "] For toggle combo | [" + blinkToggleKey +
 					"] For toggle blink | [" + UseUltimate + "] For toggle UseUlt ", 4, 530, Color.OrangeRed, txt);
 			}
 			if (!toggle)

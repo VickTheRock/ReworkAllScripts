@@ -124,8 +124,24 @@ namespace SkyMageRework
             var ModifVail = target.Modifiers.Any(y => y.Name == "modifier_item_veil_of_discord_debuff");
             var stoneModif = target.Modifiers.Any(y => y.Name == "modifier_medusa_stone_gaze_stone");
 
-
-            if (activated && me.IsAlive && target.IsAlive && Utils.SleepCheck("activated"))
+			if (Game.IsKeyDown(keyCode: 70) && Q.CanBeCasted() && target != null)
+			{
+				if (
+					Q != null
+					&& Q.CanBeCasted()
+					&& (target.IsLinkensProtected()
+					|| !target.IsLinkensProtected())
+					&& me.CanCast()
+					&& me.Distance2D(target) < 900
+					&& !stoneModif
+					&& Utils.SleepCheck("Q")
+					)
+				{
+					Q.UseAbility(target);
+					Utils.Sleep(200, "Q");
+				}
+			}
+				if (activated && me.IsAlive && target.IsAlive && Utils.SleepCheck("activated"))
 			{
 				var noBlade = target.Modifiers.Any(y => y.Name == "modifier_item_blade_mail_reflect");
 				if (target.IsVisible && me.Distance2D(target) <= 2300 && !noBlade)
