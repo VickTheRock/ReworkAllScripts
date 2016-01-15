@@ -648,7 +648,7 @@ namespace ControlCreep_By_Vick
                             Utils.Sleep(700, v.Handle.ToString());
                         }
                     }
-				var Ancient = ObjectMgr.GetEntities<Unit>().Where(x => (x.IsAncient)
+				var Ancient = ObjectMgr.GetEntities<Unit>().Where(x => x.IsAncient
 									 && x.IsAlive && x.IsControllable);
 				if (Ancient == null)
 				{
@@ -656,20 +656,31 @@ namespace ControlCreep_By_Vick
 				}
 				foreach (var v in Ancient)
 				{
-					if (target.Position.Distance2D(v.Position) < 900 && v.Spellbook.SpellQ.CanBeCasted() &&
+					if (target.Position.Distance2D(v.Position) < 1550 &&
+							   Utils.SleepCheck(v.Handle.ToString()))
+					{
+						v.Attack(target);
+						Utils.Sleep(450, v.Handle.ToString());
+					}
+					if (v.Spellbook.SpellW != null && target.Position.Distance2D(v.Position) < 300 && v.Spellbook.SpellW.CanBeCasted() &&
 							Utils.SleepCheck(v.Handle.ToString()))
 					{
-						v.Spellbook.SpellQ.UseAbility(target.Position);
-						v.Spellbook.SpellQ.UseAbility(target);
+						v.Spellbook.SpellW.UseAbility();
+						Utils.Sleep(400, v.Handle.ToString());
+					}
+					if (v.Spellbook.SpellQ != null && target.Position.Distance2D(v.Position) < 900 && v.Spellbook.SpellQ.CanBeCasted() &&
+							Utils.SleepCheck(v.Handle.ToString()))
+					{
 						v.Spellbook.SpellQ.UseAbility();
 						Utils.Sleep(400, v.Handle.ToString());
 					}
-					if (target.Position.Distance2D(v.Position) < 1550 &&
+					if (v.Spellbook.SpellQ != null && target.Position.Distance2D(v.Position) < 900 && v.Spellbook.SpellQ.CanBeCasted() && (CheckSetka || CheckStun || target.IsHexed() || target.IsStunned() || target.MovementSpeed<200) &&
 							Utils.SleepCheck(v.Handle.ToString()))
 					{
-						v.Attack(target);
-						Utils.Sleep(700, v.Handle.ToString());
+						v.Spellbook.SpellQ.UseAbility(target.Position);
+						Utils.Sleep(400, v.Handle.ToString());
 					}
+					
 				}
 
 				var harpy = ObjectMgr.GetEntities<Unit>().Where(unit => unit.Name == "npc_dota_neutral_harpy_storm" && unit.IsAlive && unit.IsControllable).ToList();
