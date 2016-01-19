@@ -280,7 +280,7 @@ namespace SkyMageRework
 							orchid.UseAbility(target);
 							Utils.Sleep(250, "orchid");
 						} // orchid Item end
-						if (!orchid.CanBeCasted() || orchid == null)
+						if (!orchid.CanBeCasted() || orchid == null || !Menu.Item("Items: ").GetValue<AbilityToggler>().IsEnabled(orchid.Name))
 						{
 							if ( // vail
                                    vail != null
@@ -295,7 +295,7 @@ namespace SkyMageRework
 								vail.UseAbility(target.Position);
 								Utils.Sleep(250, "vail");
 							} // orchid Item end
-							if (!vail.CanBeCasted() || vail == null)
+							if (!vail.CanBeCasted() || vail == null || !Menu.Item("Items: ").GetValue<AbilityToggler>().IsEnabled(vail.Name))
 							{
 								if (// ethereal
 									   ethereal != null
@@ -311,7 +311,7 @@ namespace SkyMageRework
 									ethereal.UseAbility(target);
 									Utils.Sleep(200, "ethereal");
 								} // ethereal Item end
-								if (!ethereal.CanBeCasted() || ethereal == null)
+								if (!ethereal.CanBeCasted() || ethereal == null || !Menu.Item("Items: ").GetValue<AbilityToggler>().IsEnabled(ethereal.Name))
 								{
 									if (
 										 Q != null
