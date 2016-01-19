@@ -657,7 +657,7 @@ namespace Zetta
 			{
 				foreach (var f in MyHero)
 				{
-					if (midas.CanBeCasted())
+					if (midas.CanBeCasted() && !me.IsInvisible())
 					{
 						if (creepHeroPos.Position.Distance2D(f.Position) < 650 && midas.CanBeCasted() &&
 							Utils.SleepCheck(f.Handle.ToString()))
