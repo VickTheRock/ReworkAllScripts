@@ -25,7 +25,7 @@ namespace SkyMageRework
 		private static readonly Menu skills = new Menu("Skills", "Skills");
 		private static readonly Menu items = new Menu("Items", "Items");
 		private static readonly Menu link = new Menu("Link", "Link");
-		private static readonly Menu ult = new Menu("AutoUlt", "AutoUlt");
+		private static readonly Menu ult = new Menu("AutoUlt", "Auto");
 		private static readonly Menu healh = new Menu("Healh", "Min % Enemy Healh to Ult"); 
 		private static readonly Dictionary<string, bool> Skills = new Dictionary<string, bool>
 			{
@@ -73,7 +73,7 @@ namespace SkyMageRework
 			Menu.AddSubMenu(healh);
 			skills.AddItem(new MenuItem("Skills: ", "Skills: ").SetValue(new AbilityToggler(Skills)));
 			items.AddItem(new MenuItem("Items: ", "Items:").SetValue(new AbilityToggler(Items)));
-			ult.AddItem(new MenuItem("autoUlt", "AutoUlt").SetValue(true));
+			ult.AddItem(new MenuItem("autoUlt", "AutoSpell and Items").SetValue(true));
 			ult.AddItem(new MenuItem("AutoUlt: ", "AutoUlt").SetValue(new AbilityToggler(AutoUlt)));
 			items.AddItem(new MenuItem("Link: ", "Auto triggre Linken").SetValue(new AbilityToggler(Link)));
 			healh.AddItem(new MenuItem("Healh", "Min healh % to ult").SetValue(new Slider(35, 10, 70))); // x/ 10%
