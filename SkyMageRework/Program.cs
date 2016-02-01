@@ -337,7 +337,7 @@ namespace SkyMageRework
 									   || ModifEther
 									   || ModifRod)
 									   && me.Position.Distance2D(target) < 1200
-									   && target.Health >= (target.MaximumHealth * Menu.Item("Healh").GetValue<Slider>().Value)
+									   && target.Health >= (target.MaximumHealth / 100 * Menu.Item("Healh").GetValue<Slider>().Value)
 									   && !stoneModif
 									   && Menu.Item("Skills: ").GetValue<AbilityToggler>().IsEnabled(R.Name)
 									   && Utils.SleepCheck("R"))
@@ -350,7 +350,7 @@ namespace SkyMageRework
 										soulring != null
 										&& soulring.CanBeCasted()
 										&& me.CanCast()
-										&& me.Health / me.MaximumHealth <= 0.5
+										&& me.Health >= (me.MaximumHealth * 0.5)
 										&& me.Mana <= R.ManaCost
 										&& Menu.Item("Items: ").GetValue<AbilityToggler>().IsEnabled(soulring.Name)
 										)
