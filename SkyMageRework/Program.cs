@@ -47,7 +47,6 @@ namespace SkyMageRework
 			};
 		private static readonly Dictionary<string, bool> Items = new Dictionary<string, bool>
 			{
-				{"item_dagon",true},
 				{"item_orchid",true},
 				{"item_ethereal_blade",true},
 				{"item_veil_of_discord",true},
@@ -429,7 +428,6 @@ namespace SkyMageRework
 										&& dagon.CanBeCasted()
 										&& !target.IsMagicImmune()
 										&& !stoneModif
-										&& Menu.Item("Items: ").GetValue<AbilityToggler>().IsEnabled(dagon.Name)
 										&& Utils.SleepCheck("dagon")
 									   )
 									{
