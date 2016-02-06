@@ -338,6 +338,19 @@ namespace SkyMageRework
 									   && me.Position.Distance2D(target) < 1200
 									   && target.Health >= (target.MaximumHealth / 100 * Menu.Item("Healh").GetValue<Slider>().Value)
 									   && !stoneModif
+									   && !target.Modifiers.Any(y => y.Name == "modifier_item_blade_mail_reflect")
+									   && !target.Modifiers.Any(y => y.Name == "modifier_skywrath_mystic_flare_aura_effect")
+									   && !target.Modifiers.Any(y => y.Name == "modifier_obsidian_destroyer_astral_imprisonment_prison")
+									   && !target.Modifiers.Any(y => y.Name == "modifier_puck_phase_shift")
+									   && !target.Modifiers.Any(y => y.Name == "modifier_eul_cyclone")
+									   && !target.Modifiers.Any(y => y.Name == "modifier_dazzle_shallow_grave")
+									   && !target.Modifiers.Any(y => y.Name == "modifier_brewmaster_storm_cyclone")
+									   && !target.Modifiers.Any(y => y.Name == "modifier_spirit_breaker_charge_of_darkness")
+									   && !target.Modifiers.Any(y => y.Name == "modifier_shadow_demon_disruption")
+									   && !target.Modifiers.Any(y => y.Name == "modifier_tusk_snowball_movement")
+									   && !target.IsMagicImmune()
+									   && (!target.FindSpell("abaddon_borrowed_time").CanBeCasted() && !target.Modifiers.Any(y => y.Name == "modifier_abaddon_borrowed_time_damage_redirect"))
+							 
 									   && Menu.Item("Skills: ").GetValue<AbilityToggler>().IsEnabled(R.Name)
 									   && Utils.SleepCheck("R"))
 									{
