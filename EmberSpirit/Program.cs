@@ -8,30 +8,26 @@ using Ensage.Common.Extensions;
 using Ensage.Common;
 using SharpDX.Direct3D9;
 using System.Windows.Input;
-
+using Ensage.Common.Menu;
 namespace EmberSpirit
 {
 	internal class Program
 	{
-
+		private static readonly Menu Menu = new Menu("EmberSpirit", "EmberSpirit", true, "npc_dota_hero_ember_spirit", true);
 		private static Item mom, abyssal, soulring, arcane, shiva, halberd, mjollnir, satanic, dagon, orchid;
 		private static Ability Q, W, E, R, D;
-		private static bool activated;
-		private static bool togleQW;
-
-		private static bool oneULT;
+		
 		private static Font txt;
 		private static Font not;
-		private static Key KeyCombo = Key.D;
-		private const Key TogleQW = Key.W;
-		private const Key OneUlt = Key.F;
 		private static bool loaded;
 		static void Main(string[] args)
 		{
 			Game.OnUpdate += Game_OnUpdate;
 			Game.OnUpdate += Game_OnUpdateQW;
-			//     Game.OnUpdate += Game_OnUpdateAltCombo;
-			Game.OnWndProc += Game_OnWndProc;
+			Menu.AddItem(new MenuItem("w", "Use W").SetValue(new KeyBind('W', KeyBindType.Press)));
+			Menu.AddItem(new MenuItem("full", "Use Full Combo").SetValue(new KeyBind('D', KeyBindType.Press)));
+			Menu.AddItem(new MenuItem("oneUlt", "Use One Ult").SetValue(false));
+			Menu.AddToMainMenu();
 			Console.WriteLine("> EmberSpirit# loaded!");
 
 			txt = new Font(
@@ -62,7 +58,7 @@ namespace EmberSpirit
 
 		public static void Game_OnUpdate(EventArgs args)
 		{
-			var me = ObjectMgr.LocalHero;
+			var me = ObjectManager.LocalHero;
 
 
 			if (!Game.IsInGame || me.ClassID != ClassID.CDOTA_Unit_Hero_EmberSpirit)
@@ -76,7 +72,7 @@ namespace EmberSpirit
 				return;
 			}
 
-			if (activated && target.IsAlive && !target.IsInvul())
+			if (Game.IsKeyDown(Menu.Item("full").GetValue<KeyBind>().Key) && target.IsAlive && !target.IsInvul())
 			{
 
 				//spell
@@ -95,7 +91,7 @@ namespace EmberSpirit
 				if (D == null)
 					D = me.Spellbook.SpellD;
 
-				var linkens = target.Modifiers.Any(x => x.Name == "modifier_item_spheretarget") || target.Inventory.Items.Any(x => x.Name == "item_sphere");
+				var linkens = target.IsLinkensProtected();
 				// item 
 				if (satanic == null)
 					satanic = me.FindItem("item_satanic");
@@ -137,7 +133,7 @@ namespace EmberSpirit
 
 				{
 					Q.UseAbility();
-					Utils.Sleep(20 + Game.Ping, "Q");
+					Utils.Sleep(20, "Q");
 				} // Q Skill end
 
 				if ( // W Skill
@@ -149,7 +145,7 @@ namespace EmberSpirit
 					)
 				{
 					W.UseAbility(target.Position);
-					Utils.Sleep(200 + Game.Ping, "W");
+					Utils.Sleep(200, "W");
 				} // W Skill end
 
 				if ( // E Skill
@@ -162,12 +158,12 @@ namespace EmberSpirit
 					)
 				{
 					E.UseAbility();
-					Utils.Sleep(350 + Game.Ping, "E");
+					Utils.Sleep(350, "E");
 				} // E Skill end
 
 				if (//R Skill
 					R != null
-					&& !oneULT
+					&& !Menu.Item("oneUlt").IsActive()
 					&& R.CanBeCasted()
 					&& me.CanCast()
 					&& me.Distance2D(target) <= 1100
@@ -175,12 +171,12 @@ namespace EmberSpirit
 					)
 				{
 					R.UseAbility(target.Position);
-					Utils.Sleep(90 + Game.Ping, "R");
+					Utils.Sleep(90, "R");
 				} // R Skill end
 
 				if (//R Skill
 					R != null
-					&& oneULT
+					&& Menu.Item("oneUlt").IsActive()
 					&& R.CanBeCasted()
 					&& me.CanCast()
 					&& me.Distance2D(target) <= 1100
@@ -188,7 +184,7 @@ namespace EmberSpirit
 					)
 				{
 					R.UseAbility(target.Position);
-					Utils.Sleep(7000 + Game.Ping, "R");
+					Utils.Sleep(7000, "R");
 				} // R Skill end
 
 				if ( // orchid
@@ -202,7 +198,7 @@ namespace EmberSpirit
 							)
 				{
 					orchid.UseAbility(target);
-					Utils.Sleep(250 + Game.Ping, "orchid");
+					Utils.Sleep(250, "orchid");
 				} // orchid Item end
 
 				if (// SoulRing Item 
@@ -232,7 +228,7 @@ namespace EmberSpirit
 					)
 				{
 					shiva.UseAbility();
-					Utils.Sleep(250 + Game.Ping, "shiva");
+					Utils.Sleep(250, "shiva");
 				} // Shiva Item end
 
 				if (// MOM
@@ -244,7 +240,7 @@ namespace EmberSpirit
 					)
 				{
 					mom.UseAbility();
-					Utils.Sleep(250 + Game.Ping, "mom");
+					Utils.Sleep(250, "mom");
 				} // MOM Item end
 
 
@@ -258,7 +254,7 @@ namespace EmberSpirit
 					)
 				{
 					abyssal.UseAbility(target);
-					Utils.Sleep(250 + Game.Ping, "abyssal");
+					Utils.Sleep(250, "abyssal");
 				} // Abyssal Item end
 
 				if ( // Hellbard
@@ -271,7 +267,7 @@ namespace EmberSpirit
 					)
 				{
 					halberd.UseAbility(target);
-					Utils.Sleep(250 + Game.Ping, "halberd");
+					Utils.Sleep(250, "halberd");
 				} // Hellbard Item end
 
 				if ( // Mjollnir
@@ -284,7 +280,7 @@ namespace EmberSpirit
 				   )
 				{
 					mjollnir.UseAbility(me);
-					Utils.Sleep(250 + Game.Ping, "mjollnir");
+					Utils.Sleep(250, "mjollnir");
 				} // Mjollnir Item end
 
 				if (// Dagon
@@ -296,7 +292,7 @@ namespace EmberSpirit
 				   )
 				{
 					dagon.UseAbility(target);
-					Utils.Sleep(150 + Game.Ping, "dagon");
+					Utils.Sleep(150, "dagon");
 				} // Dagon Item end
 
 
@@ -309,27 +305,24 @@ namespace EmberSpirit
 					satanic.UseAbility();
 				} // Satanic Item end
 
-				var remnant = ObjectMgr.GetEntities<Unit>().Where(unit => unit.Name == "npc_dota_ember_spirit_remnant").ToList();
+				var remnant = ObjectManager.GetEntities<Unit>().Where(unit => unit.Name == "npc_dota_ember_spirit_remnant").ToList();
 
-				var e = ObjectMgr.GetEntities<Hero>()
-				.Where(x => x.IsAlive && x.Team != me.Team && !x.IsIllusion)
-				.OrderBy(x => x.Position.Distance2D(remnant.OrderBy(y => x.Position.Distance2D(y.Position)).First().Position))
-				.First();
-				if (remnant == null)
+				if (remnant.Count <= 0)
 					return;
-				var goRemnant = e.Distance2D(remnant.First());
-				if (remnant != null)
-					if (//D Skill
-					   D.CanBeCasted() &&
-					   me.CanCast() &&
-					   goRemnant <= 600 &&
-					   Utils.SleepCheck("D")
-					   )
-					{
-						D.UseAbility(target.Position);
-						Utils.Sleep(400 + Game.Ping, "D");
-					}
-
+				for (int i = 0; i < remnant.Count; i++)
+				{
+						if (//D Skill
+						   remnant != null
+						   && D.CanBeCasted()
+						   && me.CanCast()
+						   && remnant[i].Distance2D(target) <= 600
+						   && Utils.SleepCheck("D")
+						   )
+						{
+							D.UseAbility(target.Position);
+							Utils.Sleep(400, "D");
+						}
+				}
 			}
 
 		}
@@ -338,7 +331,7 @@ namespace EmberSpirit
 
 		public static void Game_OnUpdateQW(EventArgs args)
 		{
-			var me = ObjectMgr.LocalHero;
+			var me = ObjectManager.LocalHero;
 			if (!Game.IsInGame || me.ClassID != ClassID.CDOTA_Unit_Hero_EmberSpirit)
 			{
 				return;
@@ -350,7 +343,7 @@ namespace EmberSpirit
 			{
 				return;
 			}
-			if (togleQW && target.IsAlive && !target.IsInvul())
+			if (Game.IsKeyDown(Menu.Item("w").GetValue<KeyBind>().Key) && target.IsAlive && !target.IsInvul())
 			{
 
 
@@ -373,7 +366,7 @@ namespace EmberSpirit
 
 				{
 					Q.UseAbility();
-					Utils.Sleep(40 + Game.Ping, "Q");
+					Utils.Sleep(40, "Q");
 				} // Q Skill end
 
 				if ( // W Skill
@@ -386,34 +379,14 @@ namespace EmberSpirit
 					)
 				{
 					W.UseAbility(target.Position);
-					Utils.Sleep(200 + Game.Ping, "W");
+					Utils.Sleep(200, "W");
 				} // W Skill end
 			}
 		}
 
 
 
-		private static void Game_OnWndProc(WndEventArgs args)
-		{
-			if (!Game.IsChatOpen)
-			{
-				if (Game.IsKeyDown(KeyCombo))
-					activated = true;
-				else
-					activated = false;
-			}
-			{
-				if (Game.IsKeyDown(TogleQW))
-					togleQW = true;
-				else
-					togleQW = false;
-			}
-			{
-				if (Game.IsKeyDown(OneUlt) && Utils.SleepCheck("oneULT"))
-					oneULT = !oneULT;
-				Utils.Sleep(200 + Game.Ping, "oneULT");
-			}
-		}
+		
 
 		static void CurrentDomain_DomainUnload(object sender, EventArgs e)
 		{
@@ -426,36 +399,36 @@ namespace EmberSpirit
 			if (Drawing.Direct3DDevice9 == null || Drawing.Direct3DDevice9.IsDisposed || !Game.IsInGame)
 				return;
 
-			var player = ObjectMgr.LocalPlayer;
-			var me = ObjectMgr.LocalHero;
+			var player = ObjectManager.LocalPlayer;
+			var me = ObjectManager.LocalHero;
 			if (player == null || player.Team == Team.Observer || me.ClassID != ClassID.CDOTA_Unit_Hero_EmberSpirit)
 				return;
 
-			if (activated)
+			if (Game.IsKeyDown(Menu.Item("full").GetValue<KeyBind>().Key))
 			{
-				txt.DrawText(null, "Ember#: Comboing!", 4, 170, Color.Green);
+				txt.DrawText(null, "Ember: Comboing!", 4, 170, Color.Green);
 			}
 
-			if (!activated)
+			if (!Game.IsKeyDown(Menu.Item("full").GetValue<KeyBind>().Key))
 			{
-				txt.DrawText(null, "Ember#: go combo  [" + KeyCombo + "] for toggle combo", 4, 170, Color.Aqua);
+				txt.DrawText(null, "Ember: go combo for toggle combo", 4, 170, Color.Aqua);
 			}
-			if (togleQW)
+			if (Game.IsKeyDown(Menu.Item("w").GetValue<KeyBind>().Key))
 			{
-				txt.DrawText(null, "Ember#: ComboingQW!", 4, 190, Color.Green);
+				txt.DrawText(null, "Ember: ComboingQW!", 4, 190, Color.Green);
 			}
 
-			if (!togleQW)
+			if (!Game.IsKeyDown(Menu.Item("w").GetValue<KeyBind>().Key))
 			{
-				txt.DrawText(null, "Ember#: go comboQW  [" + TogleQW + "] for toggle combo", 4, 190, Color.Aqua);
+				txt.DrawText(null, "Ember: go comboQW  for toggle combo", 4, 190, Color.Aqua);
 			}
-			if (oneULT)
+			if (Menu.Item("oneUlt").IsActive())
 			{
-				txt.DrawText(null, "Ember#: Use 1 Remnant![" + OneUlt + "]", 4, 220, Color.DarkOrchid);
+				txt.DrawText(null, "Ember: Use 1 Remnant!", 4, 220, Color.DarkOrchid);
 			}
-			if (!oneULT)
+			if (!Menu.Item("oneUlt").IsActive())
 			{
-				txt.DrawText(null, "Ember#: Use All Remnant![" + OneUlt + "]", 4, 220, Color.DarkOrchid);
+				txt.DrawText(null, "Ember: Use All Remnant!", 4, 220, Color.DarkOrchid);
 			}
 
 
