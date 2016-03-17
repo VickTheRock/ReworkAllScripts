@@ -27,6 +27,7 @@ namespace EmberSpirit
 			Menu.AddItem(new MenuItem("w", "Use W").SetValue(new KeyBind('W', KeyBindType.Press)));
 			Menu.AddItem(new MenuItem("full", "Use Full Combo").SetValue(new KeyBind('D', KeyBindType.Press)));
 			Menu.AddItem(new MenuItem("oneUlt", "Use One Ult").SetValue(false));
+			Menu.AddItem(new MenuItem("useUlt", "Use Ult").SetValue(true));
 			Menu.AddToMainMenu();
 			Console.WriteLine("> EmberSpirit# loaded!");
 
@@ -163,6 +164,7 @@ namespace EmberSpirit
 
 				if (//R Skill
 					R != null
+					&& Menu.Item("useUlt").IsActive()
 					&& !Menu.Item("oneUlt").IsActive()
 					&& R.CanBeCasted()
 					&& me.CanCast()
@@ -176,6 +178,7 @@ namespace EmberSpirit
 
 				if (//R Skill
 					R != null
+					&& Menu.Item("useUlt").IsActive()
 					&& Menu.Item("oneUlt").IsActive()
 					&& R.CanBeCasted()
 					&& me.CanCast()
@@ -304,7 +307,22 @@ namespace EmberSpirit
 				{
 					satanic.UseAbility();
 				} // Satanic Item end
-
+				if (
+					(!me.CanAttack() || me.Distance2D(target) >= 0) && me.NetworkActivity != NetworkActivity.Attack &&
+					me.Distance2D(target) <= 600 && Utils.SleepCheck("Move")
+					)
+				{
+					me.Move(target.Predict(300));
+					Utils.Sleep(390, "Move");
+				}
+				if (
+					me.Distance2D(target) <= me.AttackRange + 100 && (!me.IsAttackImmune() || !target.IsAttackImmune())
+					&& me.NetworkActivity != NetworkActivity.Attack && me.CanAttack() && Utils.SleepCheck("attack")
+					)
+				{
+					me.Attack(target);
+					Utils.Sleep(150, "attack");
+				}
 				var remnant = ObjectManager.GetEntities<Unit>().Where(unit => unit.Name == "npc_dota_ember_spirit_remnant").ToList();
 
 				if (remnant.Count <= 0)
@@ -323,6 +341,7 @@ namespace EmberSpirit
 							Utils.Sleep(400, "D");
 						}
 				}
+				
 			}
 
 		}
@@ -346,7 +365,36 @@ namespace EmberSpirit
 			if (Game.IsKeyDown(Menu.Item("w").GetValue<KeyBind>().Key) && target.IsAlive && !target.IsInvul())
 			{
 
+				var linkens = target.IsLinkensProtected();
+				// item 
+				if (satanic == null)
+					satanic = me.FindItem("item_satanic");
 
+				dagon = me.GetDagon();
+
+				if (halberd == null)
+					halberd = me.FindItem("item_heavens_halberd");
+
+				if (abyssal == null)
+					abyssal = me.FindItem("item_abyssal_blade");
+
+				if (mjollnir == null)
+					mjollnir = me.FindItem("item_mjollnir");
+
+				if (soulring == null)
+					soulring = me.FindItem("item_soul_ring");
+
+				if (arcane == null)
+					arcane = me.FindItem("item_arcane_boots");
+
+				if (mom == null)
+					mom = me.FindItem("item_mask_of_madness");
+
+				if (shiva == null)
+					shiva = me.FindItem("item_shivas_guard");
+
+				if (orchid == null)
+					orchid = me.FindItem("item_orchid");
 
 				//spell
 				if (Q == null)
@@ -381,6 +429,142 @@ namespace EmberSpirit
 					W.UseAbility(target.Position);
 					Utils.Sleep(200, "W");
 				} // W Skill end
+				if ( // orchid
+							orchid != null &&
+							orchid.CanBeCasted() &&
+							me.CanCast() &&
+							!target.IsMagicImmune() &&
+							!linkens &&
+							Utils.SleepCheck("orchid") &&
+							me.Distance2D(target) <= 1000
+							)
+				{
+					orchid.UseAbility(target);
+					Utils.Sleep(250, "orchid");
+				} // orchid Item end
+
+				if (// SoulRing Item 
+					soulring != null &&
+					me.Health <= (me.MaximumHealth * 0.3) &&
+					me.Mana <= D.ManaCost &&
+					soulring.CanBeCasted())
+				{
+					soulring.UseAbility();
+				} // SoulRing Item end
+
+				if (// Arcane Boots Item
+					arcane != null &&
+					me.Mana <= D.ManaCost &&
+					arcane.CanBeCasted())
+				{
+					arcane.UseAbility();
+				} // Arcane Boots Item end
+
+				if (// Shiva Item
+					shiva != null &&
+					shiva.CanBeCasted() &&
+					me.CanCast() &&
+					!target.IsMagicImmune() &&
+					Utils.SleepCheck("shiva") &&
+					me.Distance2D(target) <= 600
+					)
+				{
+					shiva.UseAbility();
+					Utils.Sleep(250, "shiva");
+				} // Shiva Item end
+
+				if (// MOM
+					mom != null &&
+					mom.CanBeCasted() &&
+					me.CanCast() &&
+					Utils.SleepCheck("mom") &&
+					me.Distance2D(target) <= 700
+					)
+				{
+					mom.UseAbility();
+					Utils.Sleep(250, "mom");
+				} // MOM Item end
+
+
+				if ( // Abyssal Blade
+					abyssal != null &&
+					abyssal.CanBeCasted() &&
+					me.CanCast() &&
+					!target.IsMagicImmune() &&
+					Utils.SleepCheck("abyssal") &&
+					me.Distance2D(target) <= 400
+					)
+				{
+					abyssal.UseAbility(target);
+					Utils.Sleep(250, "abyssal");
+				} // Abyssal Item end
+
+				if ( // Hellbard
+					halberd != null &&
+					halberd.CanBeCasted() &&
+					me.CanCast() &&
+					!target.IsMagicImmune() &&
+					Utils.SleepCheck("halberd") &&
+					me.Distance2D(target) <= 700
+					)
+				{
+					halberd.UseAbility(target);
+					Utils.Sleep(250, "halberd");
+				} // Hellbard Item end
+
+				if ( // Mjollnir
+					mjollnir != null &&
+					mjollnir.CanBeCasted() &&
+					me.CanCast() &&
+					!target.IsMagicImmune() &&
+					Utils.SleepCheck("mjollnir") &&
+					me.Distance2D(target) <= 900
+				   )
+				{
+					mjollnir.UseAbility(me);
+					Utils.Sleep(250, "mjollnir");
+				} // Mjollnir Item end
+
+				if (// Dagon
+					dagon != null &&
+					dagon.CanBeCasted() &&
+					me.CanCast() &&
+					!target.IsMagicImmune() &&
+					Utils.SleepCheck("dagon")
+				   )
+				{
+					dagon.UseAbility(target);
+					Utils.Sleep(150, "dagon");
+				} // Dagon Item end
+
+
+				if (// Satanic 
+					satanic != null &&
+					me.Health <= (me.MaximumHealth * 0.3) &&
+					satanic.CanBeCasted() &&
+					me.Distance2D(target) <= 400)
+				{
+					satanic.UseAbility();
+				} // Satanic Item end
+
+
+				if (
+					(!me.CanAttack() || me.Distance2D(target) >= 0) && me.NetworkActivity != NetworkActivity.Attack &&
+					me.Distance2D(target) <= 600 && Utils.SleepCheck("Move")
+					)
+				{
+					me.Move(target.Predict(300));
+					Utils.Sleep(390, "Move");
+				}
+				if (
+					me.Distance2D(target) <= me.AttackRange + 100 && (!me.IsAttackImmune() || !target.IsAttackImmune())
+					&& me.NetworkActivity != NetworkActivity.Attack && me.CanAttack() && Utils.SleepCheck("attack")
+					)
+				{
+					me.Attack(target);
+					Utils.Sleep(150, "attack");
+				}
+
 			}
 		}
 
@@ -421,6 +605,10 @@ namespace EmberSpirit
 			if (!Game.IsKeyDown(Menu.Item("w").GetValue<KeyBind>().Key))
 			{
 				txt.DrawText(null, "Ember: go comboQW  for toggle combo", 4, 190, Color.Aqua);
+			}
+			if(!Menu.Item("useUlt").IsActive())
+			{
+				txt.DrawText(null, "Ember: Don't Use Ult!", 4, 230, Color.DarkRed);
 			}
 			if (Menu.Item("oneUlt").IsActive())
 			{
