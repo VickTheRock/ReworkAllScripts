@@ -7,6 +7,7 @@ using Ensage;
 using SharpDX;
 using Ensage.Common.Extensions;
 using Ensage.Common;
+using Ensage.Common.Menu;
 using SharpDX.Direct3D9;
 using System.Windows.Input;
 
@@ -14,22 +15,23 @@ namespace TinyAutoCombo
 {
 	internal class Program
 	{
-		private static bool activated;
+		private static readonly Menu Menu = new Menu("Tiny", "Tiny by Vick", true, "npc_dota_hero_tiny", true);
 		private static Item soulring, arcane, blink, shiva, dagon, mjollnir, mom, halberd, abyssal, ethereal, cheese, satanic, medall;
 		private static Ability Q, W;
 		private static Font txt;
 		private static Font not;
-		private static Key KeyCombo = Key.D;
+		private static bool keyCombo;
+
 		private static bool loaded;
 		private static Hero me;
 		private static Hero target;
-		private static ParticleEffect rangeDisplay;
 		static void Main(string[] args)
 		{
+			Menu.AddItem(new MenuItem("ComboKey", "Combo Key").SetValue(new KeyBind('D', KeyBindType.Press)));
+			Menu.AddToMainMenu();
 			Game.OnUpdate += Game_OnUpdate;
-			Game.OnWndProc += Game_OnWndProc;
 			Console.WriteLine("> Tiny# loaded!");
-
+			
 			txt = new Font(
 			   Drawing.Direct3DDevice9,
 			   new FontDescription
@@ -45,7 +47,7 @@ namespace TinyAutoCombo
 			   new FontDescription
 			   {
 				   FaceName = "Tahoma",
-				   Height = 20,
+				   Height = 170,
 				   OutputPrecision = FontPrecision.Default,
 				   Quality = FontQuality.Default
 			   });
@@ -58,13 +60,13 @@ namespace TinyAutoCombo
 
 		public static void Game_OnUpdate(EventArgs args)
 		{
-			var me = ObjectMgr.LocalHero;
+			var me = ObjectManager.LocalHero;
 			if (!Game.IsInGame || me.ClassID != ClassID.CDOTA_Unit_Hero_Tiny)
 			{
 				return;
 			}
-
-			if (activated)
+			keyCombo = Game.IsKeyDown(Menu.Item("ComboKey").GetValue<KeyBind>().Key);
+			if (keyCombo)
 			{
 				var target = me.ClosestToMouseTarget(2000);
 				if (target == null)
@@ -97,8 +99,7 @@ namespace TinyAutoCombo
 
 					if (mom == null)
 						mom = me.FindItem("item_mask_of_madness");
-
-					if (medall == null)
+					
 						medall = me.FindItem("item_shivas_guard") ?? me.FindItem("item_solar_crest");
 
 					if (ethereal == null)
@@ -132,7 +133,7 @@ namespace TinyAutoCombo
 					{
 						if (
 						   (!me.CanAttack()
-						   || me.Distance2D(target) >= 150)
+						   || me.Distance2D(target) > 0)
 						   && me.NetworkActivity != NetworkActivity.Attack
 						   && me.Distance2D(target) <= 800
 						   && Utils.SleepCheck("Move"))
@@ -141,13 +142,14 @@ namespace TinyAutoCombo
 							Utils.Sleep(390, "Move");
 						}
 						else if (
-						   me.Distance2D(target) <= 150
+						   me.Distance2D(target) <= 280
 						   && me.CanAttack()
-						   && Utils.SleepCheck("R")
+						   && me.NetworkActivity != NetworkActivity.Attack
+						   && Utils.SleepCheck("Attack")
 						   )
 						{
 							me.Attack(target);
-							Utils.Sleep(240, "R");
+							Utils.Sleep(me.AttacksPerSecond+40, "Attack");
 						}
 
 						if (
@@ -172,7 +174,7 @@ namespace TinyAutoCombo
 						}
 						if (W != null
 							&& W.CanBeCasted()
-							&& me.Position.Distance2D(target.Position) < 280
+							&& me.Position.Distance2D(target.Position) < 300
 							&& Utils.SleepCheck("W"))
 						{
 							W.UseAbility(target);
@@ -206,7 +208,7 @@ namespace TinyAutoCombo
 							)
 						{
 							shiva.UseAbility();
-							Utils.Sleep(250 + Game.Ping, "shiva");
+							Utils.Sleep(250, "shiva");
 						} // Shiva Item end
 
 						if ( // Medall
@@ -337,25 +339,7 @@ namespace TinyAutoCombo
 		}
 
 
-
-
-		private static void Game_OnWndProc(WndEventArgs args)
-		{
-			if (!Game.IsChatOpen)
-			{
-				if (Game.IsKeyDown(KeyCombo))
-				{
-					activated = true;
-				}
-				else
-				{
-					activated = false;
-				}
-
-
-
-			}
-		}
+		
 
 		static void CurrentDomain_DomainUnload(object sender, EventArgs e)
 		{
@@ -368,22 +352,15 @@ namespace TinyAutoCombo
 			if (Drawing.Direct3DDevice9 == null || Drawing.Direct3DDevice9.IsDisposed || !Game.IsInGame)
 				return;
 
-			var player = ObjectMgr.LocalPlayer;
-			var me = ObjectMgr.LocalHero;
+			var player = ObjectManager.LocalPlayer;
+			var me = ObjectManager.LocalHero;
 			if (player == null || player.Team == Team.Observer || me.ClassID != ClassID.CDOTA_Unit_Hero_Tiny)
 				return;
 
-			if (activated)
+			if (keyCombo)
 			{
-				txt.DrawText(null, "Tiny#: Comboing!", 4, 150, Color.Green);
+				txt.DrawText(null, "Tiny#: Comboing!", 4, 150, Color.Gold);
 			}
-
-			if (!activated)
-			{
-				txt.DrawText(null, "Tiny#: go combo  [" + KeyCombo + "] for toggle combo", 4, 150, Color.Aqua);
-			}
-
-
 		}
 
 		static void Drawing_OnPostReset(EventArgs args)
