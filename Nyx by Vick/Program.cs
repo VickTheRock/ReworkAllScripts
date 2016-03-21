@@ -1,8 +1,7 @@
 //ONLY LOVE MazaiPC ;) 
 using System;
 using System.Linq;
-using System.Collections.Generic;
-
+using Ensage.Common.Menu;
 using Ensage;
 using SharpDX;
 using Ensage.Common.Extensions;
@@ -10,23 +9,31 @@ using Ensage.Common;
 using SharpDX.Direct3D9;
 using System.Windows.Input;
 
+using System.Collections.Generic;
 namespace Nyx_by_Vick
 {
     internal class Program
     {
-        private static bool activated;
+		private static readonly Menu Menu = new Menu("Nyx", "Nyx by Vick", true, "npc_dota_hero_nyx_assassin", true);
         private static Item soulring, arcane, blink, shiva, dagon, mjollnir, mom, halberd, abyssal, ethereal, cheese, satanic, medall, vail;
         private static Ability Q, W, R;
-        private static Font txt;
+		private static bool keyCombo;
+		private static Font txt;
         private static Font not;
-        private static Key KeyCombo = Key.D;
         private static bool loaded;
         private static Hero me;
         private static Hero target;
-        static void Main(string[] args)
+		private static readonly Dictionary<string, bool> Skills = new Dictionary<string, bool>
+			{
+				{"nyx_assassin_vendetta",true}
+			};
+		static void Main(string[] args)
         {
-            Game.OnUpdate += Game_OnUpdate;
-            Game.OnWndProc += Game_OnWndProc;
+			Menu.AddItem(new MenuItem("ComboKey", "Combo Key").SetValue(new KeyBind('D', KeyBindType.Press)));
+			Menu.AddItem(new MenuItem("Skills", ":").SetValue(new AbilityToggler(Skills)));
+			Menu.AddToMainMenu();
+
+			Game.OnUpdate += Game_OnUpdate;
             Console.WriteLine("> Nyx by Vick# loaded!");
 
             txt = new Font(
@@ -57,13 +64,13 @@ namespace Nyx_by_Vick
 
         public static void Game_OnUpdate(EventArgs args)
         {
-            var me = ObjectMgr.LocalHero;
+            var me = ObjectManager.LocalHero;
             if (!Game.IsInGame || me.ClassID != ClassID.CDOTA_Unit_Hero_Nyx_Assassin)
             {
                 return;
             }
-
-            if (activated)
+			keyCombo = Game.IsKeyDown(Menu.Item("ComboKey").GetValue<KeyBind>().Key);
+			if (keyCombo)
             {
                 var target = me.ClosestToMouseTarget(2000);
                 if (target == null)
@@ -136,7 +143,7 @@ namespace Nyx_by_Vick
 						&& Utils.SleepCheck("Move"))
 						{
 							me.Move(target.Predict(300));
-							Utils.Sleep(390 + Game.Ping, "Move");
+							Utils.Sleep(390, "Move");
 						}
 						else if (
 						   me.Distance2D(target) <= 145
@@ -145,22 +152,23 @@ namespace Nyx_by_Vick
 						   )
 						{
 							me.Attack(target);
-							Utils.Sleep(230 + Game.Ping, "R");
+							Utils.Sleep(230, "R");
 						}
 						if (
 						   R != null
 						   && R.CanBeCasted()
+						   && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name)
 						   && !me.Modifiers.Any(x => x.Name == "modifier_nyx_assassin_vendetta")
 						   && me.Distance2D(target) <= 1400
 						   && Utils.SleepCheck("R")
 						   )
 						{
 							R.UseAbility();
-							Utils.Sleep(200 + Game.Ping, "R");
+							Utils.Sleep(200, "R");
 						}
 						if (me.Modifiers.Any(x => x.Name == "modifier_nyx_assassin_vendetta"))
 							return;
-						if (!R.CanBeCasted() || R == null && !me.Modifiers.Any(x => x.Name == "modifier_nyx_assassin_vendetta"))
+						if (!R.CanBeCasted() || R == null && !me.Modifiers.Any(x => x.Name == "modifier_nyx_assassin_vendetta") || !Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name))
 						{
 
 
@@ -174,7 +182,7 @@ namespace Nyx_by_Vick
 							)
 							{
 								vail.UseAbility(target.Position);
-								Utils.Sleep(250 + Game.Ping, "vail");
+								Utils.Sleep(250, "vail");
 							}
 
 							if (
@@ -199,12 +207,12 @@ namespace Nyx_by_Vick
 						  )
 							{
 								ethereal.UseAbility(target);
-								Utils.Sleep(150 + Game.Ping, "ethereal");
+								Utils.Sleep(150, "ethereal");
 							}
 
 
 							
-							if ((vail ==null|| !vail.CanBeCasted()) && (ethereal ==null || !ethereal.CanBeCasted()) && !R.CanBeCasted())
+							if ((vail ==null|| !vail.CanBeCasted()) && (ethereal ==null || !ethereal.CanBeCasted()) && !R.CanBeCasted() || !Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name))
 							{
 
 								if (
@@ -214,15 +222,16 @@ namespace Nyx_by_Vick
 									Utils.SleepCheck("Q"))
 								{
 									Q.CastSkillShot(target);
-									Utils.Sleep(90, "Q");
+									Utils.Sleep(100, "Q");
 								}
 								if (W != null 
 									&& W.CanBeCasted()
+									&& target.Mana >= (target.MaximumMana * 0.3)
 									&& me.Position.Distance2D(target.Position) < 800
 									&& Utils.SleepCheck("W"))
 								{
 									W.UseAbility(target);
-									Utils.Sleep(60, "W");
+									Utils.Sleep(100, "W");
 								}
 
 								// orchid Item end
@@ -253,7 +262,7 @@ namespace Nyx_by_Vick
 									)
 								{
 									shiva.UseAbility();
-									Utils.Sleep(250 + Game.Ping, "shiva");
+									Utils.Sleep(250, "shiva");
 								} // Shiva Item end
 
 								if ( // Medall
@@ -266,7 +275,7 @@ namespace Nyx_by_Vick
 							   )
 								{
 									medall.UseAbility(target);
-									Utils.Sleep(250 + Game.Ping, "Medall");
+									Utils.Sleep(250, "Medall");
 								} // Medall Item end
 
 								if (// MOM
@@ -278,7 +287,7 @@ namespace Nyx_by_Vick
 									)
 								{
 									mom.UseAbility();
-									Utils.Sleep(250 + Game.Ping, "mom");
+									Utils.Sleep(250, "mom");
 								} // MOM Item end
 
 
@@ -292,7 +301,7 @@ namespace Nyx_by_Vick
 									)
 								{
 									abyssal.UseAbility(target);
-									Utils.Sleep(250 + Game.Ping, "abyssal");
+									Utils.Sleep(250, "abyssal");
 								} // Abyssal Item end
 
 								if ( // Hellbard
@@ -305,7 +314,7 @@ namespace Nyx_by_Vick
 									)
 								{
 									halberd.UseAbility(target);
-									Utils.Sleep(250 + Game.Ping, "halberd");
+									Utils.Sleep(250, "halberd");
 								} // Hellbard Item end
 
 
@@ -324,7 +333,7 @@ namespace Nyx_by_Vick
 								  )
 								{
 									dagon.UseAbility(target);
-									Utils.Sleep(150 + Game.Ping, "dagon");
+									Utils.Sleep(150, "dagon");
 								} // Dagon Item end
 
 
@@ -338,7 +347,7 @@ namespace Nyx_by_Vick
 								   )
 								{
 									mjollnir.UseAbility(me);
-									Utils.Sleep(250 + Game.Ping, "mjollnir");
+									Utils.Sleep(250, "mjollnir");
 								} // Mjollnir Item end
 
 								if (// Dagon
@@ -351,7 +360,7 @@ namespace Nyx_by_Vick
 								   )
 								{
 									dagon.UseAbility(target);
-									Utils.Sleep(150 + Game.Ping, "dagon");
+									Utils.Sleep(150, "dagon");
 								} // Dagon Item end
 
 
@@ -364,7 +373,7 @@ namespace Nyx_by_Vick
 									)
 								{
 									satanic.UseAbility();
-									Utils.Sleep(350 + Game.Ping, "Satanic");
+									Utils.Sleep(350, "Satanic");
 								} // Satanic Item end
 
 							}
@@ -374,26 +383,6 @@ namespace Nyx_by_Vick
             }
         }
       
-
-
-
-        private static void Game_OnWndProc(WndEventArgs args)
-        {
-            if (!Game.IsChatOpen)
-            {
-                if (Game.IsKeyDown(KeyCombo))
-                {
-                    activated = true;
-                }
-                else
-                {
-                    activated = false;
-                }
-
-               
-                
-            }
-        }
 
         static void CurrentDomain_DomainUnload(object sender, EventArgs e)
         {
@@ -406,19 +395,14 @@ namespace Nyx_by_Vick
             if (Drawing.Direct3DDevice9 == null || Drawing.Direct3DDevice9.IsDisposed || !Game.IsInGame)
                 return;
 
-            var player = ObjectMgr.LocalPlayer;
-            var me = ObjectMgr.LocalHero;
+            var player = ObjectManager.LocalPlayer;
+            var me = ObjectManager.LocalHero;
             if (player == null || player.Team == Team.Observer || me.ClassID != ClassID.CDOTA_Unit_Hero_Nyx_Assassin)
                 return;
 
-            if (activated )
+            if (keyCombo)
             {
-                txt.DrawText(null, "Nyx#: Comboing!", 4, 150, Color.Green);
-            }
-
-            if (!activated)
-            {
-                txt.DrawText(null, "Nyx#: go combo  [" + KeyCombo + "] for toggle combo", 4, 150, Color.Aqua);
+                txt.DrawText(null, "Nyx Combo Active!", 4, 150, Color.Gold);
             }
             
             
