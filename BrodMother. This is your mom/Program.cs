@@ -7,51 +7,63 @@ using Ensage.Common.Extensions;
 using Ensage.Common;
 using SharpDX.Direct3D9;
 using System.Windows.Input;
-
+using Ensage.Common.Menu;
 namespace This_is_your_Mom
 {
     internal class Program
     {
 
-        private static bool activCombo;
-        private static bool activChase;
-        private static bool toggle;
-        private static Item mom, abyssal, Soul, orchid, shiva, halberd, mjollnir, satanic, dagon, medall, orhid, sheep, cheese;
+		private static bool Combokey;
+		private static bool Chasekey;
+		private static bool LastHitkey;
+		private static readonly Menu Menu = new Menu("This is your Mom", "Broodmother", true, "npc_dota_hero_broodmother", true);
+		private static Item mom, abyssal, Soul, orchid, shiva, halberd, mjollnir, satanic, dagon, medall, orhid, sheep, cheese;
         private static Ability Q, W, R;
         private static Hero me;
-        private static Hero target, e;
+        private static Hero target;
         private static int spiderDenies = 65;
         private static int spiderDmgStatick = 175;
         private static readonly uint[] spiderQ = { 74, 149, 224, 299 };
         private static readonly uint[] SoulLvl = { 120, 190, 270, 360 };
         private static int spiderDmg;
-        private static bool toggleLasthit = true;
-        private static bool useQ = true;
+        //private static bool toggleLasthit = true;
+        private static bool useQ;
         private static Font txt;
         private static Font noti;
         private static Line lines;
-        private static Key keyCHASING = Key.Space;
-        private static Key keyCOMBO = Key.D;
-        private static Key toggleKey = Key.D5;
-        private static Key toggleLasthitKey = Key.D7;
-        private static Key UseQ = Key.Q;
+		//private static Key keyCHASING = Key.Space;
+		//private static Key keyCOMBO = Key.D;
+		//private static Key toggleKey = Key.D5;
+		//private static Key toggleLasthitKey = Key.D7;
+		//private static Key UseQ = Key.Q;
+		private static readonly Dictionary<string, bool> Skills = new Dictionary<string, bool>
+			{
+				{"broodmother_spin_web",true},
+				{"broodmother_spawn_spiderlings",true},
+				{"broodmother_insatiable_hunger",true}
+			
+			};
 
-
-        static void Main(string[] args)
+		static void Main(string[] args)
         {
-
-            Game.OnUpdate += Game_OnUpdate;
+			Menu.AddItem(new MenuItem("ComboKey", "Combo Key").SetValue(new KeyBind('D', KeyBindType.Press)));
+			Menu.AddItem(new MenuItem("ChaseKey", "Chase Key").SetValue(new KeyBind('E', KeyBindType.Press)));
+			Menu.AddItem(new MenuItem("LastHit", "LastHitCreeps").SetValue(new KeyBind('F', KeyBindType.Toggle)));
+			Menu.AddItem(new MenuItem("useQ", "Kill creep Q Spell").SetValue(true));
+			Menu.AddItem(new MenuItem("Skills", "Skills: ").SetValue(new AbilityToggler(Skills)));
+			Game.OnUpdate += Game_OnUpdate;
             Game.OnUpdate += Chasing;
             Game.OnUpdate += ChasingAll;
-            Game.OnWndProc += Game_OnWndProc;
-            Console.WriteLine("> This is your Mom# loaded!");
+			
+			Menu.AddToMainMenu();
+			Console.WriteLine("> This is your Mom# loaded!");
 
             txt = new Font(
                Drawing.Direct3DDevice9,
                new FontDescription
                {
                    FaceName = "Segoe UI",
-                   Height = 17,
+                   Height = 19,
                    OutputPrecision = FontPrecision.Default,
                    Quality = FontQuality.ClearType
                });
@@ -76,13 +88,17 @@ namespace This_is_your_Mom
 
         public static void Game_OnUpdate(EventArgs args)
         {
-            var me = ObjectMgr.LocalHero;
+            var me = ObjectManager.LocalHero;
             if ((!Game.IsInGame || me.ClassID != ClassID.CDOTA_Unit_Hero_Broodmother))
             {
                 return;
-            }
+			}
+			LastHitkey = Menu.Item("LastHit").GetValue<KeyBind>().Active;
+			Combokey = Game.IsKeyDown(Menu.Item("ComboKey").GetValue<KeyBind>().Key);
+			Chasekey = Game.IsKeyDown(Menu.Item("ChaseKey").GetValue<KeyBind>().Key);
+			useQ = Menu.Item("useQ").IsActive();
 
-            if (toggleLasthit && !activCombo && !activChase && Utils.SleepCheck("combo") && !Game.IsPaused)
+			if (LastHitkey && !Combokey && !Chasekey && Utils.SleepCheck("combo") && !Game.IsPaused)
             {
                 if (Q == null)
                     Q = me.Spellbook.SpellQ;
@@ -94,20 +110,20 @@ namespace This_is_your_Mom
 
                 var spiderlingsLevel = me.Spellbook.SpellQ.Level - 1;
 
-                var myHero = ObjectMgr.LocalHero;
+                var myHero = ObjectManager.LocalHero;
 
-                var enemies = ObjectMgr.GetEntities<Hero>().Where(hero => hero.IsAlive && !hero.IsIllusion && hero.IsVisible && hero.Team != me.Team).ToList();
+                var enemies = ObjectManager.GetEntities<Hero>().Where(hero => hero.IsAlive && !hero.IsIllusion && hero.IsVisible && hero.Team != me.Team).ToList();
 
-                var creeps = ObjectMgr.GetEntities<Creep>().Where(creep => (creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral ||
+                var creeps = ObjectManager.GetEntities<Creep>().Where(creep => (creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral ||
                 (creep.ClassID == ClassID.CDOTA_Unit_VisageFamiliar && creep.Team == me.GetEnemyTeam()) || (creep.ClassID == ClassID.CDOTA_Unit_SpiritBear && creep.Team == me.GetEnemyTeam()) || (creep.ClassID == ClassID.CDOTA_BaseNPC_Invoker_Forged_Spirit &&
                 creep.Team == me.GetEnemyTeam()) || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep &&
                 creep.IsAlive && creep.IsVisible && creep.IsSpawned) && creep.Health <= 259).ToList();
 
-                var creepQ = ObjectMgr.GetEntities<Creep>().Where(creep => (creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral ||
+                var creepQ = ObjectManager.GetEntities<Creep>().Where(creep => (creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral ||
                 creep.ClassID == ClassID.CDOTA_Unit_SpiritBear || creep.ClassID == ClassID.CDOTA_BaseNPC_Invoker_Forged_Spirit || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep &&
                 creep.IsAlive && creep.IsVisible && creep.IsSpawned)).ToList();
 
-                var Spiderlings = ObjectMgr.GetEntities<Unit>().Where(spiderlings => spiderlings.ClassID == ClassID.CDOTA_Unit_Broodmother_Spiderling).ToList();
+                var Spiderlings = ObjectManager.GetEntities<Unit>().Where(spiderlings => spiderlings.ClassID == ClassID.CDOTA_Unit_Broodmother_Spiderling).ToList();
 
 
                 // Creep Q lasthit
@@ -116,7 +132,7 @@ namespace This_is_your_Mom
                     {
                         if (Q.CanBeCasted() && creep.Health <= Math.Floor((spiderQ[spiderlingsLevel]) * (1 - creep.MagicDamageResist)) && creep.Health > 45 && creep.Team != me.Team)
                         {
-                            if (Q.CanBeCasted() && creep.Position.Distance2D(me.Position) <= 600 && Utils.SleepCheck("QQQ"))
+                            if (creep.Position.Distance2D(me.Position) <= 600 && Utils.SleepCheck("QQQ"))
                             {
                                 if (Soul != null && Soul.CanBeCasted() && me.Health >=400)
                                 {
@@ -184,7 +200,7 @@ namespace This_is_your_Mom
                 // Auto spider deny and lasthit
                     foreach (var creep in creeps)
                     {
-                        var Spiderling = ObjectMgr.GetEntities<Unit>().FirstOrDefault(x => x.ClassID == ClassID.CDOTA_Unit_Broodmother_Spiderling && x.IsAlive && x.IsControllable && x.Team == me.Team);
+                        var Spiderling = ObjectManager.GetEntities<Unit>().FirstOrDefault(x => x.ClassID == ClassID.CDOTA_Unit_Broodmother_Spiderling && x.IsAlive && x.IsControllable && x.Team == me.Team);
 
                         foreach (var spiderling in Spiderlings)
                         {
@@ -238,15 +254,15 @@ namespace This_is_your_Mom
 
         public static void Chasing(EventArgs args)
         {
-            var me = ObjectMgr.LocalHero;
+            var me = ObjectManager.LocalHero;
             if (!Game.IsInGame || me.ClassID != ClassID.CDOTA_Unit_Hero_Broodmother || me == null)
             {
                 return;
             }
-            if (activChase)
+            if (Chasekey)
             {
                 var target = me.ClosestToMouseTarget(1500);
-                var Spiderlings = ObjectMgr.GetEntities<Unit>().Where(spiderlings => spiderlings.ClassID == ClassID.CDOTA_Unit_Broodmother_Spiderling).ToList();
+                var Spiderlings = ObjectManager.GetEntities<Unit>().Where(spiderlings => spiderlings.ClassID == ClassID.CDOTA_Unit_Broodmother_Spiderling).ToList();
                 {
                     if (target != null && target.IsAlive && !target.IsIllusion)
                     {
@@ -274,16 +290,28 @@ namespace This_is_your_Mom
 
         public static void ChasingAll(EventArgs args)
         {
-            var me = ObjectMgr.LocalHero;
+            var me = ObjectManager.LocalHero;
             if (!Game.IsInGame || me.ClassID != ClassID.CDOTA_Unit_Hero_Broodmother || me == null)
             {
                 return;
             }
             var target = me.ClosestToMouseTarget(1900);
-            if (activCombo && target != null && target.IsAlive && !target.IsIllusion)
+			if (Combokey && target != null && target.IsAlive && !me.IsVisibleToEnemies)
+			{
+				
+				if (
+					me.Distance2D(target) <= 1100 && (!me.IsAttackImmune() || !target.IsAttackImmune())
+					&& me.NetworkActivity != NetworkActivity.Attack && me.CanAttack() && Utils.SleepCheck("attack")
+					)
+				{
+					me.Attack(target);
+					Utils.Sleep(150, "attack");
+				}
+			}
+			if (Combokey && target != null && target.IsAlive && me.IsVisibleToEnemies)
             {
 
-                var Spiderlings = ObjectMgr.GetEntities<Unit>().Where(spiderlings => spiderlings.ClassID == ClassID.CDOTA_Unit_Broodmother_Spiderling).ToList();
+                var Spiderlings = ObjectManager.GetEntities<Unit>().Where(spiderlings => spiderlings.ClassID == ClassID.CDOTA_Unit_Broodmother_Spiderling).ToList();
 
                     foreach (var Spider in Spiderlings)
                         {
@@ -305,7 +333,7 @@ namespace This_is_your_Mom
 
                     var linkens = target.Modifiers.Any(x => x.Name == "modifier_item_spheretarget") || target.Inventory.Items.Any(x => x.Name == "item_sphere");
 
-                    var enemies = ObjectMgr.GetEntities<Hero>().Where(hero => hero.IsAlive && !hero.IsIllusion && hero.IsVisible && hero.Team != me.Team).ToList();
+                    var enemies = ObjectManager.GetEntities<Hero>().Where(hero => hero.IsAlive && !hero.IsIllusion && hero.IsVisible && hero.Team != me.Team).ToList();
                     if (target != null && target.IsAlive && !target.IsIllusion && me.Distance2D(target) <= 1000)
                     {
 
@@ -362,14 +390,15 @@ namespace This_is_your_Mom
                                Q != null &&
                                Q.CanBeCasted() &&
                                me.CanCast() &&
-                               !target.IsMagicImmune() &&
-                               me.Distance2D(target) <= 600 &&
-                               Utils.SleepCheck("Q")
+                               !target.IsMagicImmune() 
+							   && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name)
+							   && me.Distance2D(target) <= 600
+							   && Utils.SleepCheck("Q")
                                )
 
                         {
                             Q.UseAbility(target);
-                            Utils.Sleep(250 + Game.Ping, "Q");
+                            Utils.Sleep(250, "Q");
                         } // Q Skill end
 
 
@@ -379,12 +408,13 @@ namespace This_is_your_Mom
                             R != null &&
                             R.CanBeCasted() &&
                             me.CanCast() &&
-                            me.Distance2D(target) <= 350 &&
-                            Utils.SleepCheck("R")
+                            me.Distance2D(target) <= 350
+							&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name)
+							&& Utils.SleepCheck("R")
                             )
                         {
                             R.UseAbility();
-                            Utils.Sleep(250 + Game.Ping, "R");
+                            Utils.Sleep(250, "R");
                         } // R Skill end
 
 
@@ -399,7 +429,7 @@ namespace This_is_your_Mom
                             )
                         {
                             orchid.UseAbility(target);
-                            Utils.Sleep(250 + Game.Ping, "orchid");
+                            Utils.Sleep(250, "orchid");
                         } // orchid Item end
 
                         if ( // sheep
@@ -413,7 +443,7 @@ namespace This_is_your_Mom
                             )
                         {
                             sheep.UseAbility(target);
-                            Utils.Sleep(250 + Game.Ping, "sheep");
+                            Utils.Sleep(250, "sheep");
                         } // sheep Item end
 
                         if (// Soul Item 
@@ -436,7 +466,7 @@ namespace This_is_your_Mom
                             )
                         {
                             shiva.UseAbility();
-                            Utils.Sleep(250 + Game.Ping, "shiva");
+                            Utils.Sleep(250, "shiva");
                         } // Shiva Item end
 
                         if (// MOM
@@ -448,7 +478,7 @@ namespace This_is_your_Mom
                             )
                         {
                             mom.UseAbility();
-                            Utils.Sleep(250 + Game.Ping, "mom");
+                            Utils.Sleep(250, "mom");
                         } // MOM Item end
 
                         if ( // Medall
@@ -460,7 +490,7 @@ namespace This_is_your_Mom
                             )
                         {
                             medall.UseAbility(target);
-                            Utils.Sleep(250 + Game.Ping, "Medall");
+                            Utils.Sleep(250, "Medall");
                         } // Medall Item end
 
                         if ( // Abyssal Blade
@@ -473,7 +503,7 @@ namespace This_is_your_Mom
                             )
                         {
                             abyssal.UseAbility(target);
-                            Utils.Sleep(250 + Game.Ping, "abyssal");
+                            Utils.Sleep(250, "abyssal");
                         } // Abyssal Item end
 
                         if ( // Hellbard
@@ -486,7 +516,7 @@ namespace This_is_your_Mom
                             )
                         {
                             halberd.UseAbility(target);
-                            Utils.Sleep(250 + Game.Ping, "halberd");
+                            Utils.Sleep(250, "halberd");
                         } // Hellbard Item end
 
                         if ( // Mjollnir
@@ -499,7 +529,7 @@ namespace This_is_your_Mom
                            )
                         {
                             mjollnir.UseAbility(me);
-                            Utils.Sleep(250 + Game.Ping, "mjollnir");
+                            Utils.Sleep(250, "mjollnir");
                         } // Mjollnir Item end
 
                         if (// Dagon
@@ -511,7 +541,7 @@ namespace This_is_your_Mom
                            )
                         {
                             dagon.UseAbility(target);
-                            Utils.Sleep(250 + Game.Ping, "dagon");
+                            Utils.Sleep(250, "dagon");
                         } // Dagon Item end
 
 
@@ -525,120 +555,95 @@ namespace This_is_your_Mom
                             )
                         {
                             satanic.UseAbility();
-                            Utils.Sleep(250 + Game.Ping, "Satanic");
+                            Utils.Sleep(250, "Satanic");
                         } // Satanic Item end
 
-                        if    (//Attack
-                              me.Distance2D(target) <= 1900 &&
-                               Utils.SleepCheck("Attack")
-                               )
-                        {
-                           me.Attack(target);
-                            Utils.Sleep(300 + Game.Ping, "Attack");
-                        } // Attack
+					if (
+						 (!me.CanAttack() || me.Distance2D(target) >= 0) && me.NetworkActivity != NetworkActivity.Attack &&
+							me.Distance2D(target) <= 600 && Utils.SleepCheck("Move")
+						)
+					{
+						me.Move(target.Predict(500));
+						Utils.Sleep(390, "Move");
+					}
+					if (
+						me.Distance2D(target) <= me.AttackRange + 100 && (!me.IsAttackImmune() || !target.IsAttackImmune())
+						&& me.NetworkActivity != NetworkActivity.Attack && me.CanAttack() && Utils.SleepCheck("attack")
+						)
+					{
+						me.Attack(target);
+						Utils.Sleep(150, "attack");
+					}
 
 
 					/***************************************WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW**********************************/
 
-
-					List<Unit> SpideWeb = ObjectMgr.GetEntities<Unit>().Where(web => web.ClassID == ClassID.CDOTA_Unit_Broodmother_Web).ToList();
-
-					e = ObjectMgr.GetEntities<Hero>()
-					.Where(x => x.IsAlive && x.Team != me.Team && !x.IsIllusion) 
-					.OrderBy(x => x.Position.Distance2D(SpideWeb.OrderBy(y => x.Position.Distance2D(y.Position)).FirstOrDefault().Position))
-					.FirstOrDefault();
-
-					if (e.Distance2D(SpideWeb.FirstOrDefault()) > 1100 && e != null && W != null && e.IsAlive && !e.IsIllusion)
+					var Web =
+				ObjectManager.GetEntities<Unit>().Where(unit => unit.Name == "npc_dota_broodmother_web").ToList();
+					var SpinWeb = GetClosestToWeb(Web, me);
+					if (W != null && W.CanBeCasted() && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name))
 					{
-						if (e.Distance2D(SpideWeb.FirstOrDefault()) >= 1100 && me.Distance2D(e) <= 600 && Utils.SleepCheck(e.Handle.ToString()) && W.CanBeCasted())
-						{
-							W.UseAbility(e.Position);
-							Utils.Sleep(4000, e.Handle.ToString());
+						if ((me.Distance2D(SpinWeb) >= 900) && me.Distance2D(target) <= 800 && Utils.SleepCheck(SpinWeb.Handle.ToString() + "SpideWeb"))
+							{
+								W.UseAbility(target.Predict(1100));
+								Utils.Sleep(300, SpinWeb.Handle.ToString() + "SpideWeb");
+							}
 						}
 					}
 					/***************************************WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW**********************************/
 				}
-			}
         }
 
+		private static Unit GetClosestToWeb(List<Unit> units, Hero x)
+		{
+			Unit closestHero = null;
+			foreach (var b in units.Where(v => closestHero == null || closestHero.Distance2D(x) > v.Distance2D(x)))
+			{
+				closestHero = b;
+			}
+			return closestHero;
+		}
 
-        static void Drawing_OnEndScene(EventArgs args)
+		static void Drawing_OnEndScene(EventArgs args)
         {
             if (Drawing.Direct3DDevice9 == null || Drawing.Direct3DDevice9.IsDisposed || !Game.IsInGame)
                 return;
 
-            var player = ObjectMgr.LocalPlayer;
-            var me = ObjectMgr.LocalHero;
+            var player = ObjectManager.LocalPlayer;
+            var me = ObjectManager.LocalHero;
             if (player == null || player.Team == Team.Observer || me.ClassID != ClassID.CDOTA_Unit_Hero_Broodmother)
                 return;
 
             if (!useQ)
             {
-                DrawBox(2, 510, 110, 20, 1, new ColorBGRA(0, 0, 90, 90));
-                DrawFilledBox(2, 510, 110, 20, new ColorBGRA(0, 0, 0, 100));
-                DrawShadowText("  Q DISABLE", 4, 510, Color.Goldenrod, txt);
+                DrawBox(2, 490, 90, 20, 1, new ColorBGRA(0, 0, 90, 70));
+                DrawFilledBox(2, 490, 90, 20, new ColorBGRA(0, 0, 0, 90));
+                DrawShadowText("  Q DISABLE", 4, 490, Color.Gold, txt);
             }
 
-			if (activChase || activCombo)
+			if (Combokey)
 			{
-				DrawBox(2, 510, 110, 20, 1, new ColorBGRA(0, 0, 90, 90));
-				DrawFilledBox(2, 510, 110, 20, new ColorBGRA(0, 0, 0, 100));
-				DrawShadowText("  Brood#: Active!", 4, 510, Color.Goldenrod, txt);
+				DrawBox(2, 530, 132, 20, 1, new ColorBGRA(0, 0, 90, 70));
+				DrawFilledBox(2, 530, 132, 20, new ColorBGRA(0, 0, 0, 90));
+				DrawShadowText("BroodMother: Active!", 4, 530, Color.Gold, txt);
 			}
-
-			if (toggle)
-            {
-                DrawBox(2, 530, 440, 54, 1, new ColorBGRA(0, 0, 90, 90));
-                DrawFilledBox(2, 530, 440, 54, new ColorBGRA(0, 0, 0, 100));
-                DrawShadowText("Brood menu#\n      LastHit/Denies[" + toggleLasthitKey + "]: " + toggleLasthit + " | UseQ [" + UseQ + "]: " + useQ + " |\n      [" + keyCOMBO + "] for COMBO | [" + keyCHASING + "] for CHASE ", 4, 530, Color.Gold, txt);
-            }
-
-
-            if (!toggle)
-            {
-                DrawBox(2, 530, 135, 20, 1, new ColorBGRA(0, 0, 90, 90));
-                DrawFilledBox(2, 530, 135, 20, new ColorBGRA(0, 0, 0, 100));
-                DrawShadowText("Open MENU---> [" + toggleKey + "]", 4, 530, Color.OrangeRed, txt);
-            }
-        }
+			if (Chasekey)
+			{
+				DrawBox(2, 530, 120, 20, 1, new ColorBGRA(0, 0, 30, 70));
+				DrawFilledBox(2, 530, 120, 20, new ColorBGRA(0, 0, 0, 90));
+				DrawShadowText("Spiderling: Active!", 4, 530, Color.Gold, txt);
+			}
+			if (LastHitkey)
+			{
+				DrawBox(2, 510, 120, 20, 1, new ColorBGRA(0, 0, 90, 70));
+				DrawFilledBox(2, 510, 120, 20, new ColorBGRA(0, 0, 0, 90));
+				DrawShadowText("LastHit Active", 4, 510, Color.Gold, txt);
+			}
+		}
 
 
 
-        private static void Game_OnWndProc(WndEventArgs args)
-        {
-            if (!Game.IsChatOpen)
-            {
-                if (Game.IsKeyDown(keyCHASING))
-                    activChase = true;
-                else
-                {
-                    activChase = false;
-                }
-                if (Game.IsKeyDown(keyCOMBO))
-                    activCombo = true;
-                else
-                {
-                    activCombo = false;
-                }
-                if (Game.IsKeyDown(toggleKey) && Utils.SleepCheck("toggle"))
-                {
-                    toggle = !toggle;
-                    Utils.Sleep(200, "toggle");
-                }
-
-                if (Game.IsKeyDown(UseQ) && Utils.SleepCheck("useQ"))
-                {
-                    useQ = !useQ;
-                    Utils.Sleep(150, "useQ");
-                }
-
-                if (Game.IsKeyDown(toggleLasthitKey) && Utils.SleepCheck("toggleLasthit"))
-                {
-                    toggleLasthit = !toggleLasthit;
-                    Utils.Sleep(150, "toggleLasthit");
-                }
-            }
-        }
+        
 
         static void CurrentDomain_DomainUnload(object sender, EventArgs e)
         {
