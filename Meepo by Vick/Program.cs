@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Windows.Input;
 using System.Collections.Generic;
@@ -16,23 +16,30 @@ namespace Meepo
 	{
 		private static Hero e, me, target, initMeepo;
 		
-		private static bool activated;
-		private static bool dodge=true;
+		private static bool activated, PoofKey, SafePoof, PoofAutoMode, SliderCountUnit, dodge = true;
+
 		private static Item blink, travel, Travel, shiva, sheep, medall, dagon, cheese, ethereal, vail, atos, orchid, abyssal;
 		private static readonly uint[] Qradius = { 0, 400, 650, 800, 1000 };
 		private static Font txt;
 		private static Font not;
 
 		private static readonly Menu Menu = new Menu("Meepo'S by VickTheRock", "Meepo's Combo's", true, "npc_dota_hero_meepo", true);
-		private static Key keyCombo = Key.E;
+		private static readonly Menu skills = new Menu("All Poof", "PoofMeepo");
 		private static void Main(string[] args)
 		{
 			Game.OnUpdate += Game_OnUpdate;
 			Console.WriteLine("Meepo combo loaded!");
 			Menu.AddItem(new MenuItem("keyBind", "Combo key").SetValue(new KeyBind('D', KeyBindType.Press)));
 			Menu.AddItem(new MenuItem("Dodge", "Dodge meepo's").SetValue(new KeyBind('T', KeyBindType.Toggle)));
-			Game.PrintMessage("<font face='verdana' color='#f80000'>Alfa Version Meepo's by Vick Loaded.!</font>", MessageType.LogMessage);
+			skills.AddItem(new MenuItem("poofKey", "All Poof Key").SetValue(new KeyBind('F', KeyBindType.Press)));
+			skills.AddItem(new MenuItem("poofSafe", "Use poof if ability radius suitable targets.").SetValue(true));
+			skills.AddItem(new MenuItem("poofAutoMod", "AutoPoofFarm").SetValue(new KeyBind('J', KeyBindType.Toggle)));
+			skills.AddItem(new MenuItem("poofCount", "Min units to Poof").SetValue(new Slider(3, 1, 10)));
+			skills.AddItem(new MenuItem("mana", "Min Mana % to Poof").SetValue(new Slider(35, 10, 100))); 
+			Menu.AddSubMenu(skills);
 			Menu.AddToMainMenu();
+
+			Game.PrintMessage("<font face='verdana' color='#f80000'>Alfa Version Meepo's by Vick Loaded.!</font>", MessageType.LogMessage);
 			txt = new Font(
 				Drawing.Direct3DDevice9,
 				new FontDescription
@@ -97,7 +104,15 @@ namespace Meepo
 			if (!me.IsAlive)
 				return;
 			activated = Game.IsKeyDown(Menu.Item("keyBind").GetValue<KeyBind>().Key);
+			PoofKey = Game.IsKeyDown(Menu.Item("poofKey").GetValue<KeyBind>().Key);
+			PoofAutoMode = Menu.Item("poofAutoMod").GetValue<KeyBind>().Active;
+			SafePoof = Menu.Item("poofSafe").IsActive();
+			dodge = Menu.Item("Dodge").GetValue<KeyBind>().Active;
+			var checkObj = ObjectManager.GetEntities<Unit>().Where(x =>  x.IsAlive && x.Team!=me.Team && x.IsValid).ToList();
 			var meepos = ObjectManager.GetEntities<Hero>().Where(x => x.IsControllable && x.IsAlive && x.ClassID == ClassID.CDOTA_Unit_Hero_Meepo).ToList();
+			
+
+			
 
 			Ability[] q = new Ability[meepos.Count()];
 			for (int i = 0; i < meepos.Count(); i++) q[i] = meepos[i].Spellbook.SpellQ;
@@ -106,7 +121,6 @@ namespace Meepo
 			List<Unit> fount = ObjectManager.GetEntities<Unit>().Where(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Fountain).ToList();
 			//blink = me.FindItem("item_blink");
 
-			dodge = Menu.Item("Dodge").GetValue<KeyBind>().Active;
 
 
 			e = ObjectManager.GetEntities<Hero>()
@@ -248,8 +262,52 @@ namespace Meepo
 				}
 			}
 			/**************************************************DODGE*************************************************************/
+			/***************************************************POOF*************************************************************/
+			if (PoofKey)
+			{
+				for (int i = 0; i < meepos.Count(); i++)
+				{
+					for (int j = 0; j < checkObj.Count(); j++)
+					{
+						if (((meepos[i].Distance2D(checkObj[j]) <= 365
+							&& SafePoof)||(!SafePoof)) && w[i].CanBeCasted() && meepos[i].Health >= meepos[i].MaximumHealth * 0.58 
+						&& Utils.SleepCheck(meepos[i].Handle.ToString() + "Wpos"))
+						{
+							w[i].UseAbility(meepos[i]);
+							Utils.Sleep(250, meepos[i].Handle.ToString() + "Wpos");
+						}
+					}
+				}
+			}
+			
+			
+			
+			if (PoofAutoMode)
+			{
+				for (int i = 0; i < meepos.Count(); i++)
+				{
+					/*
+					
+						
+					*/
+					int nCreeps = ObjectManager.GetEntities<Unit>().Where(x => (x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
+						|| x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege
+						|| x.ClassID == ClassID.CDOTA_BaseNPC_Creep
+						|| x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral) && x.Team != me.Team && x.IsSpawned && x.IsAlive).Where( x => x.Distance2D(meepos[i]) <= 345).Count();
+					
+					SliderCountUnit = nCreeps >= (skills.Item("poofCount").GetValue<Slider>().Value);
 
+					if (SliderCountUnit && w[i].CanBeCasted() && meepos[i].CanCast() && meepos[i].Health >= meepos[i].MaximumHealth * 0.5
+						&& meepos[i].Mana >= (meepos[i].MaximumMana / 100 * Menu.Item("mana").GetValue<Slider>().Value)
+					&& Utils.SleepCheck(meepos[i].Handle.ToString() + "Wpos"))
+					{
+						w[i].UseAbility(meepos[i]);
+						Utils.Sleep(250, meepos[i].Handle.ToString() + "Wpos");
+					}
 
+				}
+			} 
+			/***************************************************POOF*************************************************************/
 			/**************************************************COMBO*************************************************************/
 			if (activated)
 			{
@@ -598,16 +656,17 @@ namespace Meepo
             {
                 txt.DrawText(null, "Warning! Dodge unActive", 1200, 22, Color.DarkRed);
             }
-			/*
-			if (safe)
+			
+			if (PoofAutoMode)
 			{
-				txt.DrawText(null, "Safe Meepo On", 1200, 30, Color.Green);
+				txt.DrawText(null, "Auto Poof On", 1200, 30, Color.Green);
 			}
 
-			if (!safe)
+			if (!PoofAutoMode)
 			{
-				txt.DrawText(null, "Safe Meepo Off  [" + safeMEEPO + "] ", 1200, 30, Color.DarkRed);
+				txt.DrawText(null, "Auto Poof Off", 1200, 30, Color.DarkRed);
 			}
+			/*
 			if (farm)
 			{
 				txt.DrawText(null, "Farm Meepo On", 1200, 32, Color.Green);
