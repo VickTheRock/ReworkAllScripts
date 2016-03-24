@@ -147,7 +147,7 @@ namespace Meepo
 						{
 							float angle = meepos[i].FindAngleBetween(baseDota[t].Position, true);
 							Vector3 pos = new Vector3((float)(baseDota[t].Position.X - 710 * Math.Cos(angle)), (float)(baseDota[t].Position.Y - 710 * Math.Sin(angle)), 0);
-							if (meepos[i].Distance2D(baseDota[t]) <= 700 && Utils.SleepCheck(meepos[i].Handle.ToString() + "MoveDodge"))
+							if (meepos[i].Distance2D(baseDota[t]) <= 700 && !meepos[i].Modifiers.Any(y => y.Name == "modifier_bloodseeker_rupture") && Utils.SleepCheck(meepos[i].Handle.ToString() + "MoveDodge"))
 							{
 								meepos[i].Move(pos);
 								Utils.Sleep(120, meepos[i].Handle.ToString() + "MoveDodge");
@@ -171,7 +171,7 @@ namespace Meepo
 						{
 							float angle = meepos[j].FindAngleBetween(thinker[i].Position, true);
 							Vector3 pos = new Vector3((float)(thinker[i].Position.X - 360 * Math.Cos(angle)), (float)(thinker[i].Position.Y - 360 * Math.Sin(angle)), 0);
-							if (meepos[j].Distance2D(thinker[i]) <= 350)
+							if (meepos[j].Distance2D(thinker[i]) <= 350 && !meepos[j].Modifiers.Any(y => y.Name == "modifier_bloodseeker_rupture"))
 							{
 
 								if (Utils.SleepCheck(meepos[j].Handle.ToString() + "MoveDodge"))
@@ -187,6 +187,7 @@ namespace Meepo
 				foreach (var v in meepos)
 				{
 					if (Utils.SleepCheck(v.Handle.ToString() + "_move") && v.Health <= v.MaximumHealth * 0.58
+						&& !v.Modifiers.Any(y => y.Name == "modifier_bloodseeker_rupture")
 						&& v.Distance2D(fount.First().Position) >= 1000
 						)
 					{
