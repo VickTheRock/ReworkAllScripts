@@ -272,7 +272,7 @@ namespace Meepo
 					for (int j = 0; j < checkObj.Count(); j++)
 					{
 						if (((meepos[i].Distance2D(checkObj[j]) <= 365
-							&& SafePoof)||(!SafePoof)) && w[i].CanBeCasted() && meepos[i].Health >= meepos[i].MaximumHealth * 0.58 
+							&& SafePoof)||(!SafePoof)) && w[i].CanBeCasted() && (meepos[i].Health >= meepos[i].MaximumHealth * 0.58 || !dodge)
 						&& Utils.SleepCheck(meepos[i].Handle.ToString() + "Wpos"))
 						{
 							w[i].UseAbility(meepos[i]);
@@ -350,8 +350,8 @@ namespace Meepo
 							Utils.Sleep(250, me.Handle + "pooff");
 						}
 					}
-					if (meepos[i].Health <= meepos[i].MaximumHealth * 0.58)
-						return;
+				//	if (meepos[i].Health <= meepos[i].MaximumHealth * 0.58)
+				//		return;
 					/*int[] cool;
 					var core = me.FindItem("item_octarine_core");
 					if (core !=null)
@@ -394,7 +394,8 @@ namespace Meepo
 						Utils.Sleep(200, "dagon");
 					} // Dagon Item end
 					if (Utils.SleepCheck("Q") && !target.Modifiers.Any(y => y.Name == "modifier_meepo_earthbind"))
-						if (meepos[i].Health >= meepos[i].MaximumHealth * 0.58 && q[i].CanBeCasted() && !e.IsMagicImmune()
+						if ((meepos[i].Health >= meepos[i].MaximumHealth * 0.58 || !dodge)
+							&& q[i].CanBeCasted() && !e.IsMagicImmune()
 							&& (blink == null || !blink.CanBeCasted() || meepos[i].Distance2D(target) <= 400) && !meepos[i].IsChanneling()  && meepos[i].Distance2D(target) <= q[i].CastRange - 200 && Utils.SleepCheck(meepos[i].Handle.ToString() + "_net_casting"))
 						{
 							q[i].CastSkillShot(e);
@@ -402,7 +403,7 @@ namespace Meepo
 							Utils.Sleep(2000, "Q");
 						}
 
-					if ((w[i].CanBeCasted() && meepos[i].Health >= meepos[i].MaximumHealth * 0.58)
+					if ((w[i].CanBeCasted() && (meepos[i].Health >= meepos[i].MaximumHealth * 0.58 || !dodge))
 						&& !target.IsMagicImmune()
 						&& (meepos[i].Distance2D(target) <= 290) && (!q[i].CanBeCasted() || q == null || target.Modifiers.Any(y => y.Name == "modifier_meepo_earthbind"))
 						&& ((meepos[i].Handle != f.Handle && f.Modifiers.Any(y => y.Name == "modifier_fountain_aura")) || !f.Modifiers.Any(y => y.Name == "modifier_fountain_aura"))
