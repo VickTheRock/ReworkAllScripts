@@ -31,6 +31,7 @@ namespace Meepo
 			Console.WriteLine("Meepo combo loaded!");
 			Menu.AddItem(new MenuItem("keyBind", "Combo key").SetValue(new KeyBind('D', KeyBindType.Press)));
 			Menu.AddItem(new MenuItem("Dodge", "Dodge meepo's").SetValue(new KeyBind('T', KeyBindType.Toggle)));
+			Menu.AddItem(new MenuItem("healh", "Min Healh to Move Fount").SetValue(new Slider(58, 10, 100)));
 			skills.AddItem(new MenuItem("poofKey", "All Poof Key").SetValue(new KeyBind('F', KeyBindType.Press)));
 			skills.AddItem(new MenuItem("poofSafe", "Use poof if ability radius suitable targets.").SetValue(true));
 			skills.AddItem(new MenuItem("poofAutoMod", "AutoPoofFarm").SetValue(new KeyBind('J', KeyBindType.Toggle)));
@@ -186,7 +187,7 @@ namespace Meepo
 				}
 				foreach (var v in meepos)
 				{
-					if (Utils.SleepCheck(v.Handle.ToString() + "_move") && v.Health <= v.MaximumHealth * 0.58
+					if (Utils.SleepCheck(v.Handle.ToString() + "_move") && v.Health <= v.MaximumHealth / 100 * Menu.Item("healh").GetValue<Slider>().Value
 						&& !v.Modifiers.Any(y => y.Name == "modifier_bloodseeker_rupture")
 						&& v.Distance2D(fount.First().Position) >= 1000
 						)
