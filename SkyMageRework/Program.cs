@@ -72,7 +72,7 @@ namespace SkyMageRework
 			Menu.AddSubMenu(healh);
 			skills.AddItem(new MenuItem("Skills: ", "Skills: ").SetValue(new AbilityToggler(Skills)));
 			items.AddItem(new MenuItem("Items: ", "Items:").SetValue(new AbilityToggler(Items)));
-			ult.AddItem(new MenuItem("autoUlt", "AutoSpell and Items").SetValue(true));
+			ult.AddItem(new MenuItem("autoUlt", "AutoSpell and Items").SetValue(new KeyBind('J', KeyBindType.Toggle)));
 			ult.AddItem(new MenuItem("AutoUlt: ", "AutoUlt").SetValue(new AbilityToggler(AutoUlt)));
 			items.AddItem(new MenuItem("Link: ", "Auto triggre Linken").SetValue(new AbilityToggler(Link)));
 			healh.AddItem(new MenuItem("Healh", "Min healh % to ult").SetValue(new Slider(35, 10, 70))); // x/ 10%
@@ -112,7 +112,7 @@ namespace SkyMageRework
 
 		public static void Game_OnUpdate(EventArgs args)
 		{
-			var me = ObjectMgr.LocalHero;
+			var me = ObjectManager.LocalHero;
 
 			if (!Game.IsInGame || me.ClassID != ClassID.CDOTA_Unit_Hero_Skywrath_Mage || me == null || Game.IsWatchingGame)
 			{
@@ -472,7 +472,7 @@ namespace SkyMageRework
 		}
 		public static void A(EventArgs args)
 		{
-			var me = ObjectMgr.LocalHero;
+			var me = ObjectManager.LocalHero;
 
 			if (!Game.IsInGame || me.ClassID != ClassID.CDOTA_Unit_Hero_Skywrath_Mage || me == null)
 			{
@@ -480,8 +480,8 @@ namespace SkyMageRework
 			}
 
 
-			var enemies =ObjectMgr.GetEntities<Hero>().Where(x => x.IsVisible && x.IsAlive && x.Team == me.GetEnemyTeam() && !x.IsIllusion);
-			if (Menu.Item("autoUlt").GetValue<bool>())
+			var enemies =ObjectManager.GetEntities<Hero>().Where(x => x.IsVisible && x.IsAlive && x.Team == me.GetEnemyTeam() && !x.IsIllusion);
+			if (Menu.Item("autoUlt").GetValue<KeyBind>().Active)
 			{
 				 core = me.FindItem("item_octarine_core");
 				 force = me.FindItem("item_force_staff");
@@ -724,16 +724,22 @@ namespace SkyMageRework
 			if (Drawing.Direct3DDevice9 == null || Drawing.Direct3DDevice9.IsDisposed || !Game.IsInGame)
 				return;
 
-			var player = ObjectMgr.LocalPlayer;
-			var me = ObjectMgr.LocalHero;
+			var player = ObjectManager.LocalPlayer;
+			var me = ObjectManager.LocalHero;
 			if (player == null || player.Team == Team.Observer || me.ClassID != ClassID.CDOTA_Unit_Hero_Skywrath_Mage)
 				return;
-
+			R = me.Spellbook.SpellR;
 			if (Game.IsKeyDown(Menu.Item("Combo Key").GetValue<KeyBind>().Key))
             {
 				DrawBox(2, 510, 125, 20, 1, new ColorBGRA(0, 0, 90, 90));
 				DrawFilledBox(2, 510, 125, 20, new ColorBGRA(0, 0, 0, 100));
 				DrawShadowText("SkyWrath#: Comboing!", 4, 510, Color.DeepPink, txt);
+			}
+			if (!Menu.Item("autoUlt").GetValue<KeyBind>().Active)
+			{
+				DrawBox(2, 530, 125, 20, 1, new ColorBGRA(0, 0, 90, 90));
+				DrawFilledBox(2, 530, 125, 20, new ColorBGRA(0, 0, 0, 100));
+				DrawShadowText("  Auto items Disable", 4, 530, Color.Crimson, txt);
 			}
 			if (Menu.Item("AutoUlt: ").GetValue<AbilityToggler>().IsEnabled(R.Name) && !Game.IsKeyDown(Menu.Item("Combo Key").GetValue<KeyBind>().Key))
             {
