@@ -386,7 +386,8 @@ namespace Meepo
 					&& me.CanCast()
 					&& !target.IsLinkensProtected()
 					&& !target.IsMagicImmune()
-					&& me.Distance2D(target) <= 1100
+					&& ((me.Distance2D(target) <= 1100 && blink != null && blink.CanBeCasted())
+					||  ((blink == null || !blink.CanBeCasted()) && me.Distance2D(target) <= 350))
 					&& Utils.SleepCheck("sheep")
 					)
 					{
