@@ -136,10 +136,13 @@ namespace Meepo
 						.Where(x => x.IsAlive && x.Team == me.Team && !x.IsIllusion && x.IsControllable && x.ClassID == ClassID.CDOTA_Unit_Hero_Meepo)
 						.OrderBy(x => GetDistance2D(x.Position, fount.OrderBy(y => GetDistance2D(x.Position, y.Position)).FirstOrDefault().Position))
 						.FirstOrDefault();
+
 			if (dodge && me.IsAlive)
 			{
 				var baseDota =
 				  ObjectManager.GetEntities<Unit>().Where(unit => unit.Name == "npc_dota_base" && unit.Team != me.Team).ToList();
+				if (baseDota == null)
+					return;
 				if (baseDota != null)
 				{
 					for (int t = 0; t < baseDota.Count(); t++)
@@ -164,6 +167,7 @@ namespace Meepo
 
 				var thinker =
 				   ObjectManager.GetEntities<Unit>().Where(unit => unit.Name == "npc_dota_thinker" && unit.Team != me.Team).ToList();
+				if (thinker == null) return;
 				if (thinker != null)
 				{
 					for (int i = 0; i < thinker.Count(); i++)
@@ -288,10 +292,6 @@ namespace Meepo
 			{
 				for (int i = 0; i < meepos.Count(); i++)
 				{
-					/*
-					
-						
-					*/
 					int nCreeps = ObjectManager.GetEntities<Unit>().Where(x => (x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
 						|| x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege
 						|| x.ClassID == ClassID.CDOTA_BaseNPC_Creep
@@ -306,18 +306,15 @@ namespace Meepo
 						w[i].UseAbility(meepos[i]);
 						Utils.Sleep(250, meepos[i].Handle.ToString() + "Wpos");
 					}
-
 				}
 			} 
 			/***************************************************POOF*************************************************************/
 			/**************************************************COMBO*************************************************************/
 			if (activated)
 			{
-				
 				for (int i = 0; i < meepos.Count(); i++)
 				{
-
-					for (int j = 0; j < meepos.Count(); j++)
+						for (int j = 0; j < meepos.Count(); j++)
 					{
 						if (
 						w[i] != null
@@ -350,8 +347,7 @@ namespace Meepo
 							Utils.Sleep(250, me.Handle + "pooff");
 						}
 					}
-				//	if (meepos[i].Health <= meepos[i].MaximumHealth * 0.58)
-				//		return;
+				//	
 					/*int[] cool;
 					var core = me.FindItem("item_octarine_core");
 					if (core !=null)
@@ -468,6 +464,7 @@ namespace Meepo
 						}
 						if (blink.CanBeCasted()
 							&& !Menu.Item("blinkDelay").IsActive()
+							&& meepos[i].Health >= meepos[i].MaximumHealth / 100 * Menu.Item("healh").GetValue<Slider>().Value
 							&& Utils.SleepCheck("13"))
 						{
 							blink.UseAbility(target.Position);
@@ -496,7 +493,9 @@ namespace Meepo
 							|| !f.Modifiers.Any(y => y.Name == "modifier_fountain_aura_buff")
 							)
 						&& !target.IsMagicImmune()
-						&& w[i].CanBeCasted() && Utils.SleepCheck(meepos[i].Handle.ToString() + "W"))
+						&& w[i].CanBeCasted() 
+						&& meepos[i].Health >= meepos[i].MaximumHealth / 100 * Menu.Item("healh").GetValue<Slider>().Value
+						&& Utils.SleepCheck(meepos[i].Handle.ToString() + "W"))
 					{
 						w[i].UseAbility(target.Position);
 						Utils.Sleep(200, meepos[i].Handle.ToString() + "W");
@@ -508,14 +507,18 @@ namespace Meepo
 				   && meepos[i].Distance2D(target) <= 1300)) 
 				   && (meepos[i].Handle !=me.Handle && (blink.CanBeCasted() 
 				   || me.Distance2D(target)<=350) || (meepos[i].Handle == me.Handle 
-				   && !blink.CanBeCasted())) && Utils.SleepCheck(meepos[i].Handle.ToString() + "Move"))
+				   && !blink.CanBeCasted()))
+				   && meepos[i].Health >= meepos[i].MaximumHealth / 100 * Menu.Item("healh").GetValue<Slider>().Value
+				   && Utils.SleepCheck(meepos[i].Handle.ToString() + "Move"))
 					{
 						meepos[i].Move(target.Predict(450));
 						Utils.Sleep(250, meepos[i].Handle.ToString() + "Move");
 					}
 					else if (
 					   meepos[i].Distance2D(target) <= 200 && (!meepos[i].IsAttackImmune() || !target.IsAttackImmune())
-					   && meepos[i].NetworkActivity != NetworkActivity.Attack && meepos[i].CanAttack() && Utils.SleepCheck(meepos[i].Handle.ToString() + "Attack")
+					   && meepos[i].NetworkActivity != NetworkActivity.Attack && meepos[i].CanAttack()
+					   && meepos[i].Health >= meepos[i].MaximumHealth / 100 * Menu.Item("healh").GetValue<Slider>().Value
+					   && Utils.SleepCheck(meepos[i].Handle.ToString() + "Attack")
 					   )
 					{
 						meepos[i].Attack(target);
