@@ -314,7 +314,9 @@ namespace Meepo
 			{
 				for (int i = 0; i < meepos.Count(); i++)
 				{
-						for (int j = 0; j < meepos.Count(); j++)
+					target = ClosestToMouse(meepos[i]);
+					if (target == null) return;
+					for (int j = 0; j < meepos.Count(); j++)
 					{
 						if (
 						w[i] != null
@@ -354,8 +356,7 @@ namespace Meepo
 						cool = new int[4] { 20, 16, 12, 8 };
 					else
 						cool = new int[4] { 15, 12, 9, 6 };*/
-					target = ClosestToMouse(meepos[i]);
-					if (target == null) return;
+					
 					initMeepo = GetClosestToTarget(meepos, target);
 
 					blink = meepos[i].FindItem("item_blink");
