@@ -19,7 +19,6 @@ namespace Meepo
 		private static bool activated, PoofKey, SafePoof, PoofAutoMode, SliderCountUnit, dodge = true;
 
 		private static Item blink, travel, Travel, shiva, sheep, medall, dagon, cheese, ethereal, vail, atos, orchid, abyssal;
-		private static readonly uint[] Qradius = { 0, 400, 650, 800, 1000 };
 		private static Font txt;
 		private static Font not;
 
@@ -230,7 +229,7 @@ namespace Meepo
 				{
 					travel = meepos[i].FindItem("item_travel_boots") ?? meepos[i].FindItem("item_travel_boots_2");
 
-					if (meepos[i].Health <= meepos[i].MaximumHealth / 100 * Menu.Item("healh").GetValue<Slider>().Value && q[i].CanBeCasted() && !e.Modifiers.Any(y => y.Name == "modifier_meepo_earthbind") && !e.IsMagicImmune() && meepos[i].Distance2D(e) <= q[i].CastRange - 200 && Utils.SleepCheck(meepos[i].Handle.ToString() + "_net_casting"))
+					if (meepos[i].Health <= meepos[i].MaximumHealth / 100 * Menu.Item("healh").GetValue<Slider>().Value && q[i].CanBeCasted() && !e.Modifiers.Any(y => y.Name == "modifier_meepo_earthbind") && !e.IsMagicImmune() && meepos[i].Distance2D(e) <= q[i].CastRange-50 && Utils.SleepCheck(meepos[i].Handle.ToString() + "_net_casting"))
 					{
 						q[i].CastSkillShot(e);
 						Utils.Sleep(q[i].GetCastDelay(meepos[i], e, true, true) + 500, meepos[i].Handle.ToString() + "_net_casting");
@@ -240,7 +239,7 @@ namespace Meepo
 						for (int j = 0; j < meepos.Count(); j++)
 						{
 							if (meepos[j] != meepos[i] && meepos[j].Position.Distance2D(e) < q[i].CastRange && !e.Modifiers.Any(y => y.Name == "modifier_meepo_earthbind")
-								&& meepos[j].Position.Distance2D(meepos[i]) < q[j].CastRange - 100 && !e.IsMagicImmune() && Utils.SleepCheck(meepos[i].Handle.ToString() + "_net_casting"))
+								&& meepos[j].Position.Distance2D(meepos[i]) < q[j].CastRange && !e.IsMagicImmune() && Utils.SleepCheck(meepos[i].Handle.ToString() + "_net_casting"))
 							{
 								q[j].CastSkillShot(e);
 								Utils.Sleep(q[j].GetCastDelay(meepos[j], e, true, true) + 1500, meepos[i].Handle.ToString() + "_net_casting");
@@ -418,16 +417,20 @@ namespace Meepo
 						dagon.UseAbility(target);
 						Utils.Sleep(200, "dagon");
 					} // Dagon Item end
-					if (Utils.SleepCheck("Q") && !target.Modifiers.Any(y => y.Name == "modifier_meepo_earthbind"))
+					if (Utils.SleepCheck("Q") && !target.Modifiers.Any(y => y.Name == "modifier_meepo_earthbind")
+						&& (((!blink.CanBeCasted()|| blink == null) && meepos[i].Distance2D(target) <= q[i].GetCastRange()) 
+						|| blink.CanBeCasted() && meepos[i].Distance2D(target) >= 350)
+						)
+					{
 						if ((meepos[i].Health >= meepos[i].MaximumHealth / 100 * Menu.Item("healh").GetValue<Slider>().Value || !dodge)
 							&& q[i].CanBeCasted() && !e.IsMagicImmune()
-							&& (blink == null || !blink.CanBeCasted() || meepos[i].Distance2D(target) <= 400) && !meepos[i].IsChanneling()  && meepos[i].Distance2D(target) <= q[i].CastRange - 200 && Utils.SleepCheck(meepos[i].Handle.ToString() + "_net_casting"))
+							 && !meepos[i].IsChanneling() && meepos[i].Distance2D(target) <= q[i].GetCastRange() && Utils.SleepCheck(meepos[i].Handle.ToString() + "_net_casting"))
 						{
 							q[i].CastSkillShot(e);
 							Utils.Sleep(q[i].GetCastDelay(meepos[i], e, true, true) + 1500, meepos[i].Handle.ToString() + "_net_casting");
-							Utils.Sleep(2000, "Q");
+							Utils.Sleep(1500, "Q");
 						}
-
+					}
 					if ((w[i].CanBeCasted() && (meepos[i].Health >= meepos[i].MaximumHealth / 100 * Menu.Item("healh").GetValue<Slider>().Value || !dodge))
 						&& !target.IsMagicImmune()
 						&& (meepos[i].Distance2D(target) <= 290) && (!q[i].CanBeCasted() || q == null || target.Modifiers.Any(y => y.Name == "modifier_meepo_earthbind"))
@@ -708,6 +711,8 @@ namespace Meepo
 			{
 				txt.DrawText(null, "Push Meepo Off", 1200, 42, Color.DarkRed);
 			}
+			модификатор зевса
+			аутопуф - комбо
 			*/
 		}
 
