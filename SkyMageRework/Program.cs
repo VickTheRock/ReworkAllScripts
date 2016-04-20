@@ -480,7 +480,7 @@ namespace SkyMageRework
 			}
 
 
-			var enemies =ObjectManager.GetEntities<Hero>().Where(x => x.IsVisible && x.IsAlive && x.Team == me.GetEnemyTeam() && !x.IsIllusion);
+			var enemies =ObjectManager.GetEntities<Hero>().Where(x => x.IsVisible && x.IsAlive && x.Team != me.Team && !x.IsIllusion);
 			if (Menu.Item("autoUlt").GetValue<KeyBind>().Active)
 			{
 				 core = me.FindItem("item_octarine_core");
