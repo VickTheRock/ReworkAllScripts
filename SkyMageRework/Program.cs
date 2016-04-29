@@ -597,7 +597,7 @@ namespace SkyMageRework
 								Utils.Sleep(500, e.Handle.ToString()); goto leave;
 							}
 						}
-						if (E != null && e != null && E.CanBeCasted() && me.Distance2D(e) <= 730
+						if (E != null && E.CanBeCasted() && me.Distance2D(e) <= 730
 							&& !e.IsLinkensProtected()
 						&&
 						(
