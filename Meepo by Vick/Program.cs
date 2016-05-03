@@ -539,6 +539,10 @@ namespace Meepo
 
 				blink = me.FindItem("item_blink");
 
+				orchid = me.FindItem("item_orchid") ?? me.FindItem("item_bloodthorn"); 
+
+				atos = me.FindItem("item_rod_of_atos");
+
 				cheese = me.FindItem("item_cheese");
 
 				abyssal = me.FindItem("item_abyssal_blade");
