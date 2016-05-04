@@ -44,7 +44,7 @@ namespace EarthSpirit
 				{"item_urn_of_shadows", true},
 				{"item_veil_of_discord", true},
 				{"item_abyssal_blade", true},
-				{"item_shivas_guard", true},
+				{"item_bloodthorn", true},
 				{"item_blade_mail", true},
 				{"item_black_king_bar", true},
 				{"item_medallion_of_courage", true},
@@ -52,6 +52,7 @@ namespace EarthSpirit
 			};
 			var Item = new Dictionary<string, bool>
 			{
+				{"item_shivas_guard", true},
 				{"item_mask_of_madness", true},
 				{"item_sheepstick", true},
 				{"item_cheese", true},
@@ -689,7 +690,7 @@ namespace EarthSpirit
 				}
 
 				if (Shiva != null && Shiva.CanBeCasted() && me.Distance2D(e) <= 600
-					&& menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(Shiva.Name)
+					&& menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(Shiva.Name)
 					&& !e.IsMagicImmune() && Utils.SleepCheck("Shiva"))
 				{
 					Shiva.UseAbility();
