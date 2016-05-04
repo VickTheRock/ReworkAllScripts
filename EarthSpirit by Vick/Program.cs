@@ -712,11 +712,26 @@ namespace EarthSpirit
 				} // ethereal Item end
 				if (
 					blink != null
+					&& Remmnant != null
 					&& me.CanCast()
 					&& blink.CanBeCasted()
 					&& me.Distance2D(e) >= 450
 					&& me.Distance2D(e) <= 1150
-					&& (Remmnant.Distance2D(me) >= 450 || remnant.Count == 0)
+					&& Remmnant.Distance2D(me) >= 300
+					&& menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name)
+					&& Utils.SleepCheck("blink")
+					)
+				{
+					blink.UseAbility(e.Position);
+					Utils.Sleep(250, "blink");
+				}
+				if (
+					blink != null
+					&& me.CanCast()
+					&& blink.CanBeCasted()
+					&& me.Distance2D(e) >= 450
+					&& me.Distance2D(e) <= 1150
+					&& remnant.Count == 0
 					&& menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name)
 					&& Utils.SleepCheck("blink")
 					)
