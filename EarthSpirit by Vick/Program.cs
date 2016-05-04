@@ -181,7 +181,12 @@ namespace EarthSpirit
 
 			//Adding buff 'modifier_earth_spirit_geomagnetic_grip' index: 280 to 'npc_dota_earth_spirit_stone'.
 			//Adding buff 'modifier_earth_spirit_geomagnetic_grip_debuff' index: 0 to 'npc_dota_hero_axe'.
-
+				var magnetizemod = e.Modifiers.FirstOrDefault(x => x.Name == "modifier_earth_spirit_magnetize");
+				if (magnetizemod != null && AutoUlt && magnetizemod.RemainingTime <= 0.5 + Game.Ping && me.Distance2D(e) <= D.CastRange && Utils.SleepCheck("Rem"))
+				{
+					D.UseAbility(e.Position);
+					Utils.Sleep(1000, "Rem");
+				}
 
 			//Adding buff 'modifier_earth_spirit_stone_thinker' index: 1722489760 to 'npc_dota_earth_spirit_stone'.
 			if (qKey && me.Distance2D(e) <= 1400 && e != null && e.IsAlive && !ModifInv)
@@ -532,12 +537,7 @@ namespace EarthSpirit
 						}
 					}
 				}
-				var magnetizemod = e.Modifiers.FirstOrDefault(x => x.Name == "modifier_earth_spirit_magnetize");
-				if (magnetizemod != null && AutoUlt && magnetizemod.RemainingTime <= 0.5 + Game.Ping && me.Distance2D(e) <= D.CastRange && Utils.SleepCheck("Rem"))
-				{
-					D.UseAbility(e.Position);
-					Utils.Sleep(1000, "Rem");
-				}
+			
 				var charge = me.Modifiers.FirstOrDefault(y => y.Name == "modifier_earth_spirit_stone_caller_charge_counter");
 				if (//W Skill
 				   W != null
