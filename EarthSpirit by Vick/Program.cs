@@ -1,3 +1,4 @@
+
 namespace EarthSpirit
 {
 	using System;
@@ -13,14 +14,18 @@ namespace EarthSpirit
 		private static readonly Menu menu = new Menu("EarthSpirit", "EarthSpirit", true, "npc_dota_hero_earth_spirit", true);
 
 		private static bool loaded;
-
+		
+		private static Ability Q, W, E, F, R, D;
+		private static Hero e, me;
+		private static Item urn, dagon, ghost, soulring, atos, vail, sheep, cheese, stick, arcane, mjollnir,
+							halberd, ethereal, orchid, abyssal, mom, Shiva, mail, bkb, satanic, medall, blink;
 		private static bool Active, qKey, wKey, eKey;
 		private static bool AutoUlt;
 
 		static void Main(string[] args)
 		{
 			Game.OnUpdate += Game_OnUpdate;
-
+			Game.OnUpdate += Others;
 			Print.LogMessage.Success("This beginning marks their end!");
 			Print.ConsoleMessage.Success("> |EarthSpirit| This beginning marks their end!");
 
@@ -86,10 +91,6 @@ namespace EarthSpirit
 			return closestHero;
 		}
 
-		private static Ability Q, W, E, F, R, D;
-		private static Hero e, me;
-		private static Item urn, dagon, ghost, soulring, atos, vail, sheep, cheese, stick, arcane, mjollnir,
-							halberd, ethereal, orchid, abyssal, mom, Shiva, mail, bkb, satanic, medall, blink;
 		//cyclone
 
 		public static void Game_OnUpdate(EventArgs args)
@@ -113,7 +114,7 @@ namespace EarthSpirit
 
 			D = me.FindSpell("earth_spirit_stone_caller");
 			Q = me.FindSpell("earth_spirit_boulder_smash");
-			E = me.Spellbook.SpellE;
+			E = me.FindSpell("earth_spirit_geomagnetic_grip");
 			W = me.FindSpell("earth_spirit_rolling_boulder");
 			F = me.FindSpell("earth_spirit_petrify");
 			R = me.FindSpell("earth_spirit_magnetize");
@@ -127,41 +128,81 @@ namespace EarthSpirit
 
 			var v =
 				ObjectManager.GetEntities<Hero>()
-					.Where(x => x.Team != me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && !x.IsMagicImmune() && x.Distance2D(me) <= 1500)
+					.Where(x => x.Team != me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && x.Distance2D(me) <= 1500)
 					.ToList();
 			var ModifInv = me.IsInvisible();
-			//Adding buff 'modifier_earth_spirit_boulder_smash' index: 280 to 'npc_dota_earth_spirit_stone'.
-			//Adding buff 'modifier_stunned' index: 280 to 'npc_dota_hero_axe'.
-
-			//Adding buff 'modifier_earth_spirit_geomagnetic_grip' index: 280 to 'npc_dota_earth_spirit_stone'.
-			//Adding buff 'modifier_earth_spirit_geomagnetic_grip_debuff' index: 0 to 'npc_dota_hero_axe'.
-			var magnetizemod = e.Modifiers.Where(y => y.Name == "modifier_earth_spirit_magnetize").DefaultIfEmpty(null).FirstOrDefault();
-
-			if (AutoUlt && magnetizemod != null && magnetizemod.RemainingTime <= 0.1 + Game.Ping && me.Distance2D(e) <= D.CastRange && Utils.SleepCheck("Rem"))
-			{
-				D.UseAbility(e.Position);
-				Utils.Sleep(1000, "Rem");
-			}
-			var remnant = ObjectManager.GetEntities<Unit>().Where(unit => unit.Name == "npc_dota_earth_spirit_stone" && unit.Distance2D(me) <= 1600).ToList();
+			var remnant = ObjectManager.GetEntities<Unit>().Where(x => x.ClassID == ClassID.CDOTA_Unit_Earth_Spirit_Stone && x.Team == me.Team
+									  && x.Distance2D(me) <= 1700 && x.IsAlive && x.IsValid).ToList();
 			var remnantCount = remnant.Count;
 
 			var Remmnant = GetClosestToRemmnant(remnant, me);
 			var RemmnantEnem = GetClosestToRemmnant(remnant, e);
-			if (qKey || Active)
+			
+			if (Active && me.Distance2D(e) <= 1400  && e.IsAlive && !ModifInv)
 			{
-				for (int i = 0; i < remnantCount; ++i)
+				var Wmod = me.HasModifier("modifier_earth_spirit_rolling_boulder_caster");
+				if (remnantCount == 0)
 				{
-
-					if (Active)
+					if (
+					D.CanBeCasted()
+					&& Q.CanBeCasted()
+					&& !Wmod
+					&& ((blink == null 
+					|| !blink.CanBeCasted() 
+					|| !menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name))
+					|| (blink != null && blink.CanBeCasted() && me.Distance2D(e) <= 450))
+					)
 					{
-						if (//Q Skill
+						if (me.Distance2D(e) <= E.CastRange - 50
+							&& Utils.SleepCheck("Rem"))
+						{
+							if (me.NetworkActivity == NetworkActivity.Move)
+								me.Stop();
+							else
+								D.UseAbility(Prediction.InFront(me, 100));
+							Utils.Sleep(600, "Rem");
+						}
+					}
+				}
+				if (remnantCount > 0)
+				{
+					if (
+						D != null && D.CanBeCasted()
+						&& ((Q != null && Q.CanBeCasted()) 
+						|| (W != null && W.CanBeCasted()))
+						&& !Wmod
+						&& me.Distance2D(Remmnant) >= 350
+						&& ((blink == null 
+						|| !blink.CanBeCasted() 
+						|| !menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name))
+						|| (blink != null && me.Distance2D(e) <= 450 && blink.CanBeCasted()))
+						)
+					{
+						if (me.Distance2D(e) <= E.CastRange - 50
+							&& Utils.SleepCheck("Rem"))
+						{
+							if (me.NetworkActivity == NetworkActivity.Move)
+								me.Stop();
+							else
+								D.UseAbility(Prediction.InFront(me, 100));
+							Utils.Sleep(600, "Rem");
+						}
+					}
+					if (
+						me.Distance2D(Remmnant) >= 200
+						&& me.Distance2D(Remmnant) <= 350
+						&& Q.CanBeCasted()
+						&& Utils.SleepCheck("RemMove"))
+					{
+						me.Move(Remmnant.Position);
+						Utils.Sleep(300, "RemMove");
+					}
+					if (//Q Skill
 						remnant != null
 						&& W != null
 						&& (!Q.CanBeCasted()
 						|| Q == null)
 						&& !E.CanBeCasted()
-						&& !remnant[i].HasModifier("modifier_earth_spirit_boulder_smash")
-						&& !remnant[i].HasModifier("modifier_earth_spirit_geomagnetic_grip")
 						&& W.CanBeCasted()
 						&& me.Distance2D(e) <= E.CastRange - 50
 						&& me.CanCast()
@@ -171,244 +212,13 @@ namespace EarthSpirit
 							W.CastSkillShot(e);
 							Utils.Sleep(250, me.Handle.ToString() + "remnantW");
 						}
-					}
-					if(qKey)
-					{
-						if (me.Distance2D(Remmnant) >= 350)
-						{
-							if (
-							D.CanBeCasted()
-							&& (Q != null && Q.CanBeCasted())
-							&& !remnant[i].HasModifier("modifier_earth_spirit_geomagnetic_grip")
-							&& ((!blink.CanBeCasted() || blink == null || !menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name))
-							|| (blink != null && me.Distance2D(e) <= 450 && blink.CanBeCasted()))
-							)
-							{
-								if (me.Distance2D(e) <= E.CastRange - 50
-									&& Utils.SleepCheck("Rem"))
-								{
-									if (me.NetworkActivity == NetworkActivity.Move)
-										me.Stop();
-									else
-										D.UseAbility(Prediction.InFront(me, 100));
-									Utils.Sleep(1000, "Rem");
-								}
-							}
-						}
-					}
-				}
-			}
-			//Adding buff 'modifier_earth_spirit_stone_thinker' index: 1722489760 to 'npc_dota_earth_spirit_stone'.
-			if (qKey && me.Distance2D(e) <= 1400 && e != null && e.IsAlive && !ModifInv)
-			{
-				if (remnant.Count == 0)
-				{
-					if (
-					D.CanBeCasted()
-					&& Q.CanBeCasted()
-					&& ((!blink.CanBeCasted() || blink == null || !menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name))
-					|| (blink != null && me.Distance2D(e) <= 450 && blink.CanBeCasted()))
-					)
-					{
-						if (me.Distance2D(e) <= E.CastRange - 50
-							&& Utils.SleepCheck("Rem"))
-						{
-							if (me.NetworkActivity == NetworkActivity.Move)
-								me.Stop();
-							else
-								D.UseAbility(Prediction.InFront(me, 100));
-							Utils.Sleep(1000, "Rem");
-						}
-					}
-				}
-				else if (remnant.Count > 0)
-				{
-					if (//Q Skill
-					  remnant != null
-					  && Q != null
-					  && Q.CanBeCasted()
-					  && me.CanCast()
-					  && me.Distance2D(e) <= E.CastRange - 50
-					  && Remmnant.Distance2D(me) <= 350
-					  && Utils.SleepCheck(Remmnant.Handle.ToString() + "remnantQ")
-					  )
-					{
-						Q.CastSkillShot(e);
-						Utils.Sleep(250, Remmnant.Handle.ToString() + "remnantQ");
-					}
-				}
-			}
-			if (wKey)
-			{
-				var Wmod = me.HasModifier("modifier_earth_spirit_rolling_boulder_caster");
-
-				if (//Q Skill
-					remnant != null
-					&& W.CanBeCasted()
-					&& me.Distance2D(e) <= W.CastRange - 200
-					&& Utils.SleepCheck(me.Handle.ToString() + "remnantW")
-					)
-				{
-					W.CastSkillShot(e);
-					Utils.Sleep(250, me.Handle.ToString() + "remnantW");
-				}
-
-				var delay = Task.Delay(350).ContinueWith(_ =>
-				{
-					if (remnant.Count == 0)
-					{
-						if (
-							D.CanBeCasted()
-							&& Wmod
-							&& me.Distance2D(e) >= 600
-							&& Utils.SleepCheck("nextAction")
-							)
-						{
-							D.UseAbility(Prediction.InFront(me, 170));
-							Utils.Sleep(1800 + D.FindCastPoint(), "nextAction");
-						}
-					}
-					else if (remnant.Count > 0)
-					{
-						if (me.Distance2D(Remmnant) >= 200)
-						{
-							if (
-								D.CanBeCasted()
-								&& Wmod
-								&& me.Distance2D(e) >= 600
-
-								&& Utils.SleepCheck("nextAction")
-								)
-							{
-								D.UseAbility(Prediction.InFront(me, 170));
-								Utils.Sleep(1800 + D.FindCastPoint(), "nextAction");
-							}
-						}
-					}
-				});
-
-			}
-			if (eKey && me.Distance2D(e) <= 1400 && e != null && e.IsAlive && !ModifInv)
-			{
-				if (remnant.Count == 0)
-				{
-					if (
-					D.CanBeCasted()
-					&& E.CanBeCasted()
-					)
-					{
-						if (me.Distance2D(e) <= E.CastRange - 50
-							&& Utils.SleepCheck("Rem"))
-						{
-							if (me.NetworkActivity == NetworkActivity.Move)
-								me.Stop();
-							else
-								D.UseAbility(e.Position);
-							Utils.Sleep(1000, "Rem");
-						}
-					}
-				}
-				else if (remnant.Count > 0)
-				{
-					if (RemmnantEnem!=null && RemmnantEnem.Distance2D(e) >= 300)
-					{
-						if (
-							D.CanBeCasted()
-							&& (E != null && E.CanBeCasted())
-							   && !RemmnantEnem.HasModifier("modifier_earth_spirit_boulder_smash")
-							   && !RemmnantEnem.HasModifier("modifier_earth_spirit_geomagnetic_grip")
-							   )
-						{
-							if (me.Distance2D(e) <= E.CastRange - 50
-								&& Utils.SleepCheck("Rem"))
-							{
-								if (me.NetworkActivity == NetworkActivity.Move)
-									me.Stop();
-								else
-									D.UseAbility(e.Position);
-								Utils.Sleep(1000, "Rem");
-							}
-						}
-					}
-					else if (//E Skill
-						   remnant != null
-						   && E.CanBeCasted()
-						   && me.Distance2D(e) <= E.CastRange
-						   && e.Distance2D(RemmnantEnem) <= 240
-						   && me.CanCast()
-						   && Utils.SleepCheck(RemmnantEnem.Handle.ToString() + "remnantE")
-						   )
-					{
-						E.UseAbility(RemmnantEnem.Position);
-						Utils.Sleep(220, RemmnantEnem.Handle.ToString() + "remnantE");
-					}
-					else if (//E Skill
-					  remnant != null
-					  && E.CanBeCasted()
-					  && RemmnantEnem.HasModifier("modifier_earth_spirit_boulder_smash")
-					  && me.Distance2D(e) <= 200
-					  && e.Distance2D(RemmnantEnem) >= 50
-					  && me.Distance2D(RemmnantEnem) > me.Distance2D(e)
-					  && me.CanCast()
-					  && Utils.SleepCheck(RemmnantEnem.Handle.ToString() + "remnantE")
-					  )
-					{
-						E.UseAbility(RemmnantEnem.Position);
-						Utils.Sleep(220, RemmnantEnem.Handle.ToString() + "remnantE");
-					}
-				}
-			}
-			if (Active && me.Distance2D(e) <= 1400  && e.IsAlive && !ModifInv)
-			{
-				if (remnant.Count == 0)
-				{
-					if (
-					D.CanBeCasted()
-					&& Q.CanBeCasted()
-					&& ((!blink.CanBeCasted() || blink == null || !menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name))
-					|| (blink != null && me.Distance2D(e) <= 450 && blink.CanBeCasted()))
-					)
-					{
-						if (me.Distance2D(e) <= E.CastRange - 50
-							&& Utils.SleepCheck("Rem"))
-						{
-							if (me.NetworkActivity == NetworkActivity.Move)
-								me.Stop();
-							else
-								D.UseAbility(Prediction.InFront(me, 100));
-							Utils.Sleep(1000, "Rem");
-						}
-					}
-				}
-				if (remnant.Count > 0)
-				{
-					if (
-						D != null && D.CanBeCasted()
-						&& ((Q != null && Q.CanBeCasted()) || W != null && (W.CanBeCasted()))
-						   && me.Distance2D(Remmnant) >= 350
-						   && !Remmnant.HasModifier("modifier_earth_spirit_boulder_smash")
-						   && !Remmnant.HasModifier("modifier_earth_spirit_geomagnetic_grip")
-						   && ((blink == null || !blink.CanBeCasted() || !menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name))
-						   || (blink != null && me.Distance2D(e) <= 450 && blink.CanBeCasted()))
-						   )
-					{
-						if (me.Distance2D(e) <= E.CastRange - 50
-							&& Utils.SleepCheck("Rem"))
-						{
-							if (me.NetworkActivity == NetworkActivity.Move)
-								me.Stop();
-							else
-								D.UseAbility(Prediction.InFront(me, 100));
-							Utils.Sleep(1000, "Rem");
-						}
-					}
 					if (//Q Skill
 					   remnant != null
 					   && Q != null
 					   && Q.CanBeCasted()
 					   && me.CanCast()
 					   && me.Distance2D(e) <= E.CastRange - 50
-					   && me.Distance2D(Remmnant) <= 350
+					   && me.Distance2D(Remmnant) <= 210
 					   && Utils.SleepCheck(Remmnant.Handle.ToString() + "remnantQ")
 					   )
 					{
@@ -416,9 +226,8 @@ namespace EarthSpirit
 						Utils.Sleep(250, Remmnant.Handle.ToString() + "remnantQ");
 					}
 					else
-					if (//Q Skill
-					   remnant != null
-					   && W != null
+					if (//W Skill
+					   W != null
 					   && W.CanBeCasted()
 					   && !Q.CanBeCasted()
 					   && me.Distance2D(e) <= E.CastRange
@@ -428,33 +237,32 @@ namespace EarthSpirit
 						W.CastSkillShot(e);
 						Utils.Sleep(250, me.Handle.ToString() + "remnantW");
 					}
-					if (//E Skill
-					   RemmnantEnem != null
+					if (RemmnantEnem != null
 					   && E != null
 					   && E.CanBeCasted()
+					   && me.CanCast()
+					   && me.Distance2D(RemmnantEnem) < E.CastRange
 					   && me.Distance2D(e) <= E.CastRange
-					   && e.Distance2D(RemmnantEnem) <= 150
-					   && me.CanCast()
-					   && Utils.SleepCheck(RemmnantEnem.Handle.ToString() + "remnantE")
 					   )
 					{
-						E.UseAbility(RemmnantEnem.Position);
-						Utils.Sleep(220, RemmnantEnem.Handle.ToString() + "remnantE");
-					}
-					if (//E Skill
-					   RemmnantEnem != null
-					   && E != null
-					   && E.CanBeCasted()
-					   && RemmnantEnem.HasModifier("modifier_earth_spirit_boulder_smash")
-					   && me.Distance2D(e) <= 300
-					   && e.Distance2D(RemmnantEnem) >= 50
-					   && me.Distance2D(RemmnantEnem) > me.Distance2D(e)
-					   && me.CanCast()
-					   && Utils.SleepCheck(RemmnantEnem.Handle.ToString() + "remnantE")
-					   )
-					{
-						E.UseAbility(RemmnantEnem.Position);
-						Utils.Sleep(220, RemmnantEnem.Handle.ToString() + "remnantE");
+						if (//E Skill
+							e.Distance2D(RemmnantEnem) <= 200
+						    && Utils.SleepCheck(RemmnantEnem.Handle.ToString() + "remnantE")
+						   )
+						{
+							E.UseAbility(RemmnantEnem.Position);
+							Utils.Sleep(220, RemmnantEnem.Handle.ToString() + "remnantE");
+						}
+						if (//E Skill
+						  me.Distance2D(e) <= 200
+						  && e.Distance2D(RemmnantEnem) > 0
+						  && me.Distance2D(RemmnantEnem) >= e.Distance2D(RemmnantEnem)
+						  && Utils.SleepCheck(RemmnantEnem.Handle.ToString() + "remnantE")
+						  )
+						{
+							E.UseAbility(RemmnantEnem.Position);
+							Utils.Sleep(220, RemmnantEnem.Handle.ToString() + "remnantE");
+						}
 					}
 				}
 			}
@@ -788,7 +596,247 @@ namespace EarthSpirit
 				}
 			}
 		}
-	}
+		public static void Others(EventArgs args)
+		{
+			me = ObjectManager.LocalHero;
+
+
+			if (!Game.IsInGame || me.ClassID != ClassID.CDOTA_Unit_Hero_EarthSpirit || Game.IsWatchingGame)
+				return;
+
+			qKey = Game.IsKeyDown(menu.Item("qKey").GetValue<KeyBind>().Key);
+			wKey = Game.IsKeyDown(menu.Item("wKey").GetValue<KeyBind>().Key);
+			eKey = Game.IsKeyDown(menu.Item("eKey").GetValue<KeyBind>().Key);
+			AutoUlt = menu.Item("oneult").IsActive();
+			if (!menu.Item("enabled").IsActive())
+				return;
+
+			e = me.ClosestToMouseTarget(1800);
+			if (e == null) return;
+
+			D = me.FindSpell("earth_spirit_stone_caller");
+			Q = me.FindSpell("earth_spirit_boulder_smash");
+			E = me.Spellbook.SpellE;
+			W = me.FindSpell("earth_spirit_rolling_boulder");
+			F = me.FindSpell("earth_spirit_petrify");
+			R = me.FindSpell("earth_spirit_magnetize");
+			
+			var v =
+				ObjectManager.GetEntities<Hero>()
+					.Where(x => x.Team != me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && x.Distance2D(me) <= 1500)
+					.ToList();
+			var ModifInv = me.IsInvisible();
+			var magnetizemod = e.Modifiers.Where(y => y.Name == "modifier_earth_spirit_magnetize").DefaultIfEmpty(null).FirstOrDefault();
+
+			if (AutoUlt && magnetizemod != null && magnetizemod.RemainingTime <= 0.2 + Game.Ping && me.Distance2D(e) <= D.CastRange && Utils.SleepCheck("Rem"))
+			{
+				D.UseAbility(e.Position);
+				Utils.Sleep(1000, "Rem");
+			}
+			var remnant = ObjectManager.GetEntities<Unit>().Where(x => x.ClassID == ClassID.CDOTA_Unit_Earth_Spirit_Stone && x.Team == me.Team
+									   && x.Distance2D(me) <= 1700 && x.IsAlive && x.IsValid).ToList();
+			var remnantCount = remnant.Count;
+
+			var Remmnant = GetClosestToRemmnant(remnant, me);
+			var RemmnantEnem = GetClosestToRemmnant(remnant, e);
+			
+			if (qKey && me.Distance2D(e) <= 1400 && e != null && e.IsAlive && !ModifInv)
+			{
+				var Wmod = me.HasModifier("modifier_earth_spirit_rolling_boulder_caster");
+				if (remnantCount == 0)
+				{
+					if (
+					D.CanBeCasted()
+					&& Q.CanBeCasted()
+					&& !Wmod
+					&& ((blink == null
+					|| !blink.CanBeCasted()
+					|| !menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name))
+					|| (blink != null && me.Distance2D(e) <= 450 && blink.CanBeCasted()))
+					)
+					{
+						if (me.Distance2D(e) <= E.CastRange - 50
+							&& Utils.SleepCheck("Rem"))
+						{
+							if (me.NetworkActivity == NetworkActivity.Move)
+								me.Stop();
+							else
+								D.UseAbility(Prediction.InFront(me, 100));
+							Utils.Sleep(600, "Rem");
+						}
+					}
+				}
+				if (remnantCount > 0)
+				{
+					if (
+						D != null && D.CanBeCasted()
+						&& ((Q != null && Q.CanBeCasted())
+						|| (W != null && W.CanBeCasted()))
+						&& !Wmod
+						&& me.Distance2D(Remmnant) >= 350
+						&& ((blink == null
+						|| !blink.CanBeCasted()
+						|| !menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name))
+						|| (blink != null && me.Distance2D(e) <= 450 && blink.CanBeCasted()))
+						)
+					{
+						if (me.Distance2D(e) <= E.CastRange - 50
+							&& Utils.SleepCheck("Rem"))
+						{
+							if (me.NetworkActivity == NetworkActivity.Move)
+								me.Stop();
+							else
+								D.UseAbility(Prediction.InFront(me, 100));
+							Utils.Sleep(600, "Rem");
+						}
+					}
+					if (
+					   me.Distance2D(Remmnant) >= 200
+					   && me.Distance2D(Remmnant) <= 350
+					   && Q.CanBeCasted()
+					   && Utils.SleepCheck("RemMove"))
+					{
+						me.Move(Remmnant.Position);
+						Utils.Sleep(300, "RemMove");
+					}
+					if (//Q Skill
+					  Remmnant != null
+					  && Q != null
+					  && Q.CanBeCasted()
+					  && me.CanCast()
+					  && me.Distance2D(e) <= E.CastRange - 50
+					  && Remmnant.Distance2D(me) <= 210
+					  && Utils.SleepCheck(Remmnant.Handle.ToString() + "remnantQ")
+					  )
+					{
+						Q.CastSkillShot(e);
+						Utils.Sleep(250, Remmnant.Handle.ToString() + "remnantQ");
+					}
+				}
+			}
+			if (wKey)
+			{
+				var Wmod = me.HasModifier("modifier_earth_spirit_rolling_boulder_caster");
+
+				if (//W Skill
+					W != null
+					&& W.CanBeCasted()
+					&& me.Distance2D(e) <= W.CastRange - 200
+					&& Utils.SleepCheck(me.Handle.ToString() + "remnantW")
+					)
+				{
+					W.CastSkillShot(e);
+					Utils.Sleep(250, me.Handle.ToString() + "remnantW");
+				}
+
+				var delay = Task.Delay(350).ContinueWith(_ =>
+				{
+					if (remnantCount == 0)
+					{
+						if (
+							D.CanBeCasted()
+							&& Wmod
+							&& me.Distance2D(e) >= 600
+							&& Utils.SleepCheck("nextAction")
+							)
+						{
+							D.UseAbility(Prediction.InFront(me, 170));
+							Utils.Sleep(1800 + D.FindCastPoint(), "nextAction");
+						}
+					}
+					if (remnantCount > 0)
+					{
+						if (Remmnant!=null && me.Distance2D(Remmnant) >= 200)
+						{
+							if (
+								D.CanBeCasted()
+								&& Wmod
+								&& me.Distance2D(e) >= 600
+
+								&& Utils.SleepCheck("nextAction")
+								)
+							{
+								D.UseAbility(Prediction.InFront(me, 170));
+								Utils.Sleep(1800 + D.FindCastPoint(), "nextAction");
+							}
+						}
+					}
+				});
+
+			}
+			if (eKey && me.Distance2D(e) <= 1400 && e != null && e.IsAlive && !ModifInv)
+			{
+				if (remnantCount == 0)
+				{
+					if (
+					D.CanBeCasted()
+					&& E.CanBeCasted()
+					)
+					{
+						if (me.Distance2D(e) <= E.CastRange - 50
+							&& Utils.SleepCheck("Rem"))
+						{
+							if (me.NetworkActivity == NetworkActivity.Move)
+								me.Stop();
+							else
+								D.UseAbility(e.Position);
+							Utils.Sleep(1000, "Rem");
+						}
+					}
+				}
+				else if (remnantCount > 0)
+				{
+					if (RemmnantEnem != null && RemmnantEnem.Distance2D(e) >= 300)
+					{
+						if (
+							D.CanBeCasted()
+							&& (E != null && E.CanBeCasted())
+							   && !RemmnantEnem.HasModifier("modifier_earth_spirit_boulder_smash")
+							   && !RemmnantEnem.HasModifier("modifier_earth_spirit_geomagnetic_grip")
+							   )
+						{
+							if (me.Distance2D(e) <= E.CastRange - 50
+								&& Utils.SleepCheck("Rem"))
+							{
+								if (me.NetworkActivity == NetworkActivity.Move)
+									me.Stop();
+								else
+									D.UseAbility(e.Position);
+								Utils.Sleep(1000, "Rem");
+							}
+						}
+					}
+					if (RemmnantEnem != null
+					   && E != null
+					   && E.CanBeCasted()
+					   && me.CanCast()
+					   && me.Distance2D(RemmnantEnem) < E.CastRange
+					   && me.Distance2D(e) <= E.CastRange
+					   )
+					{
+						if (//E Skill
+							e.Distance2D(RemmnantEnem) <= 200
+							&& Utils.SleepCheck(RemmnantEnem.Handle.ToString() + "remnantE")
+						   )
+						{
+							E.UseAbility(RemmnantEnem.Position);
+							Utils.Sleep(220, RemmnantEnem.Handle.ToString() + "remnantE");
+						}
+						if (//E Skill
+						  me.Distance2D(e) <= 200
+						  && e.Distance2D(RemmnantEnem) > 0
+						  && me.Distance2D(RemmnantEnem) >= e.Distance2D(RemmnantEnem)
+						  && Utils.SleepCheck(RemmnantEnem.Handle.ToString() + "remnantE")
+						  )
+						{
+							E.UseAbility(RemmnantEnem.Position);
+							Utils.Sleep(220, RemmnantEnem.Handle.ToString() + "remnantE");
+						}
+					}
+				}
+			}
+		}
+		}
 	class Print
 	{
 		public class LogMessage
@@ -810,7 +858,7 @@ namespace EarthSpirit
 			}
 			public static void Success(string text, params object[] arguments)
 			{
-				Encolored(text, ConsoleColor.Red, arguments);
+				Encolored(text, ConsoleColor.Magenta, arguments);
 			}
 		} // LogMessage class
 	}
