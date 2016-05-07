@@ -112,12 +112,18 @@ namespace EarthSpirit
 			e = me.ClosestToMouseTarget(1800);
 			if (e == null) return;
 
-			D = me.FindSpell("earth_spirit_stone_caller");
+			/*D = me.FindSpell("earth_spirit_stone_caller");
 			Q = me.FindSpell("earth_spirit_boulder_smash");
 			E = me.FindSpell("earth_spirit_geomagnetic_grip");
 			W = me.FindSpell("earth_spirit_rolling_boulder");
 			F = me.FindSpell("earth_spirit_petrify");
-			R = me.FindSpell("earth_spirit_magnetize");
+			R = me.FindSpell("earth_spirit_magnetize");*/
+			D = me.Spellbook.SpellD;
+			Q = me.Spellbook.SpellQ;
+			E = me.Spellbook.SpellE;
+			W = me.Spellbook.SpellW;
+			F = me.Spellbook.SpellF;
+			R = me.Spellbook.SpellR;
 
 
 
