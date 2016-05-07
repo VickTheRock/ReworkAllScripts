@@ -580,6 +580,10 @@ namespace EarthSpirit
 					satanic.UseAbility();
 					Utils.Sleep(240, "satanic");
 				} // Satanic Item end
+				var v =
+				ObjectManager.GetEntities<Hero>()
+					.Where(x => x.Team != me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && x.Distance2D(me) <= 1500)
+					.ToList();
 				if (mail != null && mail.CanBeCasted() && (v.Count(x => x.Distance2D(me) <= 650) >=
 														   (menu.Item("Heelm").GetValue<Slider>().Value)) &&
 					menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(mail.Name) && Utils.SleepCheck("mail"))
@@ -621,10 +625,7 @@ namespace EarthSpirit
 			F = me.FindSpell("earth_spirit_petrify");
 			R = me.FindSpell("earth_spirit_magnetize");
 			
-			var v =
-				ObjectManager.GetEntities<Hero>()
-					.Where(x => x.Team != me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && x.Distance2D(me) <= 1500)
-					.ToList();
+			
 			var ModifInv = me.IsInvisible();
 			var magnetizemod = e.Modifiers.Where(y => y.Name == "modifier_earth_spirit_magnetize").DefaultIfEmpty(null).FirstOrDefault();
 
