@@ -580,10 +580,6 @@ namespace EarthSpirit
 					satanic.UseAbility();
 					Utils.Sleep(240, "satanic");
 				} // Satanic Item end
-				var v =
-				ObjectManager.GetEntities<Hero>()
-					.Where(x => x.Team != me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && x.Distance2D(me) <= 1500)
-					.ToList();
 				if (mail != null && mail.CanBeCasted() && (v.Count(x => x.Distance2D(me) <= 650) >=
 														   (menu.Item("Heelm").GetValue<Slider>().Value)) &&
 					menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(mail.Name) && Utils.SleepCheck("mail"))
