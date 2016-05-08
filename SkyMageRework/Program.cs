@@ -76,6 +76,7 @@ namespace SkyMageRework
 			ult.AddItem(new MenuItem("AutoUlt: ", "AutoUlt").SetValue(new AbilityToggler(AutoUlt)));
 			items.AddItem(new MenuItem("Link: ", "Auto triggre Linken").SetValue(new AbilityToggler(Link)));
 			healh.AddItem(new MenuItem("Healh", "Min healh % to ult").SetValue(new Slider(35, 10, 70))); // x/ 10%
+			Menu.AddItem(new MenuItem("orbwalk", "orbwalk").SetValue(false));
 			Menu.AddToMainMenu();
 			Game.OnUpdate += Game_OnUpdate;
 			Game.OnUpdate += A;
@@ -113,7 +114,7 @@ namespace SkyMageRework
 		public static void Game_OnUpdate(EventArgs args)
 		{
 			var me = ObjectManager.LocalHero;
-
+			
 			if (!Game.IsInGame || me.ClassID != ClassID.CDOTA_Unit_Hero_Skywrath_Mage || me == null || Game.IsWatchingGame)
 			{
 				return;
@@ -354,7 +355,7 @@ namespace SkyMageRework
 									   && Menu.Item("Skills: ").GetValue<AbilityToggler>().IsEnabled(R.Name)
 									   && Utils.SleepCheck("R"))
 									{
-										R.UseAbility(target.Predict(500));
+										R.UseAbility(Prediction.InFront(target, 150));
 										Utils.Sleep(330, "R");
 									}
 
@@ -465,9 +466,37 @@ namespace SkyMageRework
 								}
 							}
 						}
+						if(Menu.Item("orbwalk").GetValue<bool>())
+						{
+							if (me.Distance2D(target) <= me.AttackRange+5 &&
+							( !me.IsAttackImmune()
+							|| !target.IsAttackImmune()
+							)
+							&& me.NetworkActivity != NetworkActivity.Attack
+							&& me.CanAttack()
+							&& !me.IsAttacking()
+							&& Utils.SleepCheck("attack")
+							)
+							{
+								me.Attack(target);
+								Utils.Sleep(180, "attack");
+							}
+							else if (
+								(!me.CanAttack()
+								|| me.Distance2D(target) >= 250)
+								&& me.NetworkActivity != NetworkActivity.Attack
+								&& me.Distance2D(target) <= 2500
+								&& !me.IsAttacking()
+								&& Utils.SleepCheck("Move")
+								)
+							{
+								me.Move(Prediction.InFront(target, 100));
+								Utils.Sleep(400, "Move");
+							}
+						}
 					}
 				}
-				Utils.Sleep(200, "activated");
+				Utils.Sleep(100, "activated");
 			}
 		}
 		public static void A(EventArgs args)
@@ -524,13 +553,12 @@ namespace SkyMageRework
 								&& Menu.Item("AutoUlt: ").GetValue<AbilityToggler>().IsEnabled(R.Name)
 								&& Utils.SleepCheck(e.Handle.ToString()))
 							{
-								R.UseAbility(e.Predict(500));
+								R.UseAbility(Prediction.InFront(e, 150));
 								Utils.Sleep(300, e.Handle.ToString());
 							}
 							if (R != null && e != null && R.CanBeCasted() && me.Distance2D(e) <= 1200
 							   &&
-							   (
-								  e.Modifiers.Any(y => y.Name == "modifier_meepo_earthbind")
+							   (e.Modifiers.Any(y => y.Name == "modifier_meepo_earthbind")
 							   || e.Modifiers.Any(y => y.Name == "modifier_pudge_dismember")
 							   || e.Modifiers.Any(y => y.Name == "modifier_naga_siren_ensnare")
 							   || e.Modifiers.Any(y => y.Name == "modifier_lone_druid_spirit_bear_entangle_effect")
@@ -571,7 +599,7 @@ namespace SkyMageRework
 							   && Menu.Item("AutoUlt: ").GetValue<AbilityToggler>().IsEnabled(R.Name)
 							   && Utils.SleepCheck(e.Handle.ToString()))
 							{
-								R.UseAbility(e.Predict(500));
+								R.UseAbility(Prediction.InFront(e, 40));
 								Utils.Sleep(300, e.Handle.ToString());
 							}
 							if (R != null && e != null && R.CanBeCasted() && me.Distance2D(e) <= 1200
@@ -593,7 +621,7 @@ namespace SkyMageRework
 							   && Menu.Item("AutoUlt: ").GetValue<AbilityToggler>().IsEnabled(R.Name)
 							   && Utils.SleepCheck(e.Handle.ToString()))
 							{
-								R.UseAbility(e.Predict(500));
+								R.UseAbility(Prediction.InFront(e, 150));
 								Utils.Sleep(500, e.Handle.ToString()); goto leave;
 							}
 						}
