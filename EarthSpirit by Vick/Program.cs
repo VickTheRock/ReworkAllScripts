@@ -14,7 +14,7 @@ namespace EarthSpirit
 		private static readonly Menu menu = new Menu("EarthSpirit", "EarthSpirit", true, "npc_dota_hero_earth_spirit", true);
 
 		private static bool loaded;
-		
+
 		private static Ability Q, W, E, F, R, D;
 		private static Hero e, me;
 		private static Item urn, dagon, ghost, soulring, atos, vail, sheep, cheese, stick, arcane, mjollnir,
@@ -81,17 +81,7 @@ namespace EarthSpirit
 			menu.AddToMainMenu();
 		}
 
-		private static Unit GetClosestToRemmnant(List<Unit> units, Hero x, float range = 1700)
-		{
-			Unit closestHero = null;
-			foreach (var b in units.Where(v => (closestHero == null || closestHero.Distance2D(x) > v.Distance2D(x)) && x.Distance2D(v) <= range))
-			{
-				closestHero = b;
-			}
-			return closestHero;
-		}
 
-		//cyclone
 
 		public static void Game_OnUpdate(EventArgs args)
 		{
@@ -141,20 +131,18 @@ namespace EarthSpirit
 									  && x.Distance2D(me) <= 1700 && x.IsAlive && x.IsValid).ToList();
 			var remnantCount = remnant.Count;
 
-			var Remmnant = GetClosestToRemmnant(remnant, me);
-			var RemmnantEnem = GetClosestToRemmnant(remnant, e);
-			
-			if (Active && me.Distance2D(e) <= 1400  && e.IsAlive && !ModifInv)
+
+			if (Active && me.Distance2D(e) <= 1400 && e.IsAlive && !ModifInv)
 			{
 				var Wmod = me.HasModifier("modifier_earth_spirit_rolling_boulder_caster");
-				if (remnantCount == 0)
+				if (remnant == null || remnantCount == 0)
 				{
 					if (
 					D.CanBeCasted()
 					&& Q.CanBeCasted()
 					&& !Wmod
-					&& ((blink == null 
-					|| !blink.CanBeCasted() 
+					&& ((blink == null
+					|| !blink.CanBeCasted()
 					|| !menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name))
 					|| (blink != null && blink.CanBeCasted() && me.Distance2D(e) <= 450))
 					)
@@ -170,110 +158,127 @@ namespace EarthSpirit
 						}
 					}
 				}
-				if (remnantCount > 0)
+				for (int i = 0; i < remnantCount; ++i)
 				{
-					if (
-						D != null && D.CanBeCasted()
-						&& ((Q != null && Q.CanBeCasted()) 
-						|| (W != null && W.CanBeCasted()))
-						&& !Wmod
-						&& me.Distance2D(Remmnant) >= 350
-						&& ((blink == null 
-						|| !blink.CanBeCasted() 
-						|| !menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name))
-						|| (blink != null && me.Distance2D(e) <= 450 && blink.CanBeCasted()))
-						)
+					var r = remnant[i];
+					
+					if (remnant != null || remnantCount > 0)
 					{
-						if (me.Distance2D(e) <= E.CastRange - 50
-							&& Utils.SleepCheck("Rem"))
+						if (
+							D != null && D.CanBeCasted()
+							&& ((Q != null && Q.CanBeCasted())
+							|| (W != null && W.CanBeCasted()))
+							&& !Wmod
+							&& me.Distance2D(r) >= 350
+							&& ((blink == null
+							|| !blink.CanBeCasted()
+							|| !menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name))
+							|| (blink != null && me.Distance2D(e) <= 450 && blink.CanBeCasted()))
+							)
 						{
-							if (me.NetworkActivity == NetworkActivity.Move)
-								me.Stop();
-							else
-								D.UseAbility(Prediction.InFront(me, 100));
-							Utils.Sleep(600, "Rem");
+							if (me.Distance2D(e) <= E.CastRange - 50
+								&& Utils.SleepCheck("Rem"))
+							{
+								if (me.NetworkActivity == NetworkActivity.Move)
+									me.Stop();
+								else
+									D.UseAbility(Prediction.InFront(me, 100));
+								Utils.Sleep(600, "Rem");
+							}
 						}
-					}
-					if (
-						me.Distance2D(Remmnant) >= 200
-						&& me.Distance2D(Remmnant) <= 350
-						&& Q.CanBeCasted()
-						&& Utils.SleepCheck("RemMove"))
-					{
-						me.Move(Remmnant.Position);
-						Utils.Sleep(300, "RemMove");
-					}
-					if (//Q Skill
-						remnant != null
-						&& W != null
-						&& (!Q.CanBeCasted()
-						|| Q == null)
-						&& !E.CanBeCasted()
-						&& W.CanBeCasted()
-						&& me.Distance2D(e) <= E.CastRange - 50
-						&& me.CanCast()
-						&& Utils.SleepCheck(me.Handle.ToString() + "remnantW")
-						)
+						if (
+							me.Distance2D(r) >= 200
+							&& me.Distance2D(r) <= 350
+							&& Q.CanBeCasted()
+							&& Utils.SleepCheck("RemMove"))
+						{
+							me.Move(r.Position);
+							Utils.Sleep(300, "RemMove");
+						}
+						if (//Q Skill
+							remnant != null
+							&& W != null
+							&& (!Q.CanBeCasted()
+							|| Q == null)
+							&& !E.CanBeCasted()
+							&& W.CanBeCasted()
+							&& me.Distance2D(e) <= E.CastRange - 50
+							&& me.CanCast()
+							&& Utils.SleepCheck(me.Handle.ToString() + "remnantW")
+							)
 						{
 							W.CastSkillShot(e);
 							Utils.Sleep(250, me.Handle.ToString() + "remnantW");
 						}
-					if (//Q Skill
-					   remnant != null
-					   && Q != null
-					   && Q.CanBeCasted()
-					   && me.CanCast()
-					   && me.Distance2D(e) <= E.CastRange - 50
-					   && me.Distance2D(Remmnant) <= 210
-					   && Utils.SleepCheck(Remmnant.Handle.ToString() + "remnantQ")
-					   )
-					{
-						Q.CastSkillShot(e);
-						Utils.Sleep(250, Remmnant.Handle.ToString() + "remnantQ");
-					}
-					else
-					if (//W Skill
-					   W != null
-					   && W.CanBeCasted()
-					   && !Q.CanBeCasted()
-					   && me.Distance2D(e) <= E.CastRange
-					   && Utils.SleepCheck(me.Handle.ToString() + "remnantW")
-					   )
-					{
-						W.CastSkillShot(e);
-						Utils.Sleep(250, me.Handle.ToString() + "remnantW");
-					}
-					if (RemmnantEnem != null
-					   && E != null
-					   && E.CanBeCasted()
-					   && me.CanCast()
-					   && me.Distance2D(RemmnantEnem) < E.CastRange
-					   && me.Distance2D(e) <= E.CastRange
-					   )
-					{
-						if (//E Skill
-							e.Distance2D(RemmnantEnem) <= 200
-						    && Utils.SleepCheck(RemmnantEnem.Handle.ToString() + "remnantE")
+						if (//Q Skill
+						   remnant != null
+						   && Q != null
+						   && Q.CanBeCasted()
+						   && me.CanCast()
+						   && me.Distance2D(e) <= E.CastRange - 50
+						   && me.Distance2D(r) <= 210
+						   && Utils.SleepCheck(r.Handle.ToString() + "remnantQ")
 						   )
 						{
-							E.UseAbility(RemmnantEnem.Position);
-							Utils.Sleep(220, RemmnantEnem.Handle.ToString() + "remnantE");
+							Q.CastSkillShot(e);
+							Utils.Sleep(250, r.Handle.ToString() + "remnantQ");
 						}
-						if (//E Skill
-						  me.Distance2D(e) <= 200
-						  && e.Distance2D(RemmnantEnem) > 0
-						  && me.Distance2D(RemmnantEnem) >= e.Distance2D(RemmnantEnem)
-						  && Utils.SleepCheck(RemmnantEnem.Handle.ToString() + "remnantE")
-						  )
+						else
+						if (//W Skill
+						   W != null
+						   && W.CanBeCasted()
+						   && !Q.CanBeCasted()
+						   && me.Distance2D(e) <= E.CastRange
+						   && Utils.SleepCheck(me.Handle.ToString() + "remnantW")
+						   )
 						{
-							E.UseAbility(RemmnantEnem.Position);
-							Utils.Sleep(220, RemmnantEnem.Handle.ToString() + "remnantE");
+							W.CastSkillShot(e);
+							Utils.Sleep(250, me.Handle.ToString() + "remnantW");
+						}
+						if (r != null
+						   && E != null
+						   && E.CanBeCasted()
+						   && me.CanCast()
+						   && me.Distance2D(r) < E.CastRange
+						   && me.Distance2D(e) <= E.CastRange
+						   )
+						{
+							if (//E Skill
+								e.Distance2D(r) <= 200
+								&& Utils.SleepCheck(r.Handle.ToString() + "remnantE")
+							   )
+							{
+								E.UseAbility(r.Position);
+								Utils.Sleep(220, r.Handle.ToString() + "remnantE");
+							}
+							if (//E Skill
+							  me.Distance2D(e) <= 200
+							  && e.Distance2D(r) > 0
+							  && me.Distance2D(r) >= e.Distance2D(r)
+							  && Utils.SleepCheck(r.Handle.ToString() + "remnantE")
+							  )
+							{
+								E.UseAbility(r.Position);
+								Utils.Sleep(220, r.Handle.ToString() + "remnantE");
+							}
 						}
 					}
+					if (
+				   blink != null
+				   && r != null
+				   && me.CanCast()
+				   && blink.CanBeCasted()
+				   && me.Distance2D(e) >= 450
+				   && me.Distance2D(e) <= 1150
+				   && r.Distance2D(me) >= 300
+				   && menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name)
+				   && Utils.SleepCheck("blink")
+				   )
+					{
+						blink.UseAbility(e.Position);
+						Utils.Sleep(250, "blink");
+					}
 				}
-			}
-			if (Active && me.Distance2D(e) <= 1400 && e.IsAlive && !ModifInv)
-			{
 				var charge = me.Modifiers.FirstOrDefault(y => y.Name == "modifier_earth_spirit_stone_caller_charge_counter");
 				ethereal = me.FindItem("item_ethereal_blade");
 				mom = me.FindItem("item_mask_of_madness");
@@ -300,6 +305,7 @@ namespace EarthSpirit
 				arcane = me.FindItem("item_arcane_boots");
 				stick = me.FindItem("item_magic_stick") ?? me.FindItem("item_magic_wand");
 				Shiva = me.FindItem("item_shivas_guard");
+
 				if (//W Skill
 				   W != null
 				   && charge.StackCount == 0
@@ -471,21 +477,7 @@ namespace EarthSpirit
 					ethereal.UseAbility(e);
 					Utils.Sleep(200, "ethereal");
 				} // ethereal Item end
-				if (
-					blink != null
-					&& Remmnant != null
-					&& me.CanCast()
-					&& blink.CanBeCasted()
-					&& me.Distance2D(e) >= 450
-					&& me.Distance2D(e) <= 1150
-					&& Remmnant.Distance2D(me) >= 300
-					&& menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name)
-					&& Utils.SleepCheck("blink")
-					)
-				{
-					blink.UseAbility(e.Position);
-					Utils.Sleep(250, "blink");
-				}
+				
 				if (
 					blink != null
 					&& me.CanCast()
@@ -626,8 +618,8 @@ namespace EarthSpirit
 			W = me.FindSpell("earth_spirit_rolling_boulder");
 			F = me.FindSpell("earth_spirit_petrify");
 			R = me.FindSpell("earth_spirit_magnetize");
-			
-			
+
+
 			var ModifInv = me.IsInvisible();
 			var magnetizemod = e.Modifiers.Where(y => y.Name == "modifier_earth_spirit_magnetize").DefaultIfEmpty(null).FirstOrDefault();
 
@@ -640,13 +632,11 @@ namespace EarthSpirit
 									   && x.Distance2D(me) <= 1700 && x.IsAlive && x.IsValid).ToList();
 			var remnantCount = remnant.Count;
 
-			var Remmnant = GetClosestToRemmnant(remnant, me);
-			var RemmnantEnem = GetClosestToRemmnant(remnant, e);
-			
+
 			if (qKey && me.Distance2D(e) <= 1400 && e != null && e.IsAlive && !ModifInv)
 			{
 				var Wmod = me.HasModifier("modifier_earth_spirit_rolling_boulder_caster");
-				if (remnantCount == 0)
+				if (remnant == null || remnantCount == 0)
 				{
 					if (
 					D.CanBeCasted()
@@ -669,72 +659,65 @@ namespace EarthSpirit
 						}
 					}
 				}
-				if (remnantCount > 0)
+				for (int i = 0; i < remnantCount; ++i)
 				{
-					if (
-						D != null && D.CanBeCasted()
-						&& ((Q != null && Q.CanBeCasted())
-						|| (W != null && W.CanBeCasted()))
-						&& !Wmod
-						&& me.Distance2D(Remmnant) >= 350
-						&& ((blink == null
-						|| !blink.CanBeCasted()
-						|| !menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name))
-						|| (blink != null && me.Distance2D(e) <= 450 && blink.CanBeCasted()))
-						)
+					var r = remnant[i];
+					
+					if (remnant != null || remnantCount > 0)
 					{
-						if (me.Distance2D(e) <= E.CastRange - 50
-							&& Utils.SleepCheck("Rem"))
+						if (
+							D != null && D.CanBeCasted()
+							&& ((Q != null && Q.CanBeCasted())
+							|| (W != null && W.CanBeCasted()))
+							&& !Wmod
+							&& me.Distance2D(r) >= 350
+							&& ((blink == null
+							|| !blink.CanBeCasted()
+							|| !menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name))
+							|| (blink != null && me.Distance2D(e) <= 450 && blink.CanBeCasted()))
+							)
 						{
-							if (me.NetworkActivity == NetworkActivity.Move)
-								me.Stop();
-							else
-								D.UseAbility(Prediction.InFront(me, 100));
-							Utils.Sleep(600, "Rem");
+							if (me.Distance2D(e) <= E.CastRange - 50
+								&& Utils.SleepCheck("Rem"))
+							{
+								if (me.NetworkActivity == NetworkActivity.Move)
+									me.Stop();
+								else
+									D.UseAbility(Prediction.InFront(me, 100));
+								Utils.Sleep(600, "Rem");
+							}
 						}
-					}
-					if (
-					   me.Distance2D(Remmnant) >= 200
-					   && me.Distance2D(Remmnant) <= 350
-					   && Q.CanBeCasted()
-					   && Utils.SleepCheck("RemMove"))
-					{
-						me.Move(Remmnant.Position);
-						Utils.Sleep(300, "RemMove");
-					}
-					if (//Q Skill
-					  Remmnant != null
-					  && Q != null
-					  && Q.CanBeCasted()
-					  && me.CanCast()
-					  && me.Distance2D(e) <= E.CastRange - 50
-					  && Remmnant.Distance2D(me) <= 210
-					  && Utils.SleepCheck(Remmnant.Handle.ToString() + "remnantQ")
-					  )
-					{
-						Q.CastSkillShot(e);
-						Utils.Sleep(250, Remmnant.Handle.ToString() + "remnantQ");
+						if (
+						   me.Distance2D(r) >= 200
+						   && me.Distance2D(r) <= 350
+						   && Q.CanBeCasted()
+						   && Utils.SleepCheck("RemMove"))
+						{
+							me.Move(r.Position);
+							Utils.Sleep(300, "RemMove");
+						}
+						if (//Q Skill
+						  r != null
+						  && Q != null
+						  && Q.CanBeCasted()
+						  && me.CanCast()
+						  && me.Distance2D(e) <= E.CastRange - 50
+						  && r.Distance2D(me) <= 210
+						  && Utils.SleepCheck(r.Handle.ToString() + "remnantQ")
+						  )
+						{
+							Q.CastSkillShot(e);
+							Utils.Sleep(250, r.Handle.ToString() + "remnantQ");
+						}
 					}
 				}
 			}
 			if (wKey)
 			{
 				var Wmod = me.HasModifier("modifier_earth_spirit_rolling_boulder_caster");
-
-				if (//W Skill
-					W != null
-					&& W.CanBeCasted()
-					&& me.Distance2D(e) <= W.CastRange - 200
-					&& Utils.SleepCheck(me.Handle.ToString() + "remnantW")
-					)
+				var delay0 = Task.Delay(350).ContinueWith(_ =>
 				{
-					W.CastSkillShot(e);
-					Utils.Sleep(250, me.Handle.ToString() + "remnantW");
-				}
-
-				var delay = Task.Delay(350).ContinueWith(_ =>
-				{
-					if (remnantCount == 0)
+					if (remnant == null || remnantCount == 0)
 					{
 						if (
 							D.CanBeCasted()
@@ -747,29 +730,47 @@ namespace EarthSpirit
 							Utils.Sleep(1800 + D.FindCastPoint(), "nextAction");
 						}
 					}
-					if (remnantCount > 0)
-					{
-						if (Remmnant!=null && me.Distance2D(Remmnant) >= 200)
-						{
-							if (
-								D.CanBeCasted()
-								&& Wmod
-								&& me.Distance2D(e) >= 600
+				});
+				for (int i = 0; i < remnantCount; ++i)
+				{
 
-								&& Utils.SleepCheck("nextAction")
-								)
+					if (//W Skill
+						W != null
+						&& W.CanBeCasted()
+						&& me.Distance2D(e) <= W.CastRange - 200
+						&& Utils.SleepCheck(me.Handle.ToString() + "remnantW")
+						)
+					{
+						W.CastSkillShot(e);
+						Utils.Sleep(250, me.Handle.ToString() + "remnantW");
+					}
+
+					var delay1 = Task.Delay(350).ContinueWith(_ =>
+					{
+						if (remnant != null && remnantCount > 0)
+						{
+							var r = remnant[i];
+							if (r != null && me.Distance2D(r) >= 200)
 							{
-								D.UseAbility(Prediction.InFront(me, 170));
-								Utils.Sleep(1800 + D.FindCastPoint(), "nextAction");
+								if (
+									D.CanBeCasted()
+									&& Wmod
+									&& me.Distance2D(e) >= 600
+
+									&& Utils.SleepCheck("nextAction")
+									)
+								{
+									D.UseAbility(Prediction.InFront(me, 170));
+									Utils.Sleep(1800 + D.FindCastPoint(), "nextAction");
+								}
 							}
 						}
-					}
-				});
-
+					});
+				}
 			}
 			if (eKey && me.Distance2D(e) <= 1400 && e != null && e.IsAlive && !ModifInv)
 			{
-				if (remnantCount == 0)
+				if (remnant == null || remnantCount == 0)
 				{
 					if (
 					D.CanBeCasted()
@@ -787,59 +788,63 @@ namespace EarthSpirit
 						}
 					}
 				}
-				else if (remnantCount > 0)
+				for (int i = 0; i < remnantCount; ++i)
 				{
-					if (RemmnantEnem != null && RemmnantEnem.Distance2D(e) >= 300)
+					var r = remnant[i];
+					if (remnant != null && remnantCount > 0)
 					{
-						if (
-							D.CanBeCasted()
-							&& (E != null && E.CanBeCasted())
-							   && !RemmnantEnem.HasModifier("modifier_earth_spirit_boulder_smash")
-							   && !RemmnantEnem.HasModifier("modifier_earth_spirit_geomagnetic_grip")
-							   )
+						if(r.Distance2D(e) >= 300)
 						{
-							if (me.Distance2D(e) <= E.CastRange - 50
-								&& Utils.SleepCheck("Rem"))
+							if (
+								D.CanBeCasted()
+								&& (E != null && E.CanBeCasted())
+								   && !r.HasModifier("modifier_earth_spirit_boulder_smash")
+								   && !r.HasModifier("modifier_earth_spirit_geomagnetic_grip")
+								   )
 							{
-								if (me.NetworkActivity == NetworkActivity.Move)
-									me.Stop();
-								else
-									D.UseAbility(e.Position);
-								Utils.Sleep(1000, "Rem");
+								if (me.Distance2D(e) <= E.CastRange - 50
+									&& Utils.SleepCheck("Rem"))
+								{
+									if (me.NetworkActivity == NetworkActivity.Move)
+										me.Stop();
+									else
+										D.UseAbility(e.Position);
+									Utils.Sleep(1000, "Rem");
+								}
 							}
 						}
-					}
-					if (RemmnantEnem != null
-					   && E != null
-					   && E.CanBeCasted()
-					   && me.CanCast()
-					   && me.Distance2D(RemmnantEnem) < E.CastRange
-					   && me.Distance2D(e) <= E.CastRange
-					   )
-					{
-						if (//E Skill
-							e.Distance2D(RemmnantEnem) <= 200
-							&& Utils.SleepCheck(RemmnantEnem.Handle.ToString() + "remnantE")
+						if (r != null
+						   && E != null
+						   && E.CanBeCasted()
+						   && me.CanCast()
+						   && me.Distance2D(r) < E.CastRange
+						   && me.Distance2D(e) <= E.CastRange
 						   )
 						{
-							E.UseAbility(RemmnantEnem.Position);
-							Utils.Sleep(220, RemmnantEnem.Handle.ToString() + "remnantE");
-						}
-						if (//E Skill
-						  me.Distance2D(e) <= 200
-						  && e.Distance2D(RemmnantEnem) > 0
-						  && me.Distance2D(RemmnantEnem) >= e.Distance2D(RemmnantEnem)
-						  && Utils.SleepCheck(RemmnantEnem.Handle.ToString() + "remnantE")
-						  )
-						{
-							E.UseAbility(RemmnantEnem.Position);
-							Utils.Sleep(220, RemmnantEnem.Handle.ToString() + "remnantE");
+							if (//E Skill
+								e.Distance2D(r) <= 200
+								&& Utils.SleepCheck(r.Handle.ToString() + "remnantE")
+							   )
+							{
+								E.UseAbility(r.Position);
+								Utils.Sleep(220, r.Handle.ToString() + "remnantE");
+							}
+							if (//E Skill
+							  me.Distance2D(e) <= 200
+							  && e.Distance2D(r) > 0
+							  && me.Distance2D(r) >= e.Distance2D(r)
+							  && Utils.SleepCheck(r.Handle.ToString() + "remnantE")
+							  )
+							{
+								E.UseAbility(r.Position);
+								Utils.Sleep(220, r.Handle.ToString() + "remnantE");
+							}
 						}
 					}
 				}
 			}
 		}
-		}
+	}
 	class Print
 	{
 		public class LogMessage
