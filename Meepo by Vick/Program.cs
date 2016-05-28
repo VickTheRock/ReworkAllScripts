@@ -310,8 +310,9 @@ namespace Meepo
 			/***************************************************POOF*************************************************************/
 			/**************************************************COMBO*************************************************************/
 			if (activated)
-			{
-				for (int i = 0; i < meepos.Count(); i++)
+            {
+                initMeepo = GetClosestToTarget(meepos, target);
+                for (int i = 0; i < meepos.Count(); i++)
 				{
 					target = ClosestToMouse(meepos[i]);
 					if (target == null) return;
@@ -334,9 +335,8 @@ namespace Meepo
 							w[i].UseAbility(target.Position);
 							Utils.Sleep(250, meepos[i].Handle + "poof");
 						}
-
-                        initMeepo = GetClosestToTarget(meepos, target);
-                        if (me.Modifiers.Any(y => y.Name == "modifier_fountain_aura_buff"))
+                        
+					    if (me.Modifiers.Any(y => y.Name == "modifier_fountain_aura_buff"))
 					    {
 					        if (
 					            me.Spellbook.SpellW != null
@@ -453,7 +453,8 @@ namespace Meepo
 						for (int j = 0; j < meepos.Count(); j++)
 						{
 							if (
-							w[j] != null && meepos[j].Handle != me.Handle
+							w[j] != null 
+                            && meepos[j].Handle != me.Handle
 							&& meepos[j].CanCast()
 							&& (
 							meepos[j].Handle != f.Handle && f.Modifiers.Any(y => y.Name == "modifier_fountain_aura_buff")
@@ -496,7 +497,7 @@ namespace Meepo
 						|| (blink != null && blink.CanBeCasted() && me.Distance2D(target) <= 1150))
 						&& (
 							meepos[i].Handle != f.Handle && f.Modifiers.Any(y => y.Name == "modifier_fountain_aura_buff")
-							|| !f.Modifiers.Any(y => y.Name == "modifier_fountain_aura_buff")
+							|| f.Modifiers.Any(y => y.Name != "modifier_fountain_aura_buff")
 							)
 						&& !target.IsMagicImmune()
 						&& w[i].CanBeCasted() 
