@@ -5,38 +5,42 @@ using Ensage;
 using SharpDX;
 using Ensage.Common.Extensions;
 using Ensage.Common;
+using  Ensage.Common.Menu;
 using SharpDX.Direct3D9;
 using System.Windows.Input;
-
+using System.Collections.Generic;
 namespace Pugna
 {
 	internal class Program
 	{
-
-		private static bool activated;
+        private static readonly Menu menu = new Menu("Pugna", "Pugna", true, "npc_dota_hero_pugna", true);
+        private static bool Active;
+	    private static Hero me, target;
 		private static Item orchid, sheep, vail, soulring, arcane, blink, shiva, dagon, atos, ethereal, cheese, ghost;
 		private static Ability Q, W, E, R;
-		private static bool toggle;
-		private static bool blinkToggle = true;
-		private static bool useUltimate = true;
 		private static Font txt;
 		private static Font noti;
 		private static Line lines;
-		private static bool autoUlt = true;
-		private static Key keyCombo = Key.D;
-		private static Key toggleKey = Key.M;
-		private static Key blinkToggleKey = Key.P;
-		private static Key UseUltimate = Key.H;
 
 
 		static void Main(string[] args)
 		{
 
 			Game.OnUpdate += Game_OnUpdate;
-			Game.OnWndProc += Game_OnWndProc;
-			Console.WriteLine("> Pugna# loaded!");
-
-			txt = new Font(
+            menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true));
+            menu.AddItem(new MenuItem("keyBind", "Combo key").SetValue(new KeyBind('D', KeyBindType.Press)));
+            menu.AddItem(new MenuItem("agh", "Use items if i have Aghanim and I use Life Drain").SetValue(true));
+            menu.AddItem(
+               new MenuItem("Skills", "Skills").SetValue(new AbilityToggler(new Dictionary<string, bool>
+               {
+                    { "pugna_decrepify", true},
+                    { "pugna_life_drain", true},
+                    { "pugna_nether_ward", true},
+                    { "pugna_nether_blast", true}
+               })));
+            menu.AddItem(new MenuItem("Heel", "Min targets to NetherWard").SetValue(new Slider(2, 1, 5)));
+            menu.AddToMainMenu();
+            txt = new Font(
 			   Drawing.Direct3DDevice9,
 			   new FontDescription
 			   {
@@ -58,7 +62,9 @@ namespace Pugna
 
 			lines = new Line(Drawing.Direct3DDevice9);
 
-			Drawing.OnPreReset += Drawing_OnPreReset;
+            Print.LogMessage.Success("|Pugna|");
+            Print.ConsoleMessage.Success("|Pugna|");
+            Drawing.OnPreReset += Drawing_OnPreReset;
 			Drawing.OnPostReset += Drawing_OnPostReset;
 			Drawing.OnEndScene += Drawing_OnEndScene;
 			AppDomain.CurrentDomain.DomainUnload += CurrentDomain_DomainUnload;
@@ -66,18 +72,13 @@ namespace Pugna
 
 		public static void Game_OnUpdate(EventArgs args)
 		{
-			var me = ObjectMgr.LocalHero;
+			me = ObjectManager.LocalHero;
 
-			if (!Game.IsInGame || me.ClassID != ClassID.CDOTA_Unit_Hero_Pugna || me == null)
-			{
-				return;
-			}
-
-			var target = me.ClosestToMouseTarget(2000);
-			if (target == null)
-			{
-				return;
-			}
+			if (!Game.IsInGame || me.ClassID != ClassID.CDOTA_Unit_Hero_Pugna || me == null) return;
+            if (!menu.Item("enabled").IsActive())
+                return;
+            target = me.ClosestToMouseTarget(2000);
+			if (target == null) return;
 
 			//spell
 			Q = me.Spellbook.SpellQ;
@@ -112,122 +113,102 @@ namespace Pugna
 			shiva = me.FindItem("item_shivas_guard");
 
 			dagon = me.Inventory.Items.FirstOrDefault(item => item.Name.Contains("item_dagon"));
+			//var ModifRod = target.Modifiers.Any(y => y.Name == "modifier_rod_of_atos_debuff");
+		    var stoneModif = target.Modifiers.Any(y => y.Name == "modifier_medusa_stone_gaze_stone");
+            Active = Game.IsKeyDown(menu.Item("keyBind").GetValue<KeyBind>().Key);
 
-
-
-
-			
-			var ModifRod = target.Modifiers.Any(y => y.Name == "modifier_rod_of_atos_debuff");
-			var ModifEther = target.Modifiers.Any(y => y.Name == "modifier_item_ethereal_blade_slow");
-			var ModifVail = target.Modifiers.Any(y => y.Name == "modifier_item_veil_of_discord_debuff");
-			var stoneModif = target.Modifiers.Any(y => y.Name == "modifier_medusa_stone_gaze_stone");
-
-
-			if (activated && me.IsAlive && target.IsAlive && Utils.SleepCheck("activated"))
+            if (Active && me.IsAlive && target.IsAlive && Utils.SleepCheck("Active"))
 			{
 				var noBlade = target.Modifiers.Any(y => y.Name == "modifier_item_blade_mail_reflect");
-				if (R.IsInAbilityPhase || me.Modifiers.Any(y => y.Name == "modifier_pugna_life_drain") )
-					return;
+
+                if (stoneModif) return;
+                if (R.IsInAbilityPhase || me.Modifiers.Any(y => y.Name == "modifier_pugna_life_drain")) return;
 				if (target.IsVisible && me.Distance2D(target) <= 2300 && !noBlade)
 				{
-					if ((!me.IsChanneling() && !me.AghanimState()) || me.AghanimState())
+					if ((!me.IsChanneling() && !me.AghanimState()) || (me.AghanimState() && menu.Item("agh").IsActive()))
 					{
-						if (
-										 blink != null
-										 && W.CanBeCasted()
-										 && me.CanCast()
-										 && blinkToggle
-										 && blink.CanBeCasted()
-										 && me.Distance2D(target) > 600
-										 && me.Distance2D(target) < 1150
-										 && !stoneModif
-										 && Utils.SleepCheck("blink")
-							   )
-						{
-							blink.UseAbility(target.Position);
-							Utils.Sleep(250, "blink");
-						}
-						if (
-											 W != null
-											 && W.CanBeCasted()
-											 && (target.IsLinkensProtected()
-											 || !target.IsLinkensProtected())
-											 && me.CanCast()
-											 && me.Distance2D(target) < 1400
-											 && !stoneModif
-											 && Utils.SleepCheck("W")
-							   )
+                        if ( // atos Blade
+                            atos != null
+                            && atos.CanBeCasted()
+                            && me.CanCast()
+                            && !target.IsLinkensProtected()
+                            && !target.IsMagicImmune()
+                            && Utils.SleepCheck("atos")
+                            && me.Distance2D(target) <= 2000
+                            )
+                        {
+                            atos.UseAbility(target);
+                            Utils.Sleep(250, "atos");
+                        } // atos Item end
+                        float angle = me.FindAngleBetween(target.Position, true);
+                        Vector3 pos = new Vector3((float)(target.Position.X - 350 * Math.Cos(angle)), (float)(target.Position.Y - 350 * Math.Sin(angle)), 0);
+                        if (
+                            blink != null
+                            && Q.CanBeCasted()
+                            && me.CanCast()
+                            && blink.CanBeCasted()
+                            && me.Distance2D(target) >= 590
+                            && me.Distance2D(pos) <= 1190
+                            && Utils.SleepCheck("blink")
+                            )
+                        {
+                            blink.UseAbility(pos);
+                            Utils.Sleep(250, "blink");
+                        }
+                        if (
+							W != null
+							&& W.CanBeCasted()
+                            && (Q.CanBeCasted()
+                            || R.CanBeCasted())
+							&& me.CanCast()
+                            && menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name)
+                            && me.Distance2D(target) < 1400
+							&& Utils.SleepCheck("W")
+							)
 						{
 							W.UseAbility(target);
 							Utils.Sleep(200, "W");
 						}
-						if ( // atos Blade
-									  atos != null
-									 && atos.CanBeCasted()
-									 && me.CanCast()
-									 && !target.IsLinkensProtected()
-									 && !target.IsMagicImmune()
-									 && Utils.SleepCheck("atos")
-									 && me.Distance2D(target) <= 2000
-									  )
+						
+						if (!W.CanBeCasted() || W == null || !menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name))
 						{
-							atos.UseAbility(target);
-							Utils.Sleep(250, "atos");
-						} // atos Item end
-						if (!W.CanBeCasted() || W == null)
-						{
-
-							if ( // atos Blade
-										   atos != null
-										  && atos.CanBeCasted()
-										  && me.CanCast()
-										  && !target.IsLinkensProtected()
-										  && !target.IsMagicImmune()
-										  && Utils.SleepCheck("atos")
-										  && me.Distance2D(target) <= 2000
-										   )
-							{
-								atos.UseAbility(target);
-								Utils.Sleep(250, "atos");
-							} // atos Item end
-
-							if (
-												Q != null
-											   && Q.CanBeCasted()
-											   && me.CanCast()
-											   && me.Distance2D(target) < 1400
-											   && !stoneModif
-											   && Utils.SleepCheck("Q")
-											   )
+                            if (
+								Q != null
+								&& Q.CanBeCasted()
+								&& me.CanCast()
+                                && menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name)
+                                && me.Distance2D(target) < 1400
+								&& Utils.SleepCheck("Q")
+								)
 							{
 								Q.UseAbility(target.Position);
 								Utils.Sleep(200, "Q");
 							}
 							if ( // orchid
-									  orchid != null
-									  && orchid.CanBeCasted()
-									  && me.CanCast()
-									  && !target.IsLinkensProtected()
-									  && !target.IsMagicImmune()
-									  && Utils.SleepCheck("orchid")
-									  && me.Distance2D(target) <= 1400
-									  && !stoneModif
+								orchid != null
+								&& orchid.CanBeCasted()
+								&& me.CanCast()
+								&& !target.IsLinkensProtected()
+								&& !target.IsMagicImmune()
+								&& Utils.SleepCheck("orchid")
+								&& me.Distance2D(target) <= 1400
+								
 								)
 							{
 								orchid.UseAbility(target);
-								Utils.Sleep(250 + Game.Ping, "orchid");
+								Utils.Sleep(250 , "orchid");
 							} // orchid Item end
 							if (!orchid.CanBeCasted() || orchid == null)
 							{
 								if ( // vail
-									   vail != null
-									  && vail.CanBeCasted()
-									  && me.CanCast()
-									  && !ModifVail
-									  && !target.IsMagicImmune()
-									  && Utils.SleepCheck("vail")
-									  && me.Distance2D(target) <= 1500
-									  )
+								    vail != null
+								    && vail.CanBeCasted()
+								    && me.CanCast()
+								    && target.Modifiers.Any(y => y.Name != "modifier_item_veil_of_discord_debuff")
+								    && !target.IsMagicImmune()
+								    && Utils.SleepCheck("vail")
+								    && me.Distance2D(target) <= 1500
+								    )
 								{
 									vail.UseAbility(target.Position);
 									Utils.Sleep(250, "vail");
@@ -236,31 +217,25 @@ namespace Pugna
 								{
 									
 									if (// ethereal
-										   ethereal != null
-										   && ethereal.CanBeCasted()
-										   && me.CanCast()
-
-										   && !target.IsLinkensProtected()
-										   && !target.IsMagicImmune()
-										   && !stoneModif
-										   && Utils.SleepCheck("ethereal")
-										  )
+										ethereal != null
+										&& ethereal.CanBeCasted()
+										&& me.CanCast()
+										&& !target.IsLinkensProtected()
+										&& !target.IsMagicImmune()
+										&& Utils.SleepCheck("ethereal")
+									    )
 									{
 										ethereal.UseAbility(target);
 										Utils.Sleep(200, "ethereal");
 									} // ethereal Item end
 									if (!ethereal.CanBeCasted() || ethereal == null)
 									{
-
-
-										
-
 										if (// SoulRing Item 
 											soulring != null
 											&& soulring.CanBeCasted()
 											&& me.CanCast()
-											&& me.Health / me.MaximumHealth <= 0.5
-											&& me.Mana <= R.ManaCost
+                                            && me.Health >= (me.MaximumHealth * 0.3)
+                                            && me.Mana <= R.ManaCost
 											)
 										{
 											soulring.UseAbility();
@@ -301,12 +276,9 @@ namespace Pugna
 
 										{
 											shiva.UseAbility();
-											Utils.Sleep(250 + Game.Ping, "shiva");
+											Utils.Sleep(250 , "shiva");
 										} // Shiva Item end
-
-
-
-
+                                        
 
 										if ( // sheep
 											sheep != null
@@ -316,23 +288,23 @@ namespace Pugna
 											&& !target.IsMagicImmune()
 											&& Utils.SleepCheck("sheep")
 											&& me.Distance2D(target) <= 1400
-											&& !stoneModif
+											
 											)
 										{
 											sheep.UseAbility(target);
-											Utils.Sleep(250 + Game.Ping, "sheep");
+											Utils.Sleep(250 , "sheep");
 										} // sheep Item end
 
 										if (// Dagon
 											me.CanCast()
 											&& dagon != null
 											&& (ethereal == null
-											|| (ModifEther
+											|| (target.Modifiers.Any(y => y.Name == "modifier_item_ethereal_blade_slow")
 											|| ethereal.Cooldown < 17))
 											&& !target.IsLinkensProtected()
 											&& dagon.CanBeCasted()
 											&& !target.IsMagicImmune()
-											&& !stoneModif
+											
 											&& Utils.SleepCheck("dagon")
 										   )
 										{
@@ -349,42 +321,45 @@ namespace Pugna
 											 && me.Distance2D(target) <= 700)
 										{
 											cheese.UseAbility();
-											Utils.Sleep(200 + Game.Ping, "cheese");
+											Utils.Sleep(200 , "cheese");
 										} // cheese Item end
-
-									}
+                                        var v = ObjectManager.GetEntities<Hero>()
+                                            .Where(x => x.Team != me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && x.Distance2D(me) <= 1200).ToList();
+                                        if (E != null && E.CanBeCasted() && (v.Count(x => x.Distance2D(me) <= 1200) >=
+                                                                                                 (menu.Item("Heel").GetValue<Slider>().Value)) &&
+                                                            menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(E.Name) && Utils.SleepCheck("E"))
+                                        {
+                                            E.UseAbility(Prediction.InFront(me, 70));
+                                            Utils.Sleep(100, "E");
+                                        }
+                                    }
 								}
 							}
 						}
-						if (me.Modifiers.All(y => y.Name == "modifier_pugna_life_drain"))
-							return;
-						//, , , , arcane, blink, , , atos, , , ghost;
-						if (
-									   (R != null
-									   && R.CanBeCasted()
-									   && !me.IsChanneling()
-									   && !me.Modifiers.All(y => y.Name == "modifier_pugna_life_drain")
-									   && useUltimate
-									   && (!Q.CanBeCasted() || Q == null)
-									   && (!W.CanBeCasted() || W == null)
-									   && (!atos.CanBeCasted() || atos == null)
-									   && (!orchid.CanBeCasted() || orchid == null)
-									   && (!sheep.CanBeCasted() || sheep == null)
-									   && (!dagon.CanBeCasted() || dagon == null)
-									   && (!ethereal.CanBeCasted() || ethereal == null)
-									   && (!cheese.CanBeCasted() || cheese == null)
-									   && me.Position.Distance2D(target) < 1200
-									   && !stoneModif)
-
-									   && Utils.SleepCheck("R"))
+                        if (
+							(R != null
+							&& R.CanBeCasted()
+                            && menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name)
+                            && !me.IsChanneling()
+							&& me.Modifiers.All(y => y.Name != "modifier_pugna_life_drain")
+							&& (!Q.CanBeCasted() || Q == null || !menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name))
+							&& (!W.CanBeCasted() || W == null || !menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name))
+							&& (!atos.CanBeCasted() || atos == null)
+							&& (!orchid.CanBeCasted() || orchid == null)
+							&& (!sheep.CanBeCasted() || sheep == null)
+							&& (!dagon.CanBeCasted() || dagon == null)
+							&& (!ethereal.CanBeCasted() || ethereal == null)
+							&& (!cheese.CanBeCasted() || cheese == null)
+							&& me.Position.Distance2D(target) < 1000
+							)
+							&& Utils.SleepCheck("R"))
 						{
 							R.UseAbility(target);
-							Utils.Sleep(330, "R");
+							Utils.Sleep(200, "R");
 						}
-						return;
 					}
 				}
-				Utils.Sleep(200, "activated");
+				Utils.Sleep(50, "Active");
 			}
 		}
 		static void Drawing_OnEndScene(EventArgs args)
@@ -392,60 +367,19 @@ namespace Pugna
 			if (Drawing.Direct3DDevice9 == null || Drawing.Direct3DDevice9.IsDisposed || !Game.IsInGame)
 				return;
 
-			var player = ObjectMgr.LocalPlayer;
-			var me = ObjectMgr.LocalHero;
+			var player = ObjectManager.LocalPlayer;
+			var me = ObjectManager.LocalHero;
 			if (player == null || player.Team == Team.Observer || me.ClassID != ClassID.CDOTA_Unit_Hero_Pugna)
 				return;
 
-			if (activated)
+			if (Active)
 			{
 				DrawBox(2, 510, 130, 20, 1, new ColorBGRA(0, 0, 100, 100));
 				DrawFilledBox(2, 510, 130, 20, new ColorBGRA(0, 0, 0, 100));
 				DrawShadowText("Pugna#: Comboing!", 4, 510, Color.DeepPink, txt);
 			}
-			if (toggle && !activated)
-			{
-				DrawBox(2, 530, 410, 54, 1, new ColorBGRA(0, 0, 100, 100));
-				DrawFilledBox(2, 530, 410, 54, new ColorBGRA(0, 0, 0, 100));
-				DrawShadowText("Pugna#: Enabled\nBlink on/off(P): " + blinkToggle + " | UseUlt on/off(H): " + useUltimate + " | [" + keyCombo + "] for combo \n[" + toggleKey + "] For toggle combo | [" + blinkToggleKey +
-					"] For toggle blink | [" + UseUltimate + "] For toggle UseUlt ", 4, 530, Color.OrangeRed, txt);
-			}
-			if (!toggle)
-			{
-				DrawBox(2, 530, 125, 20, 1, new ColorBGRA(0, 0, 100, 100));
-				DrawFilledBox(2, 530, 125, 20, new ColorBGRA(0, 0, 0, 100));
-				DrawShadowText("Open MENU |-->[" + toggleKey + "]", 4, 530, Color.DeepPink, txt);
-			}
 		}
-
-		private static void Game_OnWndProc(WndEventArgs args)
-		{
-			if (!Game.IsChatOpen)
-			{
-				if (Game.IsKeyDown(keyCombo))
-					activated = true;
-				else
-					activated = false;
-
-				if (Game.IsKeyDown(toggleKey) && Utils.SleepCheck("toggle"))
-				{
-					toggle = !toggle;
-					Utils.Sleep(150, "toggle");
-				}
-
-				if (Game.IsKeyDown(UseUltimate) && Utils.SleepCheck("useUltimate"))
-				{
-					useUltimate = !useUltimate;
-					Utils.Sleep(150, "useUltimate");
-				}
-
-				if (Game.IsKeyDown(blinkToggleKey) && Utils.SleepCheck("toggleBlink"))
-				{
-					blinkToggle = !blinkToggle;
-					Utils.Sleep(150, "toggleBlink");
-				}
-			}
-		}
+        
 
 		static void CurrentDomain_DomainUnload(object sender, EventArgs e)
 		{
@@ -501,7 +435,32 @@ namespace Pugna
 			f.DrawText(null, stext, x + 1, y + 1, Color.Black);
 			f.DrawText(null, stext, x, y, color);
 		}
-	}
+    }
+    class Print
+    {
+        public class LogMessage
+        {
+            public static void Success(string text, params object[] arguments)
+            {
+                Game.PrintMessage("<font color='#e0007b'>" + text + "</font>", MessageType.LogMessage);
+            }
+        } // Console class
+
+        public class ConsoleMessage
+        {
+            public static void Encolored(string text, ConsoleColor color, params object[] arguments)
+            {
+                var clr = Console.ForegroundColor;
+                Console.ForegroundColor = color;
+                Console.WriteLine(text, arguments);
+                Console.ForegroundColor = clr;
+            }
+            public static void Success(string text, params object[] arguments)
+            {
+                Encolored(text, ConsoleColor.Magenta, arguments);
+            }
+        } // LogMessage class
+    }
 }
 
 
