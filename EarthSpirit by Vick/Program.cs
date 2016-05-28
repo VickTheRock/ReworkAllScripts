@@ -1,3 +1,4 @@
+
 namespace EarthSpirit
 {
     using System;
@@ -119,8 +120,7 @@ namespace EarthSpirit
 
             if (Active && me.Distance2D(e) <= 1300 && e.IsAlive && !me.IsInvisible() && Utils.SleepCheck("Combo"))
             {
-                Wmod = me.HasModifier("modifier_earth_spirit_rolling_boulder_caster");
-                if (remnantCount == 0)
+                if (remnantCount <= 0)
                 {
                     if (
                     D.CanBeCasted()
@@ -143,9 +143,7 @@ namespace EarthSpirit
                             Utils.Sleep(600, "Rem");
                         }
                     }
-                    else if (remnantCount == 0)
-                    {
-                        if (
+                    else if (
                         D.CanBeCasted()
                         && Q != null
                         && !Q.CanBeCasted()
@@ -156,16 +154,15 @@ namespace EarthSpirit
                         || !menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name))
                         || (blink != null && blink.CanBeCasted() && me.Distance2D(e) <= 450))
                         )
+                    {
+                        if (me.Distance2D(e) <= E.CastRange - 50
+                            && Utils.SleepCheck("Rem"))
                         {
-                            if (me.Distance2D(e) <= E.CastRange - 50
-                                && Utils.SleepCheck("Rem"))
-                            {
-                                if (me.NetworkActivity == NetworkActivity.Move)
-                                    me.Stop();
-                                else
-                                    D.UseAbility(Prediction.InFront(e, 0));
-                                Utils.Sleep(600, "Rem");
-                            }
+                            if (me.NetworkActivity == NetworkActivity.Move)
+                                me.Stop();
+                            else
+                                D.UseAbility(Prediction.InFront(e, 0));
+                            Utils.Sleep(600, "Rem");
                         }
                     }
                 }
@@ -173,7 +170,7 @@ namespace EarthSpirit
                 {
                     var r = remnant[i];
 
-                    if (remnant != null || remnantCount > 0)
+                    if (remnantCount >=1)
                     {
                         if (
                             D != null && D.CanBeCasted()
@@ -207,32 +204,30 @@ namespace EarthSpirit
                             Utils.Sleep(250, "RemMove");
                         }
                         if (//Q Skill
-                            remnant != null
-                            && W != null
+                            W != null
                             && (!Q.CanBeCasted()
                             || Q == null)
                             && !E.CanBeCasted()
                             && W.CanBeCasted()
                             && me.Distance2D(e) <= E.CastRange - 50
                             && me.CanCast()
-                            && Utils.SleepCheck(me.Handle.ToString() + "remnantW")
+                            && Utils.SleepCheck(me.Handle + "remnantW")
                             )
                         {
                             W.CastSkillShot(e);
-                            Utils.Sleep(250, me.Handle.ToString() + "remnantW");
+                            Utils.Sleep(250, me.Handle + "remnantW");
                         }
                         if (//Q Skill
-                           remnant != null
-                           && Q != null
+                           Q != null
                            && Q.CanBeCasted()
                            && me.CanCast()
                            && me.Distance2D(e) <= E.CastRange - 50
                            && me.Distance2D(r) <= 210
-                           && Utils.SleepCheck(r.Handle.ToString() + "remnantQ")
+                           && Utils.SleepCheck(r.Handle + "remnantQ")
                            )
                         {
                             Q.CastSkillShot(e);
-                            Utils.Sleep(250, r.Handle.ToString() + "remnantQ");
+                            Utils.Sleep(250, r.Handle + "remnantQ");
                         }
                         else
                         if (//W Skill
@@ -240,11 +235,11 @@ namespace EarthSpirit
                            && W.CanBeCasted()
                            && !Q.CanBeCasted()
                            && me.Distance2D(e) <= E.CastRange
-                           && Utils.SleepCheck(me.Handle.ToString() + "remnantW")
+                           && Utils.SleepCheck(me.Handle + "remnantW")
                            )
                         {
                             W.CastSkillShot(e);
-                            Utils.Sleep(250, me.Handle.ToString() + "remnantW");
+                            Utils.Sleep(250, me.Handle + "remnantW");
                         }
                         if (r != null
                            && E != null
@@ -256,21 +251,21 @@ namespace EarthSpirit
                         {
                             if (//E Skill
                                 e.Distance2D(r) <= 200
-                                && Utils.SleepCheck(r.Handle.ToString() + "remnantE")
+                                && Utils.SleepCheck(r.Handle + "remnantE")
                                )
                             {
                                 E.UseAbility(r.Position);
-                                Utils.Sleep(220, r.Handle.ToString() + "remnantE");
+                                Utils.Sleep(220, r.Handle + "remnantE");
                             }
                             if (//E Skill
                               me.Distance2D(e) <= 200
                               && e.Distance2D(r) > 0
                               && me.Distance2D(r) >= e.Distance2D(r)
-                              && Utils.SleepCheck(r.Handle.ToString() + "remnantE")
+                              && Utils.SleepCheck(r.Handle + "remnantE")
                               )
                             {
                                 E.UseAbility(r.Position);
-                                Utils.Sleep(220, r.Handle.ToString() + "remnantE");
+                                Utils.Sleep(220, r.Handle + "remnantE");
                             }
                         }
                         if (
@@ -290,8 +285,8 @@ namespace EarthSpirit
                             Utils.Sleep(250, "blink");
                         }
                     }
-                    Utils.Sleep(50, "Combo");
                 }
+                Utils.Sleep(50, "Combo");
             }
         }
         public static void Others(EventArgs args)
@@ -308,12 +303,12 @@ namespace EarthSpirit
 
             if (e == null) return;
 
-            D = me.FindSpell("earth_spirit_stone_caller");
-            Q = me.FindSpell("earth_spirit_boulder_smash");
+            D = me.Spellbook.SpellD;
+            Q = me.Spellbook.SpellQ;
             E = me.Spellbook.SpellE;
-            W = me.FindSpell("earth_spirit_rolling_boulder");
-            F = me.FindSpell("earth_spirit_petrify");
-            R = me.FindSpell("earth_spirit_magnetize");
+            W = me.Spellbook.SpellW;
+            F = me.Spellbook.SpellF;
+            R = me.Spellbook.SpellR;
 
 
             var magnetizemod = e.Modifiers.Where(y => y.Name == "modifier_earth_spirit_magnetize").DefaultIfEmpty(null).FirstOrDefault();
@@ -329,8 +324,8 @@ namespace EarthSpirit
             if (Active && me.Distance2D(e) <= 1400 && e.IsAlive && !me.IsInvisible() && Utils.SleepCheck("Combo"))
             {
                 Wmod = me.HasModifier("modifier_earth_spirit_rolling_boulder_caster");
-
                 
+
                 ethereal = me.FindItem("item_ethereal_blade");
                 mom = me.FindItem("item_mask_of_madness");
                 urn = me.FindItem("item_urn_of_shadows");
@@ -358,6 +353,7 @@ namespace EarthSpirit
                 Shiva = me.FindItem("item_shivas_guard");
                 var stoneModif = e.Modifiers.Any(y => y.Name == "modifier_medusa_stone_gaze_stone");
                 var charge = me.Modifiers.FirstOrDefault(y => y.Name == "modifier_earth_spirit_stone_caller_charge_counter");
+
                 if (//W Skill
                        W != null
                        && charge.StackCount == 0
@@ -382,6 +378,7 @@ namespace EarthSpirit
                     mom.UseAbility();
                     Utils.Sleep(250, "mom");
                 }
+                
                 if ( // Hellbard
                     halberd != null
                     && halberd.CanBeCasted()
@@ -459,6 +456,7 @@ namespace EarthSpirit
                     medall.UseAbility(e);
                     Utils.Sleep(250, "Medall");
                 } // Medall Item end
+
                 if ( //R Skill
                     R != null
                     && R.CanBeCasted()
@@ -649,12 +647,13 @@ namespace EarthSpirit
                     bkb.UseAbility();
                     Utils.Sleep(100, "bkb");
                 }
+               
                 Utils.Sleep(50, "Combo");
             }
             if (qKey && me.Distance2D(e) <= 1400 && e != null && e.IsAlive && !me.IsInvisible())
             {
                  Wmod = me.HasModifier("modifier_earth_spirit_rolling_boulder_caster");
-                if (remnant == null || remnantCount == 0)
+                if (remnant.Count == 0)
                 {
                     if (
                     D.CanBeCasted()
@@ -677,12 +676,13 @@ namespace EarthSpirit
                         }
                     }
                 }
-                for (int i = 0; i < remnantCount; ++i)
+                if (remnantCount >= 1)
                 {
+                    for (int i = 0; i < remnantCount; ++i)
+                    {
                     var r = remnant[i];
 
-                    if (remnant != null || remnantCount > 0)
-                    {
+                    
                         if (
                             D != null && D.CanBeCasted()
                             && ((Q != null && Q.CanBeCasted())
@@ -735,7 +735,7 @@ namespace EarthSpirit
                 Wmod = me.HasModifier("modifier_earth_spirit_rolling_boulder_caster");
                 Task.Delay(350).ContinueWith(_ =>
                 {
-                    if (remnant == null || remnantCount == 0)
+                    if (remnant.Count == 0)
                     {
                         if (
                             D.CanBeCasted()
@@ -749,8 +749,10 @@ namespace EarthSpirit
                         }
                     }
                 });
-                for (var i = 0; i < remnantCount; ++i)
+                if (remnantCount >= 1)
                 {
+                    for (var i = 0; i < remnantCount; ++i)
+                    {
 
                     if (//W Skill
                         W != null
@@ -776,8 +778,7 @@ namespace EarthSpirit
 
                     Task.Delay(350).ContinueWith(_ =>
                     {
-                        if (remnant != null && remnantCount > 0)
-                        {
+                        
                             var r = remnant[i];
                             if (r != null && me.Distance2D(r) >= 200)
                             {
@@ -793,13 +794,13 @@ namespace EarthSpirit
                                     Utils.Sleep(1800 + D.FindCastPoint(), "nextAction");
                                 }
                             }
-                        }
-                    });
+                        });
+                    }
                 }
             }
             if (eKey && me.Distance2D(e) <= 1400 && e != null && e.IsAlive && !me.IsInvisible())
             {
-                if (remnant == null || remnantCount == 0)
+                if (remnant.Count == 0)
                 {
                     if (
                     D.CanBeCasted()
@@ -817,11 +818,12 @@ namespace EarthSpirit
                         }
                     }
                 }
-                for (int i = 0; i < remnantCount; ++i)
+                if (remnantCount >= 1)
                 {
-                    var r = remnant[i];
-                    if (remnant != null && remnantCount > 0)
+                    for (int i = 0; i < remnantCount; ++i)
                     {
+                    var r = remnant[i];
+                    
                         if (r.Distance2D(e) >= 300)
                         {
                             if (
@@ -852,21 +854,21 @@ namespace EarthSpirit
                         {
                             if (//E Skill
                                 e.Distance2D(r) <= 200
-                                && Utils.SleepCheck(r.Handle.ToString() + "remnantE")
+                                && Utils.SleepCheck(r.Handle + "remnantE")
                                )
                             {
                                 E.UseAbility(r.Position);
-                                Utils.Sleep(220, r.Handle.ToString() + "remnantE");
+                                Utils.Sleep(220, r.Handle + "remnantE");
                             }
                             if (//E Skill
                               me.Distance2D(e) <= 200
                               && e.Distance2D(r) > 0
                               && me.Distance2D(r) >= e.Distance2D(r)
-                              && Utils.SleepCheck(r.Handle.ToString() + "remnantE")
+                              && Utils.SleepCheck(r.Handle + "remnantE")
                               )
                             {
                                 E.UseAbility(r.Position);
-                                Utils.Sleep(220, r.Handle.ToString() + "remnantE");
+                                Utils.Sleep(220, r.Handle + "remnantE");
                             }
                         }
                     }
