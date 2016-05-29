@@ -266,7 +266,7 @@ namespace Meepo
 						&& (meepos[i].Distance2D(e) >= (e.AttackRange + 60) 
                         || meepos[i].MovementSpeed <= 290) 
                         && (q == null || (!q[i].CanBeCasted() 
-                        || e.Modifiers.Any(y => y.Name == "modifier_meepo_earthbind") 
+                        || e.HasModifier("modifier_meepo_earthbind") 
                         || !e.IsMagicImmune()) || meepos[i].Distance2D(e) >= 1000)
 						&& meepos[i].Distance2D(fount.First().Position) >= 1100
 						&& Utils.SleepCheck(meepos[i].Handle + "W"))
@@ -345,27 +345,27 @@ namespace Meepo
 
                     if (target == null) return;
                     initMeepo = GetClosestToTarget(meepos, target);
-					for (int j = 0; j < meepos.Count(); j++)
-					{
-						if (
+                    
+                    
+                        if (
 						w[i] != null
 						&& meepos[i].CanCast()
-						&& meepos[j].Modifiers.Any(y => y.Name == "modifier_fountain_aura")
 						&& (
-							meepos[i].Handle != f.Handle && f.Modifiers.Any(y => y.Name == "modifier_fountain_aura_buff")
-							|| meepos[i].Handle == f.Handle && f.Modifiers.Any(y => y.Name != "modifier_fountain_aura_buff")
+							meepos[i].Handle != f.Handle && f.HasModifier("modifier_fountain_aura_buff")
+							|| meepos[i].Handle == f.Handle && !f.HasModifier("modifier_fountain_aura_buff")
 							)
-						&& meepos.Count(x => x.Distance2D(meepos[j]) <= 1000) > 1
+						&& meepos.Count(x => x.Distance2D(meepos[i]) <= 1000) > 1
 						&& meepos[i].Health >= meepos[i].MaximumHealth * 0.8
 						&& w[i].CanBeCasted()
-						&& Utils.SleepCheck(meepos[i].Handle + "poof")
+                        && initMeepo.Distance2D(target) <= 350
+                        && Utils.SleepCheck(meepos[i].Handle + "poof")
 						)
 						{
 							w[i].UseAbility(target.Position);
 							Utils.Sleep(250, meepos[i].Handle + "poof");
 						}
                         
-					    if (me.Modifiers.Any(y => y.Name == "modifier_fountain_aura_buff"))
+					    if (me.HasModifier("modifier_fountain_aura_buff"))
 					    {
 					        if (
 					            me.Spellbook.SpellW != null
@@ -380,7 +380,6 @@ namespace Meepo
 					            Utils.Sleep(250, me.Handle + "pooff");
 					        }
 					    }
-					}
                     //	
                     /*int[] cool;
 					var core = me.FindItem("item_octarine_core");
@@ -435,15 +434,16 @@ namespace Meepo
                         Utils.Sleep(250, "orchid");
                     } // orchid Item end
                     if (Utils.SleepCheck("Q") 
-                        && target.Modifiers.Any(y => y.Name != "modifier_meepo_earthbind")
+                        && !target.HasModifier("modifier_meepo_earthbind")
 						&& (((!blink.CanBeCasted()
-                        || blink == null)
+                        || blink == null) 
                         && meepos[i].Distance2D(target) <= q[i].GetCastRange()) 
 						|| (blink.CanBeCasted() 
-                        && me.Distance2D(target) <= 350))
+                        && meepos[i].Distance2D(target) <= 350))
 						)
 					{
-						if ((meepos[i].Health >= meepos[i].MaximumHealth 
+						if (q[i]!=null
+                            && (meepos[i].Health >= meepos[i].MaximumHealth 
                             / 100 * Menu.Item("healh").GetValue<Slider>().Value 
                             || !dodge)
 							&& q[i].CanBeCasted() 
@@ -457,27 +457,8 @@ namespace Meepo
 							Utils.Sleep(1500, "Q");
 						}
 					}
-					if ((w[i]!=null
-                        && w[i].CanBeCasted() 
-                        && (meepos[i].Health >= meepos[i].MaximumHealth 
-                        / 100 * Menu.Item("healh").GetValue<Slider>().Value 
-                        || !dodge))
-						&& !target.IsMagicImmune()
-						&& ((meepos[i].Distance2D(target) <= 350)
-                        || me.Distance2D(target) <= 350)
-                        && (q[i] == null 
-                        || (q[i] != null && !q[i].CanBeCasted())
-                        || (target.Modifiers.Any(y => y.Name == "modifier_meepo_earthbind")) 
-                        || (initMeepo.Distance2D(target) <= 250 && initMeepo.Distance2D(meepos[i]) >= 400))
-						&& ((meepos[i].Handle != f.Handle 
-                        && f.Modifiers.Any(y => y.Name == "modifier_fountain_aura")) 
-                        || !f.Modifiers.Any(y => y.Name == "modifier_fountain_aura"))
-						&& Utils.SleepCheck(meepos[i].Handle + "W"))
-					{
-						w[i].UseAbility(target.Position);
-						Utils.Sleep(200, meepos[i].Handle + "W");
-					}
-					if (
+                   
+                    if (
 						blink != null
 						&& me.CanCast()
 						&& blink.CanBeCasted()
@@ -486,17 +467,16 @@ namespace Meepo
 						)
 					{
 						for (int j = 0; j < meepos.Count(); j++)
-                        {
-                            if (meepos[i].IsAttacking())
-                                return;
-                            if (
+						{
+							if (
 							w[j] != null 
+                            && meepos[j].Handle != me.Handle
 							&& meepos[j].CanCast()
-                            && me.Distance2D(target) <= 350
-                            && ((meepos[j].Handle != f.Handle 
-                            && f.Modifiers.Any(y => y.Name == "modifier_fountain_aura_buff"))
-							|| f.Modifiers.Any(y => y.Name != "modifier_fountain_aura_buff"))
-							&& !target.IsMagicImmune()
+                            &&((f.Handle != meepos[j].Handle && f.HasModifier("modifier_fountain_aura_buff")
+                            || !f.HasModifier("modifier_fountain_aura_buff"))
+							)
+                            && meepos[j].Health >= meepos[j].MaximumHealth / 100 * Menu.Item("healh").GetValue<Slider>().Value
+                            && !target.IsMagicImmune()
 							&& w[j].CanBeCasted()
 							&& Utils.SleepCheck(meepos[j].Handle + "poof")
 							)
@@ -504,24 +484,6 @@ namespace Meepo
 								w[j].UseAbility(target.Position);
 								Utils.Sleep(250, meepos[j].Handle + "poof");
 							}
-                            if ((me.Distance2D(target) <= 350
-                                || (blink != null 
-                                && blink.CanBeCasted() 
-                                && me.Distance2D(target) <= 1150))
-                                && (
-                                    (meepos[i].Handle != f.Handle 
-                                    && f.Modifiers.Any(y => y.Name == "modifier_fountain_aura_buff"))
-                                    || f.Modifiers.Any(y => y.Name != "modifier_fountain_aura_buff")
-                                    )
-                                && !target.IsMagicImmune()
-                                && w[i].CanBeCasted()
-                                && meepos[i].Health >= meepos[i].MaximumHealth 
-                                / 100 * Menu.Item("healh").GetValue<Slider>().Value
-                                && Utils.SleepCheck(meepos[i].Handle + "W"))
-                            {
-                                w[i].UseAbility(target.Position);
-                                Utils.Sleep(200, meepos[i].Handle + "W");
-                            }
                         }
 						if (blink.CanBeCasted()
 							&& !Menu.Item("blinkDelay").IsActive()
@@ -532,7 +494,7 @@ namespace Meepo
 							Utils.Sleep(200, "13");
 						}
 
-						Task.Delay(1370 - (int)Game.Ping).ContinueWith(_ =>
+						Task.Delay(1350 - (int)Game.Ping).ContinueWith(_ =>
 						{
 							if (blink.CanBeCasted()
 							&& Menu.Item("blinkDelay").IsActive()
@@ -544,31 +506,34 @@ namespace Meepo
 						});
 					}
 
-					
-					if (((
-				   (!meepos[i].CanAttack() 
-				   || meepos[i].Distance2D(target) >= 0) 
-				   && meepos[i].NetworkActivity != NetworkActivity.Attack
-				   && meepos[i].Distance2D(target) <= 1300)) 
-				   && (meepos[i].Handle !=me.Handle && (blink.CanBeCasted() 
-				   || me.Distance2D(target)<=350) || (meepos[i].Handle == me.Handle 
-				   && !blink.CanBeCasted()))
-				   && meepos[i].Health >= meepos[i].MaximumHealth / 100 * Menu.Item("healh").GetValue<Slider>().Value
-				   && Utils.SleepCheck(meepos[i].Handle + "Move"))
+                    if (
+                       meepos[i].Distance2D(target) <= 200 && (!meepos[i].IsAttackImmune() || !target.IsAttackImmune())
+                       && meepos[i].NetworkActivity != NetworkActivity.Attack && meepos[i].CanAttack()
+                       && meepos[i].Health >= meepos[i].MaximumHealth / 100 * Menu.Item("healh").GetValue<Slider>().Value
+                       && Utils.SleepCheck(meepos[i].Handle + "Attack")
+                       )
+                    {
+                        meepos[i].Attack(target);
+                        Utils.Sleep(200, meepos[i].Handle + "Attack");
+                    }
+                    else if (((
+				       (!meepos[i].CanAttack() 
+				       || meepos[i].Distance2D(target) >= 0) 
+				       && meepos[i].NetworkActivity != NetworkActivity.Attack
+				       && meepos[i].Distance2D(target) <= 1000)) 
+				       && ((meepos[i].Handle !=me.Handle 
+                       && (blink != null && blink.CanBeCasted() 
+				       && me.Distance2D(target)<=350) 
+                       || (meepos[i].Handle == me.Handle 
+				       && !blink.CanBeCasted()))
+                       || blink == null)
+				       && meepos[i].Health >= meepos[i].MaximumHealth / 100 * Menu.Item("healh").GetValue<Slider>().Value
+				       && Utils.SleepCheck(meepos[i].Handle + "Move"))
 					{
 						meepos[i].Move(target.Predict(450));
 						Utils.Sleep(250, meepos[i].Handle + "Move");
 					}
-					else if (
-					   meepos[i].Distance2D(target) <= 200 && (!meepos[i].IsAttackImmune() || !target.IsAttackImmune())
-					   && meepos[i].NetworkActivity != NetworkActivity.Attack && meepos[i].CanAttack()
-					   && meepos[i].Health >= meepos[i].MaximumHealth / 100 * Menu.Item("healh").GetValue<Slider>().Value
-					   && Utils.SleepCheck(meepos[i].Handle + "Attack")
-					   )
-					{
-						meepos[i].Attack(target);
-						Utils.Sleep(200, meepos[i].Handle + "Attack");
-					}
+					 
 
 				}
 
@@ -599,7 +564,7 @@ namespace Meepo
                     me.CanCast()
                     && dagon != null
                     && (ethereal == null
-                    || (target.Modifiers.Any(y => y.Name == "modifier_item_ethereal_blade_slow")
+                    || (target.HasModifier("modifier_item_ethereal_blade_slow")
                     || ethereal.Cooldown < 17))
                     && !target.IsLinkensProtected()
                     && dagon.CanBeCasted()
