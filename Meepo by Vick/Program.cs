@@ -198,10 +198,44 @@ namespace Meepo
 				}
                 
                 for (int i = 0; i < meepos.Count(); i++)
-				{
-					travel = meepos[i].FindItem("item_travel_boots") ?? meepos[i].FindItem("item_travel_boots_2");
-
-					if (meepos[i].Health <= meepos[i].MaximumHealth / 100 * Menu.Item("healh").GetValue<Slider>().Value && q[i].CanBeCasted() && e.Modifiers.Any(y => y.Name != "modifier_meepo_earthbind") && !e.IsMagicImmune() && meepos[i].Distance2D(e) <= q[i].CastRange-50 && Utils.SleepCheck(meepos[i].Handle + "_net_casting"))
+                {
+                    travel = meepos[i].FindItem("item_travel_boots") ?? meepos[i].FindItem("item_travel_boots_2");
+                    if (w[i].CanBeCasted() 
+                        && meepos[i].Health <= meepos[i].MaximumHealth 
+                        / 100 * Menu.Item("healh").GetValue<Slider>().Value 
+                        && meepos[i].Handle != f.Handle
+                        && meepos[i].Distance2D(f) >= 700
+                        && e==null
+                        && meepos[i].Distance2D(fount.First().Position) >= 1500
+                        && Utils.SleepCheck(meepos[i].Handle + "W"))
+                    {
+                        w[i].UseAbility(f);
+                        Utils.Sleep(1000, meepos[i].Handle + "W");
+                    }
+                    else if (travel.CanBeCasted() 
+                        && meepos[i].Health <= meepos[i].MaximumHealth 
+                        / 100 * Menu.Item("healh").GetValue<Slider>().Value
+                       && (!w[i].CanBeCasted() 
+                       || meepos[i].Position.Distance2D(f) >= 1000 
+                       || (w[i].CanBeCasted() 
+                       && f.Distance2D(fount.First()) >= 1500))
+                       || (meepos[i].IsSilenced()
+                       || meepos[i].MovementSpeed <= 280)
+                       && meepos[i].Distance2D(fount.First().Position) >= 1500
+                       && e == null
+                       && Utils.SleepCheck(meepos[i].Handle + "travel"))
+                    {
+                        travel.UseAbility(fount.First().Position);
+                        Utils.Sleep(1000, meepos[i].Handle + "travel");
+                    }
+                    if (e!=null
+                        && meepos[i].Health <= meepos[i].MaximumHealth 
+                        / 100 * Menu.Item("healh").GetValue<Slider>().Value 
+                        && q[i].CanBeCasted() 
+                        && e.Modifiers.Any(y => y.Name != "modifier_meepo_earthbind") 
+                        && !e.IsMagicImmune() 
+                        && meepos[i].Distance2D(e) <= q[i].CastRange-50 
+                        && Utils.SleepCheck(meepos[i].Handle + "_net_casting"))
 					{
 						q[i].CastSkillShot(e);
 						Utils.Sleep(q[i].GetCastDelay(meepos[i], e, true) + 500, meepos[i].Handle + "_net_casting");
@@ -219,17 +253,34 @@ namespace Meepo
 							}
 						}
 					}
-					if ((w[i].CanBeCasted() && meepos[i].Health <= meepos[i].MaximumHealth / 100 * Menu.Item("healh").GetValue<Slider>().Value && meepos[i] != f && meepos[i].Distance2D(f) >= 700)
-						&& (meepos[i].Distance2D(e) >= (e.AttackRange + 60) || meepos[i].MovementSpeed <= 290) && (q == null || (!q[i].CanBeCasted() || e.Modifiers.Any(y => y.Name == "modifier_meepo_earthbind") || !e.IsMagicImmune()) || meepos[i].Distance2D(e) >= 1000)
+					if (e!=null
+                        && w[i].CanBeCasted() 
+                        && meepos[i].Health <= meepos[i].MaximumHealth 
+                        / 100 * Menu.Item("healh").GetValue<Slider>().Value 
+                        && meepos[i].Handle != f.Handle && meepos[i].Distance2D(f) >= 700
+						&& (meepos[i].Distance2D(e) >= (e.AttackRange + 60) 
+                        || meepos[i].MovementSpeed <= 290) 
+                        && (q == null || (!q[i].CanBeCasted() 
+                        || e.Modifiers.Any(y => y.Name == "modifier_meepo_earthbind") 
+                        || !e.IsMagicImmune()) || meepos[i].Distance2D(e) >= 1000)
 						&& meepos[i].Distance2D(fount.First().Position) >= 1100
 						&& Utils.SleepCheck(meepos[i].Handle + "W"))
 					{
 						w[i].UseAbility(f);
 						Utils.Sleep(1000, meepos[i].Handle + "W");
 					}
-					else if (travel.CanBeCasted() && meepos[i].Health <= meepos[i].MaximumHealth / 100 * Menu.Item("healh").GetValue<Slider>().Value
-						&& (!w[i].CanBeCasted() || meepos[i].Position.Distance2D(f) >= 1000 || (w[i].CanBeCasted() && f.Distance2D(fount.First()) >= 2000))
-						&& (meepos[i].Distance2D(e) >= (e.AttackRange + 60) || (meepos[i].IsSilenced() || meepos[i].MovementSpeed <= 290))
+				else if (
+                        e!=null
+                        && travel.CanBeCasted() 
+                        && meepos[i].Health <= meepos[i].MaximumHealth 
+                        / 100 * Menu.Item("healh").GetValue<Slider>().Value
+						&& (!w[i].CanBeCasted() 
+                        || meepos[i].Position.Distance2D(f) >= 1000 
+                        || (w[i].CanBeCasted() 
+                        && f.Distance2D(fount.First()) >= 2000))
+						&& (meepos[i].Distance2D(e) >= (e.AttackRange + 60) 
+                        || (meepos[i].IsSilenced() 
+                        || meepos[i].MovementSpeed <= 290))
 						&& meepos[i].Distance2D(fount.First().Position) >= 1100
 						&& Utils.SleepCheck(meepos[i].Handle + "travel"))
 					{
