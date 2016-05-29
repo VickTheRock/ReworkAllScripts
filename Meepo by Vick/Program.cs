@@ -65,33 +65,7 @@ namespace Meepo
 			Drawing.OnEndScene += Drawing_OnEndScene;
 			AppDomain.CurrentDomain.DomainUnload += CurrentDomain_DomainUnload;
 		}
-		private static Hero ClosestToMouse(Hero source, float range = 90000)
-		{
-			var mousePosition = Game.MousePosition;
-			var enemyHeroes =
-				ObjectManager.GetEntities<Hero>()
-					.Where(
-						x =>
-							x.Team != me.Team && !x.IsIllusion && x.IsAlive && x.IsVisible
-							&& x.Distance2D(mousePosition) <= range);
-			Hero[] closestHero = { null };
-			foreach (var enemyHero in enemyHeroes.Where(enemyHero => closestHero[0] == null || closestHero[0].Distance2D(mousePosition) > enemyHero.Distance2D(mousePosition)))
-			{
-				closestHero[0] = enemyHero;
-			}
-			return closestHero[0];
-		}
-
-
-		private static Hero GetClosestToTarget(List<Hero> units, Hero target)
-		{
-			Hero closestHero = null;
-			foreach (var v in units.Where(v => closestHero == null || closestHero.Distance2D(target) > v.Distance2D(target)))
-			{
-				closestHero = v;
-			}
-			return closestHero;
-		}
+		
 
 		public static void Game_OnUpdate(EventArgs args)
 		{
@@ -109,12 +83,12 @@ namespace Meepo
 			SafePoof = Menu.Item("poofSafe").IsActive();
 			dodge = Menu.Item("Dodge").GetValue<KeyBind>().Active;
 			var checkObj = ObjectManager.GetEntities<Unit>().Where(x =>  x.IsAlive && x.Team!=me.Team && x.IsValid).ToList();
-			var meepos = ObjectManager.GetEntities<Hero>().Where(x => x.IsControllable && x.IsAlive && x.ClassID == ClassID.CDOTA_Unit_Hero_Meepo).ToList();
-			
+            var meepos = ObjectManager.GetEntities<Hero>().Where(x => x.IsControllable && x.IsAlive && x.ClassID == ClassID.CDOTA_Unit_Hero_Meepo).ToList();
 
-			
 
-			Ability[] q = new Ability[meepos.Count()];
+
+
+            Ability[] q = new Ability[meepos.Count()];
 			for (int i = 0; i < meepos.Count(); i++) q[i] = meepos[i].Spellbook.SpellQ;
 			Ability[] w = new Ability[meepos.Count()];
 			for (int i = 0; i < meepos.Count(); i++) w[i] = meepos[i].Spellbook.SpellW;
@@ -311,11 +285,12 @@ namespace Meepo
 			/**************************************************COMBO*************************************************************/
 			if (activated)
             {
-                initMeepo = GetClosestToTarget(meepos, target);
                 for (int i = 0; i < meepos.Count(); i++)
-				{
-					target = ClosestToMouse(meepos[i]);
-					if (target == null) return;
+                {
+                    target = ClosestToMouse(meepos[i]);
+
+                    if (target == null) return;
+                    initMeepo = GetClosestToTarget(meepos, target);
 					for (int j = 0; j < meepos.Count(); j++)
 					{
 						if (
@@ -352,16 +327,15 @@ namespace Meepo
 					        }
 					    }
 					}
-				//	
-					/*int[] cool;
+                    //	
+                    /*int[] cool;
 					var core = me.FindItem("item_octarine_core");
 					if (core !=null)
 						cool = new int[4] { 20, 16, 12, 8 };
 					else
 						cool = new int[4] { 15, 12, 9, 6 };*/
-					
 
-					blink = meepos[i].FindItem("item_blink");
+                    blink = meepos[i].FindItem("item_blink");
 					vail = me.FindItem("item_veil_of_discord");
 					ethereal = me.FindItem("item_ethereal_blade");
 					sheep = target.ClassID == ClassID.CDOTA_Unit_Hero_Tidehunter ? null : me.FindItem("item_sheepstick");
@@ -468,7 +442,24 @@ namespace Meepo
 								w[j].UseAbility(target.Position);
 								Utils.Sleep(250, meepos[j].Handle + "poof");
 							}
-						}
+                            if (meepos[i].IsAttacking())
+                                return;
+                            if (initMeepo.Distance2D(meepos[i]) > 500 && (initMeepo.Distance2D(target) <= 350
+
+                                || (blink != null && blink.CanBeCasted() && me.Distance2D(target) <= 1150))
+                                && (
+                                    meepos[i].Handle != f.Handle && f.Modifiers.Any(y => y.Name == "modifier_fountain_aura_buff")
+                                    || f.Modifiers.Any(y => y.Name != "modifier_fountain_aura_buff")
+                                    )
+                                && !target.IsMagicImmune()
+                                && w[i].CanBeCasted()
+                                && meepos[i].Health >= meepos[i].MaximumHealth / 100 * Menu.Item("healh").GetValue<Slider>().Value
+                                && Utils.SleepCheck(meepos[i].Handle + "W"))
+                            {
+                                w[i].UseAbility(target.Position);
+                                Utils.Sleep(200, meepos[i].Handle + "W");
+                            }
+                        }
 						if (blink.CanBeCasted()
 							&& !Menu.Item("blinkDelay").IsActive()
 							&& meepos[i].Health >= meepos[i].MaximumHealth / 100 * Menu.Item("healh").GetValue<Slider>().Value
@@ -490,23 +481,7 @@ namespace Meepo
 						});
 					}
 
-					if (meepos[i].IsAttacking())
-						return;
-					if (initMeepo.Distance2D(meepos[i]) > 500 && (initMeepo.Distance2D(target) <= 350
-
-						|| (blink != null && blink.CanBeCasted() && me.Distance2D(target) <= 1150))
-						&& (
-							meepos[i].Handle != f.Handle && f.Modifiers.Any(y => y.Name == "modifier_fountain_aura_buff")
-							|| f.Modifiers.Any(y => y.Name != "modifier_fountain_aura_buff")
-							)
-						&& !target.IsMagicImmune()
-						&& w[i].CanBeCasted() 
-						&& meepos[i].Health >= meepos[i].MaximumHealth / 100 * Menu.Item("healh").GetValue<Slider>().Value
-						&& Utils.SleepCheck(meepos[i].Handle + "W"))
-					{
-						w[i].UseAbility(target.Position);
-						Utils.Sleep(200, meepos[i].Handle + "W");
-					}
+					
 					if (((
 				   (!meepos[i].CanAttack() 
 				   || meepos[i].Distance2D(target) >= 0) 
@@ -549,8 +524,9 @@ namespace Meepo
 				cheese = me.FindItem("item_cheese");
 
 				abyssal = me.FindItem("item_abyssal_blade");
-				
-				if (// Shiva Item
+
+                target = me.ClosestToMouseTarget(2000);
+                if (// Shiva Item
 						shiva != null
 						&& shiva.CanBeCasted()
 						&& me.CanCast()
@@ -593,10 +569,10 @@ namespace Meepo
 					medall != null
 					&& medall.CanBeCasted()
 					&& Utils.SleepCheck("Medall")
-					&& me.Distance2D(e) <= 700
+					&& me.Distance2D(target) <= 700
 					)
 				{
-					medall.UseAbility(e);
+					medall.UseAbility(target);
 					Utils.Sleep(250, "Medall");
 				} // Medall Item end
 				if (me.Distance2D(target) <= 400 || !blink.CanBeCasted() || blink == null)
@@ -622,13 +598,13 @@ namespace Meepo
 						abyssal != null
 						&& abyssal.CanBeCasted()
 						&& me.CanCast()
-						&& !e.IsStunned()
-						&& !e.IsHexed()
+						&& !target.IsStunned()
+						&& !target.IsHexed()
 						&& Utils.SleepCheck("abyssal")
-						&& me.Distance2D(e) <= 400
+						&& me.Distance2D(target) <= 400
 						)
 					{
-						abyssal.UseAbility(e);
+						abyssal.UseAbility(target);
 						Utils.Sleep(250, "abyssal");
 					} // Abyssal Item end
 				}
@@ -638,24 +614,50 @@ namespace Meepo
 		}
 
 
-		/**************************************************Farm*************************************************************/
+        /**************************************************Farm*************************************************************/
 
 
 
-		/**************************************************Farm*************************************************************/
+        /**************************************************Farm*************************************************************/
+
+
+        private static Hero ClosestToMouse(Hero source, float range = 9000)
+        {
+            var mousePosition = Game.MousePosition;
+            var enemyHeroes =
+                ObjectManager.GetEntities<Hero>()
+                    .Where(
+                        x =>
+                            x.Team != me.Team && !x.IsIllusion && x.IsAlive && x.IsVisible
+                            && x.Distance2D(mousePosition) <= range);
+            Hero[] closestHero = { null };
+            foreach (var enemyHero in enemyHeroes.Where(enemyHero => closestHero[0] == null || closestHero[0].Distance2D(mousePosition) > enemyHero.Distance2D(mousePosition)))
+            {
+                closestHero[0] = enemyHero;
+            }
+            return closestHero[0];
+        }
+
+
+        private static Hero GetClosestToTarget(List<Hero> units, Hero z)
+        {
+            Hero closestHero = null;
+            foreach (var v in units.Where(v => closestHero == null || closestHero.Distance2D(z) > v.Distance2D(z)))
+            {
+                closestHero = v;
+            }
+            return closestHero;
+        }
 
 
 
 
 
 
+        /**************************************************Push*************************************************************/
+        /**************************************************Push*************************************************************/
 
-
-
-		/**************************************************Push*************************************************************/
-		/**************************************************Push*************************************************************/
-
-		static double GetDistance2D(Vector3 a, Vector3 b)
+        static double GetDistance2D(Vector3 a, Vector3 b)
 		{
 			return Math.Sqrt(Math.Pow(a.X - b.X, 2) + Math.Pow(a.Y - b.Y, 2));
 		}
