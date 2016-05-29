@@ -333,65 +333,52 @@ namespace Meepo
 					else
 						cool = new int[4] { 15, 12, 9, 6 };*/
 
+                    orchid = me.FindItem("item_orchid") ?? me.FindItem("item_bloodthorn");
                     blink = meepos[i].FindItem("item_blink");
-					vail = me.FindItem("item_veil_of_discord");
-					ethereal = me.FindItem("item_ethereal_blade");
 					sheep = target.ClassID == ClassID.CDOTA_Unit_Hero_Tidehunter ? null : me.FindItem("item_sheepstick");
 
-				    if ( // vail
-					vail != null
-					&& vail.CanBeCasted()
-					&& me.CanCast()
-					&& !target.IsMagicImmune()
-					&& me.Distance2D(target) <= 1100
-					&& Utils.SleepCheck("vail")
-					)
-					{
-						vail.UseAbility(target.Position);
-						Utils.Sleep(250, "vail");
-					} // orchid Item end
+				    
 					if ( // sheep
 					sheep != null
 					&& sheep.CanBeCasted()
 					&& me.CanCast()
 					&& !target.IsLinkensProtected()
 					&& !target.IsMagicImmune()
-					&& ((me.Distance2D(target) <= 1100 && blink != null && blink.CanBeCasted())
-					||  ((blink == null || !blink.CanBeCasted()) && me.Distance2D(target) <= 350))
+                    && me.Distance2D(target)<=900
+					&& meepos[i].Distance2D(target) <= 350
 					&& Utils.SleepCheck("sheep")
 					)
 					{
 						sheep.UseAbility(target);
 						Utils.Sleep(250, "sheep");
 					} // sheep Item end
-					if ( // ethereal
-					ethereal != null
-					&& ethereal.CanBeCasted()
-					&& me.CanCast()
-					&& !target.IsLinkensProtected()
-					&& !target.IsMagicImmune()
-					&& Utils.SleepCheck("ethereal")
-					)
-					{
-						ethereal.UseAbility(target);
-						Utils.Sleep(200, "ethereal");
-					} // ethereal Item end
-					if (// Dagon
-						me.CanCast()
-						&& dagon != null
-						&& (ethereal == null
-						|| (target.Modifiers.Any(y => y.Name == "modifier_item_ethereal_blade_slow")
-						|| ethereal.Cooldown < 17))
-						&& !target.IsLinkensProtected()
-						&& dagon.CanBeCasted()
-						&& !target.IsMagicImmune()
-						&& Utils.SleepCheck("dagon")
-						)
-					{
-						dagon.UseAbility(target);
-						Utils.Sleep(200, "dagon");
-					} // Dagon Item end
-					if (Utils.SleepCheck("Q") && target.Modifiers.Any(y => y.Name != "modifier_meepo_earthbind")
+					
+                    if ( // Medall
+                    medall != null
+                    && medall.CanBeCasted()
+                    && Utils.SleepCheck("Medall")
+                    && meepos[i].Distance2D(target) <= 300
+                    && me.Distance2D(target) <= 700
+                    )
+                    {
+                        medall.UseAbility(target);
+                        Utils.Sleep(250, "Medall");
+                    } // Medall Item end
+                    if ( // orchid
+                        orchid != null
+                        && orchid.CanBeCasted()
+                        && me.CanCast()
+                        && !target.IsLinkensProtected()
+                        && !target.IsMagicImmune()
+                        && meepos[i].Distance2D(target)<= 300
+                        && me.Distance2D(target) <= 900
+                        && Utils.SleepCheck("orchid")
+                        )
+                    {
+                        orchid.UseAbility(target);
+                        Utils.Sleep(250, "orchid");
+                    } // orchid Item end
+                    if (Utils.SleepCheck("Q") && target.Modifiers.Any(y => y.Name != "modifier_meepo_earthbind")
 						&& (((!blink.CanBeCasted()|| blink == null) && meepos[i].Distance2D(target) <= q[i].GetCastRange()) 
 						|| blink.CanBeCasted() && meepos[i].Distance2D(target) >= 350)
 						)
@@ -507,106 +494,107 @@ namespace Meepo
 
 				}
 
-				shiva = me.FindItem("item_shivas_guard");
-
-				dagon = me.Inventory.Items.FirstOrDefault(item => item.Name.Contains("item_dagon"));
-
+                vail = me.FindItem("item_veil_of_discord");
+                shiva = me.FindItem("item_shivas_guard");
 				medall = me.FindItem("item_medallion_of_courage") ?? me.FindItem("item_solar_crest");
-
-				blink = me.FindItem("item_blink");
-
-				orchid = me.FindItem("item_orchid") ?? me.FindItem("item_bloodthorn"); 
-
 				atos = me.FindItem("item_rod_of_atos");
-
 				cheese = me.FindItem("item_cheese");
-
 				abyssal = me.FindItem("item_abyssal_blade");
+                dagon = me.Inventory.Items.FirstOrDefault(item => item.Name.Contains("item_dagon"));
+                ethereal = me.FindItem("item_ethereal_blade");
 
                 target = me.ClosestToMouseTarget(2000);
+                if(target == null)return;
+                if ( // ethereal
+                    ethereal != null
+                    && ethereal.CanBeCasted()
+                    && me.CanCast()
+                    && !target.IsLinkensProtected()
+                    && !target.IsMagicImmune()
+                    && Utils.SleepCheck("ethereal")
+                    )
+                {
+                    ethereal.UseAbility(target);
+                    Utils.Sleep(200, "ethereal");
+                } // ethereal Item end
+                if (// Dagon
+                    me.CanCast()
+                    && dagon != null
+                    && (ethereal == null
+                    || (target.Modifiers.Any(y => y.Name == "modifier_item_ethereal_blade_slow")
+                    || ethereal.Cooldown < 17))
+                    && !target.IsLinkensProtected()
+                    && dagon.CanBeCasted()
+                    && !target.IsMagicImmune()
+                    && Utils.SleepCheck("dagon")
+                    )
+                {
+                    dagon.UseAbility(target);
+                    Utils.Sleep(200, "dagon");
+                } // Dagon Item end
+                if ( // vail
+                    vail != null
+                    && vail.CanBeCasted()
+                    && me.CanCast()
+                    && !target.IsMagicImmune()
+                    && me.Distance2D(target) <= 1100
+                    && Utils.SleepCheck("vail")
+                    )
+                {
+                    vail.UseAbility(target.Position);
+                    Utils.Sleep(250, "vail");
+                } // orchid Item end
                 if (// Shiva Item
-						shiva != null
-						&& shiva.CanBeCasted()
-						&& me.CanCast()
-						&& !target.IsMagicImmune()
-						&& Utils.SleepCheck("shiva")
-						&& me.Distance2D(target) <= 600
-						)
-
+					shiva != null
+					&& shiva.CanBeCasted()
+					&& me.CanCast()
+					&& !target.IsMagicImmune()
+					&& Utils.SleepCheck("shiva")
+					&& me.Distance2D(target) <= 600
+					)
 				{
 					shiva.UseAbility();
 					Utils.Sleep(250, "shiva");
 				} // Shiva Item end
 				if (
-						// cheese
-						cheese != null
-						&& cheese.CanBeCasted()
-						&& me.Health <= (me.MaximumHealth * 0.3)
-						&& me.Distance2D(target) <= 700
-						&& Utils.SleepCheck("cheese")
-						)
+					// cheese
+					cheese != null
+					&& cheese.CanBeCasted()
+					&& me.Health <= (me.MaximumHealth * 0.3)
+					&& me.Distance2D(target) <= 700
+					&& Utils.SleepCheck("cheese")
+					)
 				{
 					cheese.UseAbility();
 					Utils.Sleep(200, "cheese");
 				} // cheese Item end
 				
 				if ( // atos Blade
-						atos != null
-						&& atos.CanBeCasted()
-						&& me.CanCast()
-						&& !target.IsLinkensProtected()
-						&& !target.IsMagicImmune()
-						&& me.Distance2D(target) <= 2000
-						&& Utils.SleepCheck("atos")
-						)
+					atos != null
+					&& atos.CanBeCasted()
+					&& me.CanCast()
+					&& !target.IsLinkensProtected()
+					&& !target.IsMagicImmune()
+					&& me.Distance2D(target) <= 2000
+					&& Utils.SleepCheck("atos")
+					)
 				{
 					atos.UseAbility(target);
 					Utils.Sleep(250, "atos");
 				} // atos Item end
-				if ( // Medall
-					medall != null
-					&& medall.CanBeCasted()
-					&& Utils.SleepCheck("Medall")
-					&& me.Distance2D(target) <= 700
+				if ( // Abyssal Blade
+					abyssal != null
+					&& abyssal.CanBeCasted()
+					&& me.CanCast()
+					&& !target.IsStunned()
+					&& !target.IsHexed()
+					&& Utils.SleepCheck("abyssal")
+					&& me.Distance2D(target) <= 300
 					)
 				{
-					medall.UseAbility(target);
-					Utils.Sleep(250, "Medall");
-				} // Medall Item end
-				if (me.Distance2D(target) <= 400 || !blink.CanBeCasted() || blink == null)
-				{
-					
-					if ( // orchid
-						orchid != null
-						&& orchid.CanBeCasted()
-						&& me.CanCast()
-						&& !target.IsLinkensProtected()
-						&& !target.IsMagicImmune()
-						&& me.Distance2D(target) <= 900
-						&& Utils.SleepCheck("orchid")
-						)
-					{
-						orchid.UseAbility(target);
-						Utils.Sleep(250, "orchid");
-					} // orchid Item end
-
-					
-
-					if ( // Abyssal Blade
-						abyssal != null
-						&& abyssal.CanBeCasted()
-						&& me.CanCast()
-						&& !target.IsStunned()
-						&& !target.IsHexed()
-						&& Utils.SleepCheck("abyssal")
-						&& me.Distance2D(target) <= 400
-						)
-					{
-						abyssal.UseAbility(target);
-						Utils.Sleep(250, "abyssal");
-					} // Abyssal Item end
-				}
-
+					abyssal.UseAbility(target);
+					Utils.Sleep(250, "abyssal");
+				} // Abyssal Item end
 			}
 			/**************************************************COMBO*************************************************************/
 		}
