@@ -88,10 +88,7 @@ namespace Meepo
 
 
 
-            Ability[] q = new Ability[meepos.Count()];
-			for (int i = 0; i < meepos.Count(); i++) q[i] = meepos[i].Spellbook.SpellQ;
-			Ability[] w = new Ability[meepos.Count()];
-			for (int i = 0; i < meepos.Count(); i++) w[i] = meepos[i].Spellbook.SpellW;
+           
 			List<Unit> fount = ObjectManager.GetEntities<Unit>().Where(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Fountain).ToList();
 			//blink = me.FindItem("item_blink");
 
@@ -110,12 +107,14 @@ namespace Meepo
 						.OrderBy(x => GetDistance2D(x.Position, fount.OrderBy(y => GetDistance2D(x.Position, y.Position)).FirstOrDefault().Position))
 						.FirstOrDefault();
 
-			if (dodge && me.IsAlive)
+            Ability[] q = new Ability[meepos.Count()];
+            for (int i = 0; i < meepos.Count(); i++) q[i] = meepos[i].Spellbook.SpellQ;
+            Ability[] w = new Ability[meepos.Count()];
+            for (int i = 0; i < meepos.Count(); i++) w[i] = meepos[i].Spellbook.SpellW;
+            if (dodge && me.IsAlive)
 			{
 				var baseDota =
 				  ObjectManager.GetEntities<Unit>().Where(unit => unit.Name == "npc_dota_base" && unit.Team != me.Team).ToList();
-				if (baseDota == null)
-					return;
 				if (baseDota != null)
 				{
 					for (int t = 0; t < baseDota.Count(); t++)
@@ -138,9 +137,8 @@ namespace Meepo
 					}
 				}
 
-				var thinker =
+                var thinker =
 				   ObjectManager.GetEntities<Unit>().Where(unit => unit.Name == "npc_dota_thinker" && unit.Team != me.Team).ToList();
-				if (thinker == null) return;
 				if (thinker != null)
 				{
 					for (int i = 0; i < thinker.Count(); i++)
@@ -162,7 +160,7 @@ namespace Meepo
 						}
 					}
 				}
-				foreach (var v in meepos)
+                foreach (var v in meepos)
 				{
 					if (Utils.SleepCheck(v.Handle + "_move") && v.Health <= v.MaximumHealth / 100 * Menu.Item("healh").GetValue<Slider>().Value
 						&& v.Modifiers.Any(y => y.Name != "modifier_bloodseeker_rupture")
@@ -198,15 +196,15 @@ namespace Meepo
 						}
 					}
 				}
-
-				for (int i = 0; i < meepos.Count(); i++)
+                
+                for (int i = 0; i < meepos.Count(); i++)
 				{
 					travel = meepos[i].FindItem("item_travel_boots") ?? meepos[i].FindItem("item_travel_boots_2");
 
 					if (meepos[i].Health <= meepos[i].MaximumHealth / 100 * Menu.Item("healh").GetValue<Slider>().Value && q[i].CanBeCasted() && e.Modifiers.Any(y => y.Name != "modifier_meepo_earthbind") && !e.IsMagicImmune() && meepos[i].Distance2D(e) <= q[i].CastRange-50 && Utils.SleepCheck(meepos[i].Handle + "_net_casting"))
 					{
 						q[i].CastSkillShot(e);
-						Utils.Sleep(q[i].GetCastDelay(meepos[i], e, true, true) + 500, meepos[i].Handle + "_net_casting");
+						Utils.Sleep(q[i].GetCastDelay(meepos[i], e, true) + 500, meepos[i].Handle + "_net_casting");
 					}
 					else if (!q[i].CanBeCasted() && meepos[i].Health <= meepos[i].MaximumHealth / 100 * Menu.Item("healh").GetValue<Slider>().Value)
 					{
@@ -216,7 +214,7 @@ namespace Meepo
 								&& meepos[j].Position.Distance2D(meepos[i]) < q[j].CastRange && !e.IsMagicImmune() && Utils.SleepCheck(meepos[i].Handle + "_net_casting"))
 							{
 								q[j].CastSkillShot(e);
-								Utils.Sleep(q[j].GetCastDelay(meepos[j], e, true, true) + 1500, meepos[i].Handle + "_net_casting");
+								Utils.Sleep(q[j].GetCastDelay(meepos[j], e, true) + 1500, meepos[i].Handle + "_net_casting");
 								break;
 							}
 						}
