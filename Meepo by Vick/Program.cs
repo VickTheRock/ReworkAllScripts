@@ -244,8 +244,13 @@ namespace Meepo
 					{
 						for (var j = 0; j < meepos.Count(); j++)
 						{
-							if (meepos[j] != meepos[i] && meepos[j].Position.Distance2D(e) < q[i].CastRange && e.Modifiers.Any(y => y.Name != "modifier_meepo_earthbind")
-								&& meepos[j].Position.Distance2D(meepos[i]) < q[j].CastRange && !e.IsMagicImmune() && Utils.SleepCheck(meepos[i].Handle + "_net_casting"))
+							if (e!=null
+                                && meepos[i].Handle != meepos[j].Handle
+                                && meepos[j].Position.Distance2D(e) < q[i].CastRange 
+                                && e.Modifiers.Any(y => y.Name != "modifier_meepo_earthbind")
+								&& meepos[j].Position.Distance2D(meepos[i]) < q[j].CastRange 
+                                && !e.IsMagicImmune() 
+                                && Utils.SleepCheck(meepos[i].Handle + "_net_casting"))
 							{
 								q[j].CastSkillShot(e);
 								Utils.Sleep(q[j].GetCastDelay(meepos[j], e, true) + 1500, meepos[i].Handle + "_net_casting");
