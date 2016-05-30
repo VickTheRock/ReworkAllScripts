@@ -41,7 +41,7 @@ namespace SkyMageRework
 			{
 				{"skywrath_mage_arcane_bolt",true},
 				{"skywrath_mage_concussive_shot",true},
-				{"skywrath_mage_mystic_flare",true}
+				{"skywrath_mage_mystic_flare",false}
 			})));
 			items.AddItem(new MenuItem("Items: ", "Items:").SetValue(new AbilityToggler(new Dictionary<string, bool>
 			{
@@ -260,7 +260,7 @@ namespace SkyMageRework
 						E.UseAbility(target);
 						Utils.Sleep(200, "E");
 					}
-					if (!E.CanBeCasted() || E == null)
+					if (!E.CanBeCasted() || E == null || me.IsSilenced())
 					{
 						if ( // orchid
 							orchid != null
@@ -276,7 +276,7 @@ namespace SkyMageRework
 							orchid.UseAbility(target);
 							Utils.Sleep(250, "orchid");
 						} // orchid Item end
-						if (!orchid.CanBeCasted() || orchid == null || !Menu.Item("Items: ").GetValue<AbilityToggler>().IsEnabled(orchid.Name))
+						if (!orchid.CanBeCasted() || orchid == null || me.IsSilenced() || !Menu.Item("Items: ").GetValue<AbilityToggler>().IsEnabled(orchid.Name))
 						{
 							if ( // vail
 								   vail != null
@@ -291,7 +291,7 @@ namespace SkyMageRework
 								vail.UseAbility(target.Position);
 								Utils.Sleep(250, "vail");
 							} // orchid Item end
-							if (!vail.CanBeCasted() || vail == null || !Menu.Item("Items: ").GetValue<AbilityToggler>().IsEnabled(vail.Name))
+							if (!vail.CanBeCasted() || vail == null || me.IsSilenced() || !Menu.Item("Items: ").GetValue<AbilityToggler>().IsEnabled(vail.Name))
 							{
 								if (// ethereal
 									   ethereal != null
@@ -306,7 +306,7 @@ namespace SkyMageRework
 									ethereal.UseAbility(target);
 									Utils.Sleep(200, "ethereal");
 								} // ethereal Item end
-								if (!ethereal.CanBeCasted() || ethereal == null || !Menu.Item("Items: ").GetValue<AbilityToggler>().IsEnabled(ethereal.Name))
+								if (!ethereal.CanBeCasted() || ethereal == null || me.IsSilenced() || !Menu.Item("Items: ").GetValue<AbilityToggler>().IsEnabled(ethereal.Name))
 								{
 									if (
 										 Q != null
@@ -523,7 +523,7 @@ namespace SkyMageRework
 						if (((Active && !E.CanBeCasted()) || e[i].HasModifier("modifier_item_ethereal_blade_slow")) || !Active)
 						{
 							if (R != null && R.CanBeCasted() && me.Distance2D(e[i]) <= R.CastRange + 100
-								&& e[i].MovementSpeed <= 200
+								&& e[i].MovementSpeed <= 220
 								&& !e[i].HasModifier("modifier_zuus_lightningbolt_vision_thinker")
 								&& !e[i].HasModifier("modifier_item_blade_mail_reflect")
 								&& !e[i].HasModifier("modifier_sniper_headshot")
@@ -537,6 +537,7 @@ namespace SkyMageRework
 								&& !e[i].HasModifier("modifier_obsidian_destroyer_astral_imprisonment_prison")
 								&& !e[i].HasModifier("modifier_skywrath_mystic_flare_aura_effect")
 								&& !e[i].HasModifier("modifier_puck_phase_shift")
+								&& !e[i].HasModifier("modifier_winter_wyvern_winters_curse")
 								&& !e[i].HasModifier("modifier_eul_cyclone")
 								&& !e[i].HasModifier("modifier_dazzle_shallow_grave")
 								&& !e[i].HasModifier("modifier_brewmaster_storm_cyclone")
@@ -545,7 +546,7 @@ namespace SkyMageRework
 								&& !e[i].HasModifier("modifier_spirit_breaker_charge_of_darkness")
 								&& !e[i].HasModifier("modifier_shadow_demon_disruption")
 								&& (e[i].FindSpell("abaddon_borrowed_time") != null
-								&& e[i].FindSpell("abaddon_borrowed_time").Cooldown>0
+								&& e[i].FindSpell("abaddon_borrowed_time").Cooldown > 0
 								&& !e[i].HasModifier("modifier_abaddon_borrowed_time"))
 								&& e[i].Health >= (e[i].MaximumHealth / 100 * (Menu.Item("Healh").GetValue<Slider>().Value))
 								&& !e[i].IsMagicImmune()
@@ -557,7 +558,7 @@ namespace SkyMageRework
 							}
 							if (R != null && R.CanBeCasted() && me.Distance2D(e[i]) <= R.CastRange + 100
 								&&
-								(	  e[i].HasModifier("modifier_meepo_earthbind")
+								(e[i].HasModifier("modifier_meepo_earthbind")
 									|| e[i].HasModifier("modifier_pudge_dismember")
 									|| e[i].HasModifier("modifier_naga_siren_ensnare")
 									|| e[i].HasModifier("modifier_lone_druid_spirit_bear_entangle_effect")
@@ -565,6 +566,7 @@ namespace SkyMageRework
 									&& !e[i].AghanimState())
 									|| e[i].HasModifier("modifier_kunkka_torrent")
 									|| e[i].HasModifier("modifier_ice_blast")
+									|| e[i].HasModifier("modifier_crystal_maiden_crystal_nova")
 									|| e[i].HasModifier("modifier_enigma_black_hole_pull")
 									|| e[i].HasModifier("modifier_ember_spirit_searing_chains")
 									|| e[i].HasModifier("modifier_dark_troll_warlord_ensnare")
@@ -597,12 +599,12 @@ namespace SkyMageRework
 									&& !e[i].HasModifier("modifier_skywrath_mystic_flare_aura_effect")
 									&& !e[i].HasModifier("modifier_dazzle_shallow_grave")
 									&& !e[i].HasModifier("modifier_mirana_leap")
+									&& !e[i].HasModifier("modifier_winter_wyvern_winters_curse")
 									&& !e[i].HasModifier("modifier_earth_spirit_rolling_boulder_caster")
 									&& !e[i].HasModifier("modifier_brewmaster_storm_cyclone")
 									&& !e[i].HasModifier("modifier_spirit_breaker_charge_of_darkness")
 									&& !e[i].HasModifier("modifier_shadow_demon_disruption")
 									&& !e[i].HasModifier("modifier_tusk_snowball_movement")
-									&& !e[i].HasModifier("modifier_invoker_tornado")
 									&& !e[i].HasModifier("modifier_invoker_tornado")
 									&& (e[i].FindSpell("abaddon_borrowed_time") != null
 									&& e[i].FindSpell("abaddon_borrowed_time").Cooldown > 0
@@ -615,9 +617,9 @@ namespace SkyMageRework
 								R.UseAbility(Prediction.InFront(e[i], 70));
 								Utils.Sleep(500, e[i].Handle.ToString());
 							}
-							
+
 							if (R != null && R.CanBeCasted() && me.Distance2D(e[i]) <= R.CastRange + 100
-								&& e[i].MovementSpeed <= 200
+								&& e[i].MovementSpeed <= 220
 								&& e[i].MagicDamageResist <= 0.07
 								&& e[i].Health >= (e[i].MaximumHealth / 100 * (Menu.Item("Healh").GetValue<Slider>().Value))
 								&& !e[i].HasModifier("modifier_item_blade_mail_reflect")
@@ -632,6 +634,7 @@ namespace SkyMageRework
 								&& !e[i].HasModifier("modifier_spirit_breaker_charge_of_darkness")
 								&& !e[i].HasModifier("modifier_shadow_demon_disruption")
 								&& !e[i].HasModifier("modifier_faceless_void_time_walk")
+								&& !e[i].HasModifier("modifier_winter_wyvern_winters_curse")
 								&& !e[i].HasModifier("modifier_mirana_leap")
 								&& !e[i].HasModifier("modifier_earth_spirit_rolling_boulder_caster")
 								&& !e[i].HasModifier("modifier_tusk_snowball_movement")
@@ -650,6 +653,8 @@ namespace SkyMageRework
 						}
 						if (W != null && W.CanBeCasted() && me.Distance2D(e[i]) <= 1400
 						   && (e[i].MovementSpeed <= 255
+						   || (e[i].Distance2D(me)<= me.HullRadius+10 
+						   && e[i].NetworkActivity==NetworkActivity.Attack)
 						   || e[i].MagicDamageResist <= 0.07)
 						   && !e[i].IsMagicImmune()
 						   && Utils.SleepCheck(e[i].Handle.ToString()))
@@ -710,13 +715,12 @@ namespace SkyMageRework
 								|| e[i].HasModifier("modifier_enigma_black_hole_pull")
 								|| e[i].HasModifier("modifier_ember_spirit_searing_chains")
 								|| e[i].HasModifier("modifier_dark_troll_warlord_ensnare")
-								|| e[i].HasModifier("modifier_crystal_maiden_frostbite")
+								|| e[i].HasModifier("modifier_crystal_maiden_crystal_nova")
 								|| e[i].HasModifier("modifier_axe_berserkers_call")
 								|| e[i].HasModifier("modifier_bane_fiends_grip")
 								|| e[i].HasModifier("modifier_rubick_telekinesis")
 								|| e[i].HasModifier("modifier_storm_spirit_electric_vortex_pull")
 								|| e[i].HasModifier("modifier_winter_wyvern_cold_embrace")
-								|| e[i].HasModifier("modifier_winter_wyvern_winters_curse")
 								|| e[i].HasModifier("modifier_shadow_shaman_shackles")
 								|| (e[i].FindSpell("magnataur_reverse_polarity") != null && e[i].FindSpell("magnataur_reverse_polarity").IsInAbilityPhase)
 								|| (e[i].FindItem("item_blink") != null && e[i].FindItem("item_blink").Cooldown > 11)
@@ -737,12 +741,14 @@ namespace SkyMageRework
 								|| (e[i].FindSpell("slardar_slithereen_crush") != null && e[i].FindSpell("slardar_slithereen_crush").IsInAbilityPhase)
 								|| (e[i].FindSpell("tiny_toss") != null && e[i].FindSpell("tiny_toss").IsInAbilityPhase)
 								|| (e[i].FindSpell("tusk_walrus_punch") != null && e[i].FindSpell("tusk_walrus_punch").IsInAbilityPhase)
+								|| (e[i].FindSpell("faceless_void_time_walk") != null && e[i].FindSpell("faceless_void_time_walk").IsInAbilityPhase)
+								|| (e[i].FindSpell("faceless_void_chronosphere") != null && e[i].FindSpell("faceless_void_chronosphere").IsInAbilityPhase)
 								|| (e[i].FindSpell("disruptor_static_storm") != null && e[i].FindSpell("disruptor_static_storm").Cooldown <= 0)
 								|| (e[i].FindSpell("lion_finger_of_death") != null && e[i].FindSpell("lion_finger_of_death").Cooldown <= 0)
 								|| (e[i].FindSpell("luna_eclipse") != null && e[i].FindSpell("luna_eclipse").Cooldown <= 0)
 								|| (e[i].FindSpell("lina_laguna_blade") != null && e[i].FindSpell("lina_laguna_blade").Cooldown <= 0)
 								|| (e[i].FindSpell("doom_bringer_doom") != null && e[i].FindSpell("doom_bringer_doom").Cooldown <= 0)
-								|| (e[i].FindSpell("life_stealer_rage") != null && e[i].FindSpell("life_stealer_rage").Cooldown <= 0 && me.Level>=7)
+								|| (e[i].FindSpell("life_stealer_rage") != null && e[i].FindSpell("life_stealer_rage").Cooldown <= 0 && me.Level >= 7)
 								|| e[i].IsStunned()
 								)
 							&& !e[i].IsMagicImmune()
