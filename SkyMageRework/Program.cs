@@ -235,18 +235,20 @@ namespace SkyMageRework
 						W.UseAbility();
 						Utils.Sleep(300, "W");
 					}
+					float angle = me.FindAngleBetween(target.Position, true);
+					Vector3 pos = new Vector3((float)(target.Position.X - 500 * Math.Cos(angle)), (float)(target.Position.Y - 500 * Math.Sin(angle)), 0);
 					if (
 						blink != null
 						&& Q.CanBeCasted()
 						&& me.CanCast()
 						&& blink.CanBeCasted()
-						&& me.Distance2D(target) > 1000
-						&& Menu.Item("Items: ").GetValue<AbilityToggler>().IsEnabled(blink.Name)
+						&& me.Distance2D(target) >= 490
+						&& me.Distance2D(pos) <= 1180
+						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name)
 						&& Utils.SleepCheck("blink")
 						)
 					{
-						blink.UseAbility(target.Position);
-
+						blink.UseAbility(pos);
 						Utils.Sleep(250, "blink");
 					}
 					if (
