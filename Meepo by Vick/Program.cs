@@ -200,7 +200,8 @@ namespace Meepo
                 for (int i = 0; i < meepos.Count(); i++)
                 {
                     travel = meepos[i].FindItem("item_travel_boots") ?? meepos[i].FindItem("item_travel_boots_2");
-                    if (w[i].CanBeCasted() 
+                    if (w[i]!=null
+                        && w[i].CanBeCasted() 
                         && meepos[i].Health <= meepos[i].MaximumHealth 
                         / 100 * Menu.Item("healh").GetValue<Slider>().Value 
                         && meepos[i].Handle != f.Handle
@@ -212,7 +213,9 @@ namespace Meepo
                         w[i].UseAbility(f);
                         Utils.Sleep(1000, meepos[i].Handle + "W");
                     }
-                    else if (travel.CanBeCasted() 
+                    else if (
+                        travel !=null
+                        && travel.CanBeCasted() 
                         && meepos[i].Health <= meepos[i].MaximumHealth 
                         / 100 * Menu.Item("healh").GetValue<Slider>().Value
                        && (!w[i].CanBeCasted() 
@@ -229,6 +232,7 @@ namespace Meepo
                         Utils.Sleep(1000, meepos[i].Handle + "travel");
                     }
                     if (e!=null
+                        && q[i]!=null
                         && meepos[i].Health <= meepos[i].MaximumHealth 
                         / 100 * Menu.Item("healh").GetValue<Slider>().Value 
                         && q[i].CanBeCasted() 
@@ -245,6 +249,7 @@ namespace Meepo
 						for (var j = 0; j < meepos.Count(); j++)
 						{
 							if (e!=null
+                                && q[j]!=null
                                 && meepos[i].Handle != meepos[j].Handle
                                 && meepos[j].Position.Distance2D(e) < q[i].CastRange 
                                 && e.Modifiers.Any(y => y.Name != "modifier_meepo_earthbind")
@@ -259,6 +264,7 @@ namespace Meepo
 						}
 					}
 					if (e!=null
+                        && w[i]!=null
                         && w[i].CanBeCasted() 
                         && meepos[i].Health <= meepos[i].MaximumHealth 
                         / 100 * Menu.Item("healh").GetValue<Slider>().Value 
@@ -276,6 +282,7 @@ namespace Meepo
 					}
 				else if (
                         e!=null
+                        && travel !=null
                         && travel.CanBeCasted() 
                         && meepos[i].Health <= meepos[i].MaximumHealth 
                         / 100 * Menu.Item("healh").GetValue<Slider>().Value
@@ -302,9 +309,15 @@ namespace Meepo
 				{
 					for (int j = 0; j < checkObj.Count(); j++)
 					{
-						if (((meepos[i].Distance2D(checkObj[j]) <= 365
-							&& SafePoof)||(!SafePoof)) && w[i].CanBeCasted() && (meepos[i].Health >= meepos[i].MaximumHealth / 100 * Menu.Item("healh").GetValue<Slider>().Value || !dodge)
-						&& Utils.SleepCheck(meepos[i].Handle + "Wpos"))
+						if (w[i]!=null
+                            && ((meepos[i].Distance2D(checkObj[j]) <= 365
+							&& SafePoof)
+                            ||(!SafePoof))
+                            && w[i].CanBeCasted() 
+                            && (meepos[i].Health >= meepos[i].MaximumHealth 
+                            / 100 * Menu.Item("healh").GetValue<Slider>().Value 
+                            || !dodge)
+						    && Utils.SleepCheck(meepos[i].Handle + "Wpos"))
 						{
 							w[i].UseAbility(meepos[i]);
 							Utils.Sleep(250, meepos[i].Handle + "Wpos");
@@ -326,9 +339,15 @@ namespace Meepo
 					
 					SliderCountUnit = nCreeps >= (skills.Item("poofCount").GetValue<Slider>().Value);
 
-					if (SliderCountUnit && w[i].CanBeCasted() && meepos[i].CanCast() && meepos[i].Health >= meepos[i].MaximumHealth / 100 * Menu.Item("healh").GetValue<Slider>().Value - 0.05
-						&& meepos[i].Mana >= (meepos[i].MaximumMana / 100 * Menu.Item("mana").GetValue<Slider>().Value)
-					&& Utils.SleepCheck(meepos[i].Handle + "Wpos"))
+					if (SliderCountUnit 
+                        && w[i]!=null
+                        && w[i].CanBeCasted() 
+                        && meepos[i].CanCast() 
+                        && meepos[i].Health >= meepos[i].MaximumHealth 
+                        / 100 * Menu.Item("healh").GetValue<Slider>().Value - 0.05
+						&& meepos[i].Mana >= (meepos[i].MaximumMana 
+                        / 100 * Menu.Item("mana").GetValue<Slider>().Value)
+					    && Utils.SleepCheck(meepos[i].Handle + "Wpos"))
 					{
 						w[i].UseAbility(meepos[i]);
 						Utils.Sleep(250, meepos[i].Handle + "Wpos");
