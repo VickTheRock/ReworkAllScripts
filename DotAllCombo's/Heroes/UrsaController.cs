@@ -27,8 +27,8 @@
 
 			Q = me.Spellbook.SpellQ;
 			W = me.Spellbook.SpellW;
-			R = me.Spellbook.Spell5;
-			Shiva = me.FindItem("item_shivas_guard");
+			R = me.FindSpell("ursa_enrage");
+            Shiva = me.FindItem("item_shivas_guard");
 			mom = me.FindItem("item_mask_of_madness");
 			urn = me.FindItem("item_urn_of_shadows");
 			dagon = me.Inventory.Items.FirstOrDefault(item => item.Name.Contains("item_dagon"));
@@ -99,7 +99,8 @@
 				}
 				if (
 					R != null && R.CanBeCasted() && me.Distance2D(e) <= 200
-					&& menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name)
+                    && me.HasModifier("modifier_ursa_overpower")
+                    && menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name)
 					&& Utils.SleepCheck("R")
 					)
 				{

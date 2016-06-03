@@ -451,6 +451,120 @@ namespace DotaAllCombo.Heroes
                     }
                 }
             }
+            if (CastW && !Game.IsChatOpen)
+            {
+                target = me.ClosestToMouseTarget(2500);
+                //Skils
+                W = me.Spellbook.SpellW;
+                R = me.Spellbook.SpellR;
+                //Items
+                soul = me.FindItem("item_soul_ring");
+                guardian = me.FindItem("item_guardian_greaves");
+                if (target == null || R == null || W == null) return;
+                if (target.IsAlive && !target.IsIllusion && !me.IsChanneling() && me.Distance2D(target) <= 2500)
+                {
+                    if (R.IsChanneling || me.HasModifier("modifier_tinker_rearm") || me.IsChanneling()) return;
+                    uint elsecount = 0;
+                    bool magicimune = (!target.IsMagicImmune() && !target.HasModifier("modifier_eul_cyclone"));
+                    if (Utils.SleepCheck("combo"))
+                    {
+
+                        if (soul != null
+                            && soul.CanBeCasted()
+                            && me.Health >= (me.MaximumHealth * 0.5)
+                            && Utils.SleepCheck("Rearm"))
+                            soul.UseAbility();
+                        else
+                            elsecount += 1;
+                        if (W != null
+                            && W.CanBeCasted()
+                            && magicimune && Utils.SleepCheck("Rearm"))
+                        {
+                            W.UseAbility();
+                            if (Utils.SleepCheck("TimeW")
+                                && me.Distance2D(target) <= W.CastRange)
+                                Utils.Sleep((me.NetworkPosition.Distance2D(target.NetworkPosition) / 600) * 1000, "TimeW");
+                        }
+                        else
+                            elsecount += 1;
+                        if (guardian != null
+                            && guardian.CanBeCasted()
+                            && Utils.SleepCheck("Rearm"))
+                            guardian.UseAbility();
+                        else
+                            elsecount += 1;
+                        if (elsecount == 3
+                            && R != null && R.CanBeCasted()
+                            && menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name)
+                            && !R.IsChanneling
+                            && ((((soul != null && !soul.CanBeCasted())) || soul == null)
+                            || (((W != null && !W.CanBeCasted())) || W == null)
+                            || (((guardian != null && !guardian.CanBeCasted())) || guardian == null)
+                               )
+                            && Utils.SleepCheck("Rearm")
+                            )
+                        {
+                            R.UseAbility();
+                            Utils.Sleep(800, "Rearm");
+                        }
+                        Utils.Sleep(150, "combo");
+                    }
+                }
+            }
+            if (CastE && !Game.IsChatOpen)
+            {
+                //Skils
+                E = me.Spellbook.SpellE;
+                R = me.Spellbook.SpellR;
+                //Items
+                soul = me.FindItem("item_soul_ring");
+                guardian = me.FindItem("item_guardian_greaves");
+                if (R == null || E == null) return;
+                if (R.IsChanneling || me.HasModifier("modifier_tinker_rearm") || me.IsChanneling()) return;
+                if (!me.IsChanneling())
+                {
+
+                    uint elsecount = 0;
+                    if (Utils.SleepCheck("combo"))
+                    {
+
+                        if (soul != null
+                            && soul.CanBeCasted()
+                            && me.Health >= (me.MaximumHealth*0.5)
+                            && Utils.SleepCheck("Rearm"))
+                            soul.UseAbility();
+                        else
+                            elsecount += 1;
+                        if (E != null
+                            && E.CanBeCasted()
+                            && Utils.SleepCheck("Rearm"))
+                            E.UseAbility(Prediction.InFront(me, 290));
+                        else
+                            elsecount += 1;
+                        if (guardian != null
+                            && guardian.CanBeCasted()
+                            && Utils.SleepCheck("Rearm"))
+                            guardian.UseAbility();
+                        else
+                            elsecount += 1;
+                        if (elsecount == 3
+                            && R != null && R.CanBeCasted()
+                            && !R.IsChanneling
+                            && ((((soul != null && !soul.CanBeCasted())) || soul == null)
+                                || (((E != null && !E.CanBeCasted())) || E == null)
+                                || (((guardian != null && !guardian.CanBeCasted())) || guardian == null)
+                                )
+                            && Utils.SleepCheck("Rearm")
+                            )
+                        {
+                            R.UseAbility();
+                            Utils.Sleep(800, "Rearm");
+                        }
+                        Utils.Sleep(150, "combo");
+                    }
+                }
+
+            }
             List<Unit> fount = ObjectManager.GetEntities<Unit>().Where(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Fountain).ToList();
             var creeps = ObjectManager.GetEntities<Creep>().Where(creep =>
                    (creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
@@ -533,7 +647,8 @@ namespace DotaAllCombo.Heroes
                         else if (
                                 R != null
                                 && R.CanBeCasted()
-                                && !travel.CanBeCasted()
+                                && travel!=null 
+                                &&!travel.CanBeCasted()
                                 && me.Distance2D(fount.First().Position) <= 1200
                                 && !R.IsChanneling
                                 && menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name)
@@ -654,119 +769,7 @@ namespace DotaAllCombo.Heroes
                     Utils.Sleep(300, "travel");
                 }
             }
-            if (CastW && !Game.IsChatOpen)
-            {
-                target = me.ClosestToMouseTarget(2500);
-                //Skils
-                W = me.Spellbook.SpellW;
-                R = me.Spellbook.SpellR;
-                //Items
-                soul = me.FindItem("item_soul_ring");
-                guardian = me.FindItem("item_guardian_greaves");
-                if (target == null || (R == null && W == null)) return;
-                if (target.IsAlive && !target.IsIllusion && !me.IsChanneling() && me.Distance2D(target) <= 2500)
-                {
-                    if (R.IsChanneling || me.HasModifier("modifier_tinker_rearm") || me.IsChanneling()) return;
-                    uint elsecount = 0;
-                    bool magicimune = (!target.IsMagicImmune() && !target.HasModifier("modifier_eul_cyclone"));
-                    if (Utils.SleepCheck("combo"))
-                    {
-
-                        if (soul != null
-                            && soul.CanBeCasted()
-                            && me.Health >= (me.MaximumHealth * 0.5)
-                            && Utils.SleepCheck("Rearm"))
-                            soul.UseAbility();
-                        else
-                            elsecount += 1;
-                        if (W != null
-                            && W.CanBeCasted()
-                            && magicimune && Utils.SleepCheck("Rearm"))
-                        {
-                            W.UseAbility();
-                            if (Utils.SleepCheck("TimeW")
-                                && me.Distance2D(target) <= W.CastRange)
-                                Utils.Sleep((me.NetworkPosition.Distance2D(target.NetworkPosition) / 600) * 1000, "TimeW");
-                        }
-                        else
-                            elsecount += 1;
-                        if (guardian != null
-                            && guardian.CanBeCasted()
-                            && Utils.SleepCheck("Rearm"))
-                            guardian.UseAbility();
-                        else
-                            elsecount += 1;
-                        if (elsecount == 3
-                            && R != null && R.CanBeCasted()
-                            && menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name)
-                            && !R.IsChanneling
-                            && ((((soul != null && !soul.CanBeCasted())) || soul == null)
-                            || (((W != null && !W.CanBeCasted())) || W == null)
-                            || (((guardian != null && !guardian.CanBeCasted())) || guardian == null)
-                               )
-                            && Utils.SleepCheck("Rearm")
-                            )
-                        {
-                            R.UseAbility();
-                            Utils.Sleep(800, "Rearm");
-                        }
-                        Utils.Sleep(150, "combo");
-                    }
-                }
-            }
-            if (CastE && !Game.IsChatOpen)
-            {
-                //Skils
-                E = me.Spellbook.SpellE;
-                R = me.Spellbook.SpellR;
-                //Items
-                soul = me.FindItem("item_soul_ring");
-                guardian = me.FindItem("item_guardian_greaves");
-                if (R == null && E == null) return;
-                if (R.IsChanneling || me.HasModifier("modifier_tinker_rearm") || me.IsChanneling()) return;
-                if (!me.IsChanneling())
-                {
-
-                    uint elsecount = 0;
-                    if (Utils.SleepCheck("combo"))
-                    {
-
-                        if (soul != null
-                            && soul.CanBeCasted()
-                            && me.Health >= (me.MaximumHealth * 0.5)
-                            && Utils.SleepCheck("Rearm"))
-                            soul.UseAbility();
-                        else
-                            elsecount += 1;
-                        if (E != null
-                            && E.CanBeCasted()
-                            && Utils.SleepCheck("Rearm"))
-                            E.UseAbility(Prediction.InFront(me, 290));
-                        else
-                            elsecount += 1;
-                        if (guardian != null
-                            && guardian.CanBeCasted()
-                            && Utils.SleepCheck("Rearm"))
-                            guardian.UseAbility();
-                        else
-                            elsecount += 1;
-                        if (elsecount == 3
-                            && R != null && R.CanBeCasted()
-                            && !R.IsChanneling
-                            && ((((soul != null && !soul.CanBeCasted())) || soul == null)
-                            || (((E != null && !E.CanBeCasted())) || E == null)
-                            || (((guardian != null && !guardian.CanBeCasted())) || guardian == null)
-                               )
-                            && Utils.SleepCheck("Rearm")
-                            )
-                        {
-                            R.UseAbility();
-                            Utils.Sleep(800, "Rearm");
-                        }
-                        Utils.Sleep(150, "combo");
-                    }
-                }
-            }
+           
         }
         bool CheckRefresh()
         {

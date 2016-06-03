@@ -26,16 +26,21 @@
             e = me.ClosestToMouseTarget(1300);
             if (e == null) return;
 
-            D = me.FindSpell("earth_spirit_stone_caller");
+            /*D = me.FindSpell("earth_spirit_stone_caller");
 			Q = me.FindSpell("earth_spirit_boulder_smash");
 			E = me.FindSpell("earth_spirit_geomagnetic_grip");
 			W = me.FindSpell("earth_spirit_rolling_boulder");
 			F = me.FindSpell("earth_spirit_petrify");
-			R = me.FindSpell("earth_spirit_magnetize");
+			R = me.FindSpell("earth_spirit_magnetize");*/
+            D = me.Spellbook.SpellD;
+            Q = me.Spellbook.SpellQ;
+            E = me.Spellbook.SpellE;
+            W = me.Spellbook.SpellW;
+            F = me.Spellbook.SpellF;
+            R = me.Spellbook.SpellR;
 
 
-            var remnant = ObjectManager.GetEntities<Unit>().Where(x => x.ClassID == ClassID.CDOTA_Unit_Earth_Spirit_Stone && x.Team == me.Team
-                                      && x.Distance2D(me) <= 1300 && x.IsValid).ToList();
+            var remnant = ObjectManager.GetEntities<Unit>().Where(x => x.ClassID == ClassID.CDOTA_Unit_Earth_Spirit_Stone && x.Team == me.Team && x.IsValid).ToList();
             var remnantCount = remnant.Count;
 
 
@@ -57,11 +62,8 @@
                         if (me.Distance2D(e) <= E.CastRange - 50
                             && Utils.SleepCheck("Rem"))
                         {
-                            if (me.NetworkActivity == NetworkActivity.Move)
-                                me.Stop();
-                            else
-                                D.UseAbility(Prediction.InFront(me, 100));
-                            Utils.Sleep(600, "Rem");
+                            D.UseAbility(Prediction.InFront(me, 50));
+                            Utils.Sleep(500, "Rem");
                         }
                     }
                     else if (
@@ -79,10 +81,7 @@
                         if (me.Distance2D(e) <= E.CastRange - 50
                             && Utils.SleepCheck("Rem"))
                         {
-                            if (me.NetworkActivity == NetworkActivity.Move)
-                                me.Stop();
-                            else
-                                D.UseAbility(Prediction.InFront(e, 0));
+                            D.UseAbility(Prediction.InFront(e, 0));
                             Utils.Sleep(600, "Rem");
                         }
                     }
@@ -108,10 +107,7 @@
                             if (me.Distance2D(e) <= E.CastRange - 50
                                 && Utils.SleepCheck("Rem"))
                             {
-                                if (me.NetworkActivity == NetworkActivity.Move)
-                                    me.Stop();
-                                else
-                                    D.UseAbility(Prediction.InFront(me, 100));
+                                D.UseAbility(Prediction.InFront(me, 50));
                                 Utils.Sleep(600, "Rem");
                             }
                         }
@@ -213,7 +209,6 @@
 		private  void Others(EventArgs args)
 		{
 
-
             qKey = Game.IsKeyDown(menu.Item("qKey").GetValue<KeyBind>().Key);
             wKey = Game.IsKeyDown(menu.Item("wKey").GetValue<KeyBind>().Key);
             eKey = Game.IsKeyDown(menu.Item("eKey").GetValue<KeyBind>().Key);
@@ -233,7 +228,7 @@
 
             var magnetizemod = e.Modifiers.Where(y => y.Name == "modifier_earth_spirit_magnetize").DefaultIfEmpty(null).FirstOrDefault();
 
-            if (AutoUlt && magnetizemod != null && magnetizemod.RemainingTime <= 0.15 + Game.Ping && me.Distance2D(e) <= D.CastRange && Utils.SleepCheck("Rem"))
+            if (AutoUlt && magnetizemod != null && magnetizemod.RemainingTime <= 0.2 + Game.Ping && me.Distance2D(e) <= D.CastRange && Utils.SleepCheck("Rem"))
             {
                 D.UseAbility(e.Position);
                 Utils.Sleep(1000, "Rem");
@@ -283,7 +278,6 @@
                     W.CastSkillShot(e);
                     Utils.Sleep(250, me.Handle + "remnantW");
                 }
-
                 if ( // Hellbard
                     halberd != null
                     && halberd.CanBeCasted()
@@ -454,7 +448,6 @@
                             || ethereal.Cooldown < 17))
                     && !e.IsLinkensProtected()
                     && dagon.CanBeCasted()
-                    && menu.Item("Item").GetValue<AbilityToggler>().IsEnabled("item_dagon")
                     && !e.IsMagicImmune()
                     && !stoneModif
                     && Utils.SleepCheck("dagon")
@@ -533,6 +526,7 @@
             }
             if (qKey && me.Distance2D(e) <= 1400 && e != null && e.IsAlive && !me.IsInvisible())
             {
+                Wmod = me.HasModifier("modifier_earth_spirit_rolling_boulder_caster");
                 if (remnant.Count == 0)
                 {
                     if (
@@ -548,10 +542,8 @@
                         if (me.Distance2D(e) <= E.CastRange - 50
                             && Utils.SleepCheck("Rem"))
                         {
-                            if (me.NetworkActivity == NetworkActivity.Move)
-                                me.Stop();
-                            else
-                                D.UseAbility(Prediction.InFront(me, 100));
+                            
+                            D.UseAbility(Prediction.InFront(me, 50));
                             Utils.Sleep(600, "Rem");
                         }
                     }
@@ -576,10 +568,7 @@
                             if (me.Distance2D(e) <= E.CastRange - 50
                                 && Utils.SleepCheck("Rem"))
                             {
-                                if (me.NetworkActivity == NetworkActivity.Move)
-                                    me.Stop();
-                                else
-                                    D.UseAbility(Prediction.InFront(me, 100));
+                                D.UseAbility(Prediction.InFront(me, 50));
                                 Utils.Sleep(600, "Rem");
                             }
                         }
@@ -610,6 +599,7 @@
             }
             if (wKey)
             {
+                Wmod = me.HasModifier("modifier_earth_spirit_rolling_boulder_caster");
                 Task.Delay(350).ContinueWith(_ =>
                 {
                     if (remnant.Count == 0)
@@ -687,10 +677,7 @@
                         if (me.Distance2D(e) <= E.CastRange - 50
                             && Utils.SleepCheck("Rem"))
                         {
-                            if (me.NetworkActivity == NetworkActivity.Move)
-                                me.Stop();
-                            else
-                                D.UseAbility(e.Position);
+                            D.UseAbility(e.Position);
                             Utils.Sleep(1000, "Rem");
                         }
                     }
@@ -713,10 +700,7 @@
                                 if (me.Distance2D(e) <= E.CastRange - 50
                                     && Utils.SleepCheck("Rem"))
                                 {
-                                    if (me.NetworkActivity == NetworkActivity.Move)
-                                        me.Stop();
-                                    else
-                                        D.UseAbility(e.Position);
+                                    D.UseAbility(e.Position);
                                     Utils.Sleep(1000, "Rem");
                                 }
                             }
@@ -750,8 +734,8 @@
                         }
                     }
                 }
-			}
-		}
+            }
+        }
 	
 		public void OnCloseEvent()
 		{
@@ -816,16 +800,6 @@
 			menu.AddItem(new MenuItem("Heel", "Min targets to BKB").SetValue(new Slider(2, 1, 5)));
 			menu.AddItem(new MenuItem("Heelm", "Min targets to BladeMail").SetValue(new Slider(2, 1, 5)));
 			menu.AddItem(new MenuItem("oneult", "Use AutoUpdate Ultimate Remnant").SetValue(true));
-		}
-
-		private Unit GetClosestToRemmnant(List<Unit> units, Hero x, float range = 1700)
-		{
-			Unit closestHero = null;
-			foreach (var b in units.Where(v => (closestHero == null || closestHero.Distance2D(x) > v.Distance2D(x)) && x.Distance2D(v) <= range))
-			{
-				closestHero = b;
-			}
-			return closestHero;
 		}
 	}
 }
