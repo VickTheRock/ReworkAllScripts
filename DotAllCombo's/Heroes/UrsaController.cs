@@ -56,7 +56,7 @@ namespace DotaAllCombo.Heroes
 			if (Active && me.Distance2D(e) <= 1700 && e != null && e.IsAlive)
             {
                 if (
-                    me.Distance2D(e) <= Toolset.AttackRange+50 && (!me.IsAttackImmune() || !e.IsAttackImmune())
+                    me.Distance2D(e) <= me.AttackRange+50 && (!me.IsAttackImmune() || !e.IsAttackImmune())
                     && me.NetworkActivity != NetworkActivity.Attack && me.CanAttack() && Utils.SleepCheck("attack")
                     )
                 {
@@ -270,11 +270,11 @@ namespace DotaAllCombo.Heroes
 			menu.AddItem(
 				new MenuItem("Items", "Items:").SetValue(new AbilityToggler(new Dictionary<string, bool>
 				{
-				    {"item_mask_of_madness", true},
-                		    {"item_blink", true},
+                    {"item_mask_of_madness", true},
+                    {"item_blink", true},
 				    {"item_heavens_halberd", true},
 				    {"item_orchid", true},
-                		    { "item_bloodthorn", true},
+                    { "item_bloodthorn", true},
 				    {"item_urn_of_shadows", true},
 				    {"item_abyssal_blade", true},
 				    {"item_shivas_guard", true},
