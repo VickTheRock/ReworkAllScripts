@@ -1,4 +1,3 @@
-﻿
 namespace DotaAllCombo.Service
 {
 	using System.Linq;
@@ -29,8 +28,19 @@ namespace DotaAllCombo.Service
 		public static float AttackRange;
 		public static void Range()
 		{
-				AttackRange = me.GetAttackRange();
-		}
+            Item item = me.Inventory.Items.FirstOrDefault(x => x != null && x.IsValid && (x.Name.Contains("item_dragon_lance") || x.Name.Contains("item_hurricane_pike")));
+            var _q = me.Spellbook.Spell1;
+
+            if (me.ClassID == ClassID.CDOTA_Unit_Hero_TrollWarlord)
+                AttackRange = _q.IsToggled ? 150 + me.HullRadius + 24 : me.GetAttackRange() + me.HullRadius + 24;
+            if (me.ClassID == ClassID.CDOTA_Unit_Hero_TemplarAssassin)
+                AttackRange = me.GetAttackRange() + me.HullRadius + 24;
+            else
+            if (item != null && me.IsRanged)
+                AttackRange = me.GetAttackRange() + me.HullRadius + 24;
+            else
+                AttackRange = me.GetAttackRange() + me.HullRadius + 24;
+        }
 		public static bool checkFace(Ability z, Hero v)
 		{
 			ObjectManager.GetEntities<Hero>().Where(x => x.Distance2D(v) < z.CastRange).OrderBy(x => RadiansToFace(x, v)).FirstOrDefault();
