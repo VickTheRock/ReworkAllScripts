@@ -1,4 +1,4 @@
-﻿namespace DotaAllCombo.Heroes
+namespace DotaAllCombo.Heroes
 {
     using System;
     using System.Collections.Generic;
@@ -270,11 +270,12 @@
 			menu.AddItem(
 				new MenuItem("Items", "Items:").SetValue(new AbilityToggler(new Dictionary<string, bool>
 				{
-				    {"item_blink", true},
+				    {"item_mask_of_madness", true},
+                		    {"item_blink", true},
 				    {"item_heavens_halberd", true},
-				    {"item_orchid", true}, {"item_bloodthorn", true},
+				    {"item_orchid", true},
+                		    { "item_bloodthorn", true},
 				    {"item_urn_of_shadows", true},
-				    {"item_veil_of_discord", true},
 				    {"item_abyssal_blade", true},
 				    {"item_shivas_guard", true},
 				    {"item_blade_mail", true},
