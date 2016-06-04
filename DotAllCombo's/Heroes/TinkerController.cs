@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 namespace DotaAllCombo.Heroes
 {
     using System;
@@ -10,7 +8,6 @@ namespace DotaAllCombo.Heroes
     using Ensage.Common;
     using Ensage.Common.Menu;
     using SharpDX;
-    using System.Threading;
 
     using Service;
     using Service.Debug;
@@ -39,98 +36,116 @@ namespace DotaAllCombo.Heroes
 
         private readonly Vector3[] PanicPos =
         {
-            new Vector3(-7304, -3979, 384),
-            new Vector3(-7429, -3608, 383),
-            new Vector3(-7059, -1099, 384),
-            new Vector3(-6942, 360, 384),
-            new Vector3(-5537, 1962, 384),
-            new Vector3(-4818, 2039, 384),
-            new Vector3(-3122, 950, 384),
-            new Vector3(-2219, -1194, 256),
-            new Vector3(368, -3218, 384),
-            new Vector3(1443, -3006, 384),
-            new Vector3(3092, -3341, 383),
-            new Vector3(2657, -4581, 384),
-            new Vector3(4272, -4514, 384),
-            new Vector3(3141, -6812, 384),
-            new Vector3(2412, -6837, 384),
-            new Vector3(736, -6986, 384),
-            new Vector3(2507, -5683, 384),
-            new Vector3(4645, -5418, 384),
-            new Vector3(6108, -6233, 384),
-            new Vector3(6703, -5479, 384),
-            new Vector3(7004, -3430, 384),
-            new Vector3(7213, -2255, 384),
-            new Vector3(6939, -984, 384),
-            new Vector3(5443, -1230, 384),
-            new Vector3(7084, -100, 384),
-            new Vector3(6922, 544, 384),
-            new Vector3(5373, 1020, 640),
-            new Vector3(4675, 1187, 384),
-            new Vector3(2391, -194, 384),
-            new Vector3(2402, 790, 256),
-            new Vector3(2787, 1090, 256),
-            new Vector3(938, 1265, 256),
-            new Vector3(1708, 3371, 384),
-            new Vector3(1018, 4575, 640),
-            new Vector3(27, 3370, 383),
-            new Vector3(-1126, 2207, 384),
-            new Vector3(-2637, 4510, 384),
-            new Vector3(-2520, 5412, 384),
-            new Vector3(-1448, 5386, 384),
-            new Vector3(-4528, 4985, 384),
-            new Vector3(-4484, 6686, 384),
-            new Vector3(-3703, 6641, 384),
-            new Vector3(-2716, 6757, 384),
-            new Vector3(-2264, 6791, 384),
-            new Vector3(-989, 6887, 384),
-            new Vector3(334, 6880, 384),
-            new Vector3(1858, 6907, 255),
-            new Vector3(2533, 3404, 256),
-            new Vector3(4508, 2037, 256),
-            new Vector3(4345, -342, 256),
-            new Vector3(5226, -646, 383),
-            new Vector3(-485, -5483, 384),
-            new Vector3(613, -4483, 384),
-            new Vector3(-1108, -4769, 384),
-            new Vector3(-2081, -4572, 256),
-            new Vector3(-2476, -4180, 256),
-            new Vector3(-2376, -3104, 256),
-            new Vector3(-2038, -2568, 256),
-            new Vector3(-3686, -1302, 384),
-            new Vector3(-3245, -582, 384),
-            new Vector3(-2935, 388, 384),
-            new Vector3(-1798, 4081, 640),
-            new Vector3(-3501, 4449, 384),
-            new Vector3(-6750, 4327, 384),
-            new Vector3(-7027, 5036, 384),
-            new Vector3(-6618, 6252, 383),
-            new Vector3(-5036, 5085, 384),
-            new Vector3(-4765, -91, 384),
-            new Vector3(-4619, -541, 640),
-            new Vector3(-3861, -2403, 256),
-            new Vector3(-3565, -4897, 256),
-            new Vector3(-3921, -7065, 384),
-            new Vector3(-4882, -7084, 384),
-            new Vector3(-7349, -5014, 384),
-            new Vector3(-7352, -4804, 384),
-            new Vector3(-7409, -3233, 384),
-            new Vector3(924, 1709, 256),
-            new Vector3(7588, 1806, 256),
-            new Vector3(7532, 2914, 384),
-            new Vector3(7516, 2640, 384),
-            new Vector3(-6940, 1584, 384),
-            new Vector3(-749, -3145, 256),
-            new Vector3(-1562, -3232, 256),
-            new Vector3(5265, -4294, 384),
-            new Vector3(4511, -2148, 384),
-            new Vector3(4240, -2207, 384),
-            new Vector3(3078, 6945, 384),
-            new Vector3(4593, 6911, 384),
-            new Vector3(5476, 6769, 384),
-            new Vector3(-2069, 2856, 384),
-            new Vector3(4168, -3240, 384),
-            new Vector3(4277, -6537, 384),
+            new Vector3(-752, -6961, 383),
+            new Vector3(93, -6959, 383),
+            new Vector3(758, -7021, 384),
+            new Vector3(1816, -6797, 384),
+            new Vector3(2705, -6839, 384),
+            new Vector3(2506, -5658, 384),
+            new Vector3(4658, -5404, 384),
+            new Vector3(5558, -6553, 384),
+            new Vector3(6261, -6097, 384),
+            new Vector3(6744, -5342, 384),
+            new Vector3(5271, -4309, 384),
+            new Vector3(6994, -3484, 384),
+            new Vector3(2654, -4520, 384),
+            new Vector3(-492, -5489, 384),
+            new Vector3(-1103, -4761, 384),
+            new Vector3(-2219, -4762, 255),
+            new Vector3(-2458, -4182, 256),
+            new Vector3(-2280, -3277, 256),
+            new Vector3(-2080, -2578, 256),
+            new Vector3(-3698, -1303, 384),
+            new Vector3(-2296, -1253, 256),
+            new Vector3(-3238, -601, 384),
+            new Vector3(-3595, 242, 640),
+            new Vector3(-4003, 1318, 384),
+            new Vector3(-4530, 1976, 384),
+            new Vector3(-5466, 2152, 384),
+            new Vector3(-5121, 2041, 640),
+            new Vector3(-5417, 1188, 384),
+            new Vector3(-5052, 791, 383),
+            new Vector3(-4627, -530, 640),
+            new Vector3(-7242, -288, 384),
+            new Vector3(-6951, 358, 384),
+            new Vector3(-7139, 693, 384),
+            new Vector3(-7385, 1317, 384),
+            new Vector3(-7352, -1285, 384),
+            new Vector3(-7464, -3214, 384),
+            new Vector3(-7461, -3619, 383),
+            new Vector3(-7572, -3872, 384),
+            new Vector3(-7407, -4303, 384),
+            new Vector3(-7330, -5013, 384),
+            new Vector3(-5562, -6994, 384),
+            new Vector3(-4830, -7086, 384),
+            new Vector3(-4015, -7129, 384),
+            new Vector3(-3066, -6947, 256),
+            new Vector3(3975, -5508, 384),
+            new Vector3(7217, -2250, 384),
+            new Vector3(6938, -973, 384),
+            new Vector3(6943, -334, 384),
+            new Vector3(7000, 316, 384),
+            new Vector3(7198, 771, 384),
+            new Vector3(7590, 1568, 256),
+            new Vector3(7591, 2070, 256),
+            new Vector3(7477, 2790, 384),
+            new Vector3(7522, 2949, 384),
+            new Vector3(7464, 5083, 384),
+            new Vector3(5350, 1011, 640),
+            new Vector3(4648, -652, 384),
+            new Vector3(2395, -251, 384),
+            new Vector3(2602, 805, 256),
+            new Vector3(2822, 1096, 255),
+            new Vector3(844, 1474, 255),
+            new Vector3(602, 1064, 256),
+            new Vector3(-932, 1953, 384),
+            new Vector3(-3115, 931, 384),
+            new Vector3(-4439, 3226, 384),
+            new Vector3(-2662, 4506, 384),
+            new Vector3(-1389, 5406, 384),
+            new Vector3(-1258, 5480, 384),
+            new Vector3(1012, 4587, 640),
+            new Vector3(1652, 7235, 384),
+            new Vector3(2020, 6933, 256),
+            new Vector3(2493, 7178, 384),
+            new Vector3(3864, 6726, 384),
+            new Vector3(4612, 6880, 384),
+            new Vector3(5654, 6752, 384),
+            new Vector3(5469, 6752, 384),
+            new Vector3(4505, 2020, 256),
+            new Vector3(5210, -643, 384),
+            new Vector3(5467, -1202, 384),
+            new Vector3(6894, -4705, 384),
+            new Vector3(-735, -3173, 256),
+            new Vector3(-24, -3628, 384),
+            new Vector3(1438, -3047, 384),
+            new Vector3(3000, -3094, 384),
+            new Vector3(4345, -2316, 383),
+            new Vector3(3625, -1479, 384),
+            new Vector3(2350, 2732, 256),
+            new Vector3(-367, 3230, 384),
+            new Vector3(-1816, 4064, 640),
+            new Vector3(-4493, 4960, 384),
+            new Vector3(-6864, 5850, 384),
+            new Vector3(-6308, 6498, 384),
+            new Vector3(-5156, 6642, 383),
+            new Vector3(-4521, 6699, 384),
+            new Vector3(-3690, 6627, 384),
+            new Vector3(-2719, 6764, 384),
+            new Vector3(-2286, 6778, 384),
+            new Vector3(-1637, 6881, 384),
+            new Vector3(-676, 6944, 384),
+            new Vector3(338, 6875, 384),
+            new Vector3(8, 3375, 384),
+            new Vector3(1727, 3367, 384),
+            new Vector3(-3565, -4903, 256),
+            new Vector3(610, -4438, 384),
+            new Vector3(4271, -4513, 384),
+            new Vector3(3930, -6864, 384),
+            new Vector3(-6972, 3864, 384),
+            new Vector3(-5545, 4132, 383),
+            new Vector3(-7008, 5027, 384),
+
         };
         private readonly Vector3[] SafePos =
         {
@@ -530,7 +545,7 @@ namespace DotaAllCombo.Heroes
 
                         if (soul != null
                             && soul.CanBeCasted()
-                            && me.Health >= (me.MaximumHealth*0.5)
+                            && me.Health >= (me.MaximumHealth * 0.5)
                             && Utils.SleepCheck("Rearm"))
                             soul.UseAbility();
                         else
@@ -572,7 +587,7 @@ namespace DotaAllCombo.Heroes
                    || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral
                    || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep) &&
                   creep.IsAlive && creep.Team != me.Team && creep.IsVisible && creep.IsSpawned).ToList();
-            if (menu.Item("pushMod").IsActive() && !Active)
+            if (menu.Item("pushMod").IsActive() && (!Active || !CastE|| !CastW))
             {
                 var panic = GetClosestToTarget(PanicPos, me);
                 var safe = GetClosestToTarget(SafePos, me);
@@ -585,7 +600,7 @@ namespace DotaAllCombo.Heroes
                 {
 
                     if (R.IsChanneling || me.HasModifier("modifier_tinker_rearm") || me.IsChanneling()) return;
-                   
+
                     if (creeps.Count >= 1)
                     {
                         if (soul != null
@@ -617,7 +632,7 @@ namespace DotaAllCombo.Heroes
                                 && blink.CanBeCasted()
                                 )
                         {
-                            if (me.Distance2D(safe) <= 1190 
+                            if (me.Distance2D(safe) <= 1190
                                 && me.Distance2D(safe) >= 100
                                 && Utils.SleepCheck("blink"))
                             {
@@ -635,7 +650,7 @@ namespace DotaAllCombo.Heroes
                                && blink.CanBeCasted()
                                )
                         {
-                            if (me.Distance2D(safe) >= 1190 
+                            if (me.Distance2D(safe) >= 1190
                                 && me.Distance2D(panic) <= 1190
                                 && Utils.SleepCheck("blink"))
                             {
@@ -647,8 +662,8 @@ namespace DotaAllCombo.Heroes
                         else if (
                                 R != null
                                 && R.CanBeCasted()
-                                && travel!=null 
-                                &&!travel.CanBeCasted()
+                                && travel != null
+                                && !travel.CanBeCasted()
                                 && me.Distance2D(fount.First().Position) <= 1200
                                 && !R.IsChanneling
                                 && menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name)
@@ -664,27 +679,27 @@ namespace DotaAllCombo.Heroes
 
 
                 if (me.Distance2D(safe) >= 150) return;
-                if (    soul != null
-                        && soul.CanBeCasted()
-                        && !R.IsChanneling
-                        && me.Health >= (me.MaximumHealth * 0.5)
-                        && me.Distance2D(safe) <= HIDE_AWAY_RANGE
-                        && menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(soul.Name)
-                        && Utils.SleepCheck("soul"))
+                if (soul != null
+                    && soul.CanBeCasted()
+                    && !R.IsChanneling
+                    && me.Health >= (me.MaximumHealth * 0.5)
+                    && me.Distance2D(safe) <= HIDE_AWAY_RANGE
+                    && menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(soul.Name)
+                    && Utils.SleepCheck("soul"))
                 {
                     soul.UseAbility();
                     Utils.Sleep(500, "soul");
                 }
                 else
                     if (
-                           R != null
-                           && R.CanBeCasted()
-                           && !E.CanBeCasted()
-                           && !R.IsChanneling
-                           && me.Mana >= R.ManaCost + 75
-                           && me.Distance2D(safe) <= HIDE_AWAY_RANGE
-                           && menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name)
-                           && Utils.SleepCheck("R")
+                        R != null
+                        && R.CanBeCasted()
+                        && !E.CanBeCasted()
+                        && !R.IsChanneling
+                        && me.Mana >= R.ManaCost + 75
+                        && me.Distance2D(safe) <= HIDE_AWAY_RANGE
+                        && menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name)
+                        && Utils.SleepCheck("R")
                        )
                 {
                     R.UseAbility();
@@ -727,7 +742,7 @@ namespace DotaAllCombo.Heroes
                     blink != null
                     && !E.CanBeCasted()
                     && me.CanCast()
-                    && target.Distance2D(me)<= 2000
+                    && target.Distance2D(me) <= 2000
                     && me.Health <= (me.MaximumHealth / 100 * menu.Item("Healh").GetValue<Slider>().Value)
                     && !R.IsChanneling
                     && blink.CanBeCasted()
@@ -758,7 +773,7 @@ namespace DotaAllCombo.Heroes
                         travel != null
                         && !travel.CanBeCasted()
                         && !R.IsChanneling
-                        && R!=null
+                        && R != null
                         && R.CanBeCasted()
                         && menu.Item("pushTravel").IsActive()
                         && me.Distance2D(panic) <= HIDE_AWAY_RANGE
@@ -769,7 +784,7 @@ namespace DotaAllCombo.Heroes
                     Utils.Sleep(300, "travel");
                 }
             }
-           
+
         }
         bool CheckRefresh()
         {
@@ -856,18 +871,18 @@ namespace DotaAllCombo.Heroes
                     }
                 }
                 if (menu.Item("panicMod").IsActive())
-                {
-                    for (int i = 0; i < PanicPos.Count(); ++i)
-                    {
-                        if (!iscreated)
-                        {
-                            ParticleEffect effect = new ParticleEffect(EffectPanicPath, PanicPos[i]);
-                            effect.SetControlPoint(1, new Vector3(HIDE_AWAY_RANGE, 0, 0));
-                            Effects.Add(effect);
-                        }
-                    }
-                }
-            iscreated = true;
+                 {
+                     for (int i = 0; i < PanicPos.Count(); ++i)
+                     {
+                         if (!iscreated)
+                         {
+                             ParticleEffect effect = new ParticleEffect(EffectPanicPath, PanicPos[i]);
+                             effect.SetControlPoint(1, new Vector3(HIDE_AWAY_RANGE, 0, 0));
+                             Effects.Add(effect);
+                         }
+                     }
+                 }
+                iscreated = true;
             }
         }
     }
