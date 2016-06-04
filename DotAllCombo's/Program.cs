@@ -36,7 +36,56 @@ namespace DotaAllCombo.Heroes
                 closestVector = v;
             return closestVector;
         }
-
+private readonly Vector3[] SafePos =
+        {
+            new Vector3(-6752, 4325, 384),
+            new Vector3(-5017, 5099, 384),
+            new Vector3(-4046, 5282, 384),
+            new Vector3(-2531, 5419, 384),
+            new Vector3(-1561, 5498, 384),
+            new Vector3(-1000, 5508, 384),
+            new Vector3(-749, 6791, 384),
+            new Vector3(359, 6668, 384),
+            new Vector3(1624, 6780, 256),
+            new Vector3(-6877, 3757, 384),
+            new Vector3(-5662, 2268, 384),
+            new Vector3(-6941, 1579, 384),
+            new Vector3(-6819, 608, 384),
+            new Vector3(-6848, 68, 384),
+            new Vector3(-7005, -681, 384),
+            new Vector3(-7082, -1160, 384),
+            new Vector3(-2605, -2657, 256),
+            new Vector3(-2207, -2394, 256),
+            new Vector3(-1446, -1871, 256),
+            new Vector3(-2068, -1151, 256),
+            new Vector3(659, 929, 256),
+            new Vector3(1065, 1241, 256),
+            new Vector3(2259, 667, 256),
+            new Vector3(2426, 812, 256),
+            new Vector3(2647, 1009, 256),
+            new Vector3(2959, 1283, 256),
+            new Vector3(2110, 2431, 256),
+            new Vector3(6869, 613, 384),
+            new Vector3(6832, -206, 384),
+            new Vector3(6773, -431, 384),
+            new Vector3(6742, -1549, 384),
+            new Vector3(6813, -3591, 384),
+            new Vector3(6745, -4689, 384),
+            new Vector3(6360, -5215, 384),
+            new Vector3(4637, -5579, 384),
+            new Vector3(4756, -6491, 384),
+            new Vector3(4249, -6553, 384),
+            new Vector3(2876, -5666, 384),
+            new Vector3(3180, -6627, 384),
+            new Vector3(2013, -6684, 384),
+            new Vector3(-560, -6810, 384),
+            new Vector3(-922, -6797, 384),
+            new Vector3(-1130, -6860, 384),
+            new Vector3(1000, -6928, 384),
+            new Vector3(814, 981, 256),
+            new Vector3(-6690, 5024, 384),
+            new Vector3(-5553, 1961, 384),
+        };
         private readonly Vector3[] PanicPos =
         {
             new Vector3(-752, -6961, 383),
@@ -148,6 +197,7 @@ namespace DotaAllCombo.Heroes
             new Vector3(-6972, 3864, 384),
             new Vector3(-5545, 4132, 383),
             new Vector3(-7008, 5027, 384),
+
         };
 
         public void Combo()
