@@ -99,34 +99,30 @@ namespace DotaAllCombo.Heroes
                     || !blink.CanBeCasted()
                     || !menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name))
                     || (blink != null && blink.CanBeCasted() && me.Distance2D(e) <= 450))
+                    && me.Distance2D(e) <= E.CastRange - 50
+                    && Utils.SleepCheck("Rem")
                     )
-                    {
-                        if (me.Distance2D(e) <= E.CastRange - 50
-                            && Utils.SleepCheck("Rem"))
                         {
                             D.UseAbility(Prediction.InFront(me, 50));
                             Utils.Sleep(500, "Rem");
                         }
-                    }
                     else if (
                         D.CanBeCasted()
                         && Q != null
                         && !Q.CanBeCasted()
                         && E.CanBeCasted()
+                        && me.Distance2D(e)<=E.CastRange
                         && !Wmod
                         && ((blink == null
                         || !blink.CanBeCasted()
                         || !menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name))
                         || (blink != null && blink.CanBeCasted() && me.Distance2D(e) <= 450))
+                        && Utils.SleepCheck("Rem")
                         )
-                    {
-                        if (me.Distance2D(e) <= E.CastRange - 50
-                            && Utils.SleepCheck("Rem"))
                         {
                             D.UseAbility(Prediction.InFront(e, 0));
                             Utils.Sleep(600, "Rem");
                         }
-                    }
                 }
                 if (remnant.Count(x => x.Distance2D(me) <= 1200) >= 1)
                 {
@@ -140,7 +136,7 @@ namespace DotaAllCombo.Heroes
                             && ((Q != null && Q.CanBeCasted())
                             || (W != null && W.CanBeCasted()))
                             && !Wmod
-                            && me.Distance2D(r) >= 350
+                            && remnant.Count(x => x.Distance2D(me) <= 350) == 0
                             && ((blink == null
                             || !blink.CanBeCasted()
                             || !menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name))
@@ -155,8 +151,8 @@ namespace DotaAllCombo.Heroes
                             }
                         }
                         if (
-                            me.Distance2D(r) >= 1500
-                            && me.Distance2D(r) <= 350
+                            me.Distance2D(r) >=  210
+                            && remnant.Count(x => x.Distance2D(me) <= 350) >= 1
                             && Q.CanBeCasted()
                             && Utils.SleepCheck("RemMove"))
                         {
@@ -250,8 +246,8 @@ namespace DotaAllCombo.Heroes
                     && me.CanCast()
                     && !e.IsMagicImmune()
                     && (e.NetworkActivity == NetworkActivity.Attack
-                        || e.NetworkActivity == NetworkActivity.Crit
-                        || e.NetworkActivity == NetworkActivity.Attack2)
+                    || e.NetworkActivity == NetworkActivity.Crit
+                    || e.NetworkActivity == NetworkActivity.Attack2)
                     && Utils.SleepCheck("halberd")
                     && me.Distance2D(e) <= 700
                     && menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(halberd.Name)
@@ -265,8 +261,8 @@ namespace DotaAllCombo.Heroes
                     && ghost.CanBeCasted()
                     && me.CanCast()
                     && ((me.Position.Distance2D(e) < 300
-                         && me.Health <= (me.MaximumHealth * 0.7))
-                        || me.Health <= (me.MaximumHealth * 0.3))
+                    && me.Health <= (me.MaximumHealth * 0.7))
+                    || me.Health <= (me.MaximumHealth * 0.3))
                     && menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(ghost.Name)
                     && Utils.SleepCheck("Ghost"))
                 {
@@ -756,8 +752,8 @@ namespace DotaAllCombo.Heroes
 				    {"item_blink", true},
 				    {"item_heavens_halberd", true},
 				    {"item_orchid", true},
-                    {"item_dagon", true},
-                    {"item_urn_of_shadows", true},
+                		    {"item_dagon", true},
+                		    {"item_urn_of_shadows", true},
 				    {"item_veil_of_discord", true},
 				    {"item_abyssal_blade", true},
 				    {"item_bloodthorn", true},
@@ -767,9 +763,9 @@ namespace DotaAllCombo.Heroes
 			menu.AddItem(
 				new MenuItem("Item", "Items:").SetValue(new AbilityToggler(new Dictionary<string, bool>
                 {
-                    {"item_medallion_of_courage", true},
-                    {"item_solar_crest", true},
-                    {"item_shivas_guard", true},
+                		    {"item_medallion_of_courage", true},
+                		    {"item_solar_crest", true},
+                		    {"item_shivas_guard", true},
 				    {"item_sheepstick", true},
 				    {"item_cheese", true},
 				    {"item_ghost", true},
