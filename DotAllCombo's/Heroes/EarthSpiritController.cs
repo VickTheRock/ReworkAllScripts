@@ -1,4 +1,4 @@
-﻿namespace DotaAllCombo.Heroes
+namespace DotaAllCombo.Heroes
 {
 	using System;
 	using System.Collections.Generic;
@@ -46,7 +46,7 @@
 
             if (Active && me.Distance2D(e) <= 1300 && e.IsAlive && !me.IsInvisible() && Utils.SleepCheck("Combo"))
             {
-                if (remnantCount <= 0)
+                if (remnant.Count(x => x.Distance2D(me) <= 1200) == 0)
                 {
                     if (
                     D.CanBeCasted()
@@ -86,12 +86,13 @@
                         }
                     }
                 }
-                for (int i = 0; i < remnantCount; ++i)
+                if (remnant.Count(x => x.Distance2D(me) <= 1200) >= 1)
                 {
-                    var r = remnant[i];
 
-                    if (remnantCount >= 1)
+                    for (int i = 0; i < remnantCount; ++i)
                     {
+
+                        var r = remnant[i];
                         if (
                             D != null && D.CanBeCasted()
                             && ((Q != null && Q.CanBeCasted())
@@ -203,41 +204,6 @@
                         }
                     }
                 }
-                Utils.Sleep(50, "Combo");
-            }
-        }
-		private  void Others(EventArgs args)
-		{
-
-            qKey = Game.IsKeyDown(menu.Item("qKey").GetValue<KeyBind>().Key);
-            wKey = Game.IsKeyDown(menu.Item("wKey").GetValue<KeyBind>().Key);
-            eKey = Game.IsKeyDown(menu.Item("eKey").GetValue<KeyBind>().Key);
-            AutoUlt = menu.Item("oneult").IsActive();
-            if (!menu.Item("enabled").IsActive())
-                return;
-
-            if (e == null) return;
-
-            D = me.Spellbook.SpellD;
-            Q = me.Spellbook.SpellQ;
-            E = me.Spellbook.SpellE;
-            W = me.Spellbook.SpellW;
-            F = me.Spellbook.SpellF;
-            R = me.Spellbook.SpellR;
-
-
-            var magnetizemod = e.Modifiers.Where(y => y.Name == "modifier_earth_spirit_magnetize").DefaultIfEmpty(null).FirstOrDefault();
-
-            if (AutoUlt && magnetizemod != null && magnetizemod.RemainingTime <= 0.2 + Game.Ping && me.Distance2D(e) <= D.CastRange && Utils.SleepCheck("Rem"))
-            {
-                D.UseAbility(e.Position);
-                Utils.Sleep(1000, "Rem");
-            }
-            var remnant = ObjectManager.GetEntities<Unit>().Where(x => x.ClassID == ClassID.CDOTA_Unit_Earth_Spirit_Stone && x.Team == me.Team
-                                       && x.Distance2D(me) <= 1700 && x.IsAlive && x.IsValid).ToList();
-            var remnantCount = remnant.Count;
-            if (Active && me.Distance2D(e) <= 1400 && e.IsAlive && !me.IsInvisible() && Utils.SleepCheck("Combo"))
-            {
                 Wmod = me.HasModifier("modifier_earth_spirit_rolling_boulder_caster");
 
 
@@ -335,7 +301,7 @@
                     medall != null
                     && medall.CanBeCasted()
                     && Utils.SleepCheck("Medall")
-                    && menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(medall.Name)
+                    && menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(medall.Name)
                     && me.Distance2D(e) <= 700
                     )
                 {
@@ -440,16 +406,16 @@
                 {
                     soulring.UseAbility();
                 } // SoulRing Item end
-                if ( // Dagon
+                if (// Dagon
                     me.CanCast()
                     && dagon != null
                     && (ethereal == null
-                        || (e.Modifiers.Any(y => y.Name == "modifier_item_ethereal_blade_slow")
-                            || ethereal.Cooldown < 17))
+                    || (e.HasModifier("modifier_item_ethereal_blade_slow")
+                    || ethereal.Cooldown < 17))
                     && !e.IsLinkensProtected()
                     && dagon.CanBeCasted()
+                    && menu.Item("Items").GetValue<AbilityToggler>().IsEnabled("item_dagon")
                     && !e.IsMagicImmune()
-                    && !stoneModif
                     && Utils.SleepCheck("dagon")
                     )
                 {
@@ -521,13 +487,44 @@
                     bkb.UseAbility();
                     Utils.Sleep(100, "bkb");
                 }
-
                 Utils.Sleep(50, "Combo");
             }
+        }
+		private  void Others(EventArgs args)
+		{
+
+            qKey = Game.IsKeyDown(menu.Item("qKey").GetValue<KeyBind>().Key);
+            wKey = Game.IsKeyDown(menu.Item("wKey").GetValue<KeyBind>().Key);
+            eKey = Game.IsKeyDown(menu.Item("eKey").GetValue<KeyBind>().Key);
+            AutoUlt = menu.Item("oneult").IsActive();
+            if (!menu.Item("enabled").IsActive())
+                return;
+
+            if (e == null) return;
+
+            D = me.Spellbook.SpellD;
+            Q = me.Spellbook.SpellQ;
+            E = me.Spellbook.SpellE;
+            W = me.Spellbook.SpellW;
+            F = me.Spellbook.SpellF;
+            R = me.Spellbook.SpellR;
+
+
+            var magnetizemod = e.Modifiers.Where(y => y.Name == "modifier_earth_spirit_magnetize").DefaultIfEmpty(null).FirstOrDefault();
+
+            if (AutoUlt && magnetizemod != null && magnetizemod.RemainingTime <= 0.2 + Game.Ping && me.Distance2D(e) <= D.CastRange && Utils.SleepCheck("Rem"))
+            {
+                D.UseAbility(e.Position);
+                Utils.Sleep(1000, "Rem");
+            }
+            var remnant = ObjectManager.GetEntities<Unit>().Where(x => x.ClassID == ClassID.CDOTA_Unit_Earth_Spirit_Stone && x.Team == me.Team
+                                       && x.Distance2D(me) <= 1700 && x.IsAlive && x.IsValid).ToList();
+            var remnantCount = remnant.Count;
+            
             if (qKey && me.Distance2D(e) <= 1400 && e != null && e.IsAlive && !me.IsInvisible())
             {
                 Wmod = me.HasModifier("modifier_earth_spirit_rolling_boulder_caster");
-                if (remnant.Count == 0)
+                if (remnant.Count(x => x.Distance2D(me) <= 1200) == 0)
                 {
                     if (
                     D.CanBeCasted()
@@ -548,7 +545,7 @@
                         }
                     }
                 }
-                if (remnantCount >= 1)
+                if (remnant.Count(x => x.Distance2D(me) <= 1200) >= 1)
                 {
                     for (int i = 0; i < remnantCount; ++i)
                     {
@@ -602,7 +599,7 @@
                 Wmod = me.HasModifier("modifier_earth_spirit_rolling_boulder_caster");
                 Task.Delay(350).ContinueWith(_ =>
                 {
-                    if (remnant.Count == 0)
+                    if (remnant.Count(x => x.Distance2D(me) <= 1200) == 0)
                     {
                         if (
                             D.CanBeCasted()
@@ -616,7 +613,7 @@
                         }
                     }
                 });
-                if (remnantCount >= 1)
+                if (remnant.Count(x => x.Distance2D(me) <= 1200) >= 1)
                 {
                     for (var i = 0; i < remnantCount; ++i)
                     {
@@ -667,7 +664,7 @@
             }
             if (eKey && me.Distance2D(e) <= 1400 && e != null && e.IsAlive && !me.IsInvisible())
             {
-                if (remnant.Count == 0)
+                if (remnant.Count(x => x.Distance2D(me) <= 1200) == 0)
                 {
                     if (
                     D.CanBeCasted()
@@ -682,7 +679,7 @@
                         }
                     }
                 }
-                if (remnantCount >= 1)
+                if (remnant.Count(x => x.Distance2D(me) <= 1200) >= 1)
                 {
                     for (int i = 0; i < remnantCount; ++i)
                     {
@@ -774,20 +771,20 @@
 				    {"item_blink", true},
 				    {"item_heavens_halberd", true},
 				    {"item_orchid", true},
-                    {"item_dagon", true},
-                    {"item_urn_of_shadows", true},
+                    		    {"item_dagon", true},
+                    		    {"item_urn_of_shadows", true},
 				    {"item_veil_of_discord", true},
 				    {"item_abyssal_blade", true},
 				    {"item_bloodthorn", true},
 				    {"item_blade_mail", true},
-				    {"item_black_king_bar", true},
-				    {"item_medallion_of_courage", true},
-				    {"item_solar_crest", true}
+				    {"item_black_king_bar", true}
 				})));
 			menu.AddItem(
 				new MenuItem("Item", "Items:").SetValue(new AbilityToggler(new Dictionary<string, bool>
-				{
-				    {"item_shivas_guard", true},
+                		{
+                		    {"item_medallion_of_courage", true},
+                		    {"item_solar_crest", true},
+                		    {"item_shivas_guard", true},
 				    {"item_sheepstick", true},
 				    {"item_cheese", true},
 				    {"item_ghost", true},
