@@ -38,7 +38,33 @@ namespace DotaAllCombo.Heroes
             W = me.Spellbook.SpellW;
             F = me.Spellbook.SpellF;
             R = me.Spellbook.SpellR;
+            Wmod = me.HasModifier("modifier_earth_spirit_rolling_boulder_caster");
 
+
+            ethereal = me.FindItem("item_ethereal_blade");
+            urn = me.FindItem("item_urn_of_shadows");
+            dagon =
+                me.Inventory.Items.FirstOrDefault(
+                    item =>
+                        item.Name.Contains("item_dagon"));
+            halberd = me.FindItem("item_heavens_halberd");
+            orchid = me.FindItem("item_orchid") ?? me.FindItem("item_bloodthorn");
+            abyssal = me.FindItem("item_abyssal_blade");
+            mail = me.FindItem("item_blade_mail");
+            bkb = me.FindItem("item_black_king_bar");
+            blink = me.FindItem("item_blink");
+            medall = me.FindItem("item_medallion_of_courage") ?? me.FindItem("item_solar_crest");
+            sheep = e.ClassID == ClassID.CDOTA_Unit_Hero_Tidehunter ? null : me.FindItem("item_sheepstick");
+            vail = me.FindItem("item_veil_of_discord");
+            cheese = me.FindItem("item_cheese");
+            ghost = me.FindItem("item_ghost");
+            atos = me.FindItem("item_rod_of_atos");
+            soulring = me.FindItem("item_soul_ring");
+            arcane = me.FindItem("item_arcane_boots");
+            stick = me.FindItem("item_magic_stick") ?? me.FindItem("item_magic_wand");
+            Shiva = me.FindItem("item_shivas_guard");
+            var stoneModif = e.Modifiers.Any(y => y.Name == "modifier_medusa_stone_gaze_stone");
+            var charge = me.Modifiers.FirstOrDefault(y => y.Name == "modifier_earth_spirit_stone_caller_charge_counter");
 
             var remnant = ObjectManager.GetEntities<Unit>().Where(x => x.ClassID == ClassID.CDOTA_Unit_Earth_Spirit_Stone && x.Team == me.Team && x.IsValid).ToList();
             var remnantCount = remnant.Count;
@@ -46,8 +72,24 @@ namespace DotaAllCombo.Heroes
 
             if (Active && me.Distance2D(e) <= 1300 && e.IsAlive && !me.IsInvisible() && Utils.SleepCheck("Combo"))
             {
+                
                 if (remnant.Count(x => x.Distance2D(me) <= 1200) == 0)
                 {
+                    if (
+                       blink != null
+                       && me.CanCast()
+                       && blink.CanBeCasted()
+                       && remnant.Count(x => x.Distance2D(me) >= 350) == 0
+                       && me.Distance2D(e) >= 450
+                       && me.Distance2D(e) <= 1150
+                       && !Wmod
+                       && menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name)
+                       && Utils.SleepCheck("blink")
+                       )
+                    {
+                        blink.UseAbility(e.Position);
+                        Utils.Sleep(250, "blink");
+                    }
                     if (
                     D.CanBeCasted()
                     && Q != null
@@ -186,51 +228,9 @@ namespace DotaAllCombo.Heroes
                                 Utils.Sleep(220, r.Handle + "remnantE");
                             }
                         }
-                        if (
-                           blink != null
-                           && r != null
-                           && me.CanCast()
-                           && blink.CanBeCasted()
-                           && me.Distance2D(e) >= 450
-                           && me.Distance2D(e) <= 1150
-                           && r.Distance2D(me) >= 300
-                           && !Wmod
-                           && menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name)
-                           && Utils.SleepCheck("blink")
-                           )
-                        {
-                            blink.UseAbility(e.Position);
-                            Utils.Sleep(250, "blink");
-                        }
                     }
                 }
-                Wmod = me.HasModifier("modifier_earth_spirit_rolling_boulder_caster");
-
-
-                ethereal = me.FindItem("item_ethereal_blade");
-                urn = me.FindItem("item_urn_of_shadows");
-                dagon =
-                    me.Inventory.Items.FirstOrDefault(
-                        item =>
-                            item.Name.Contains("item_dagon"));
-                halberd = me.FindItem("item_heavens_halberd");
-                orchid = me.FindItem("item_orchid") ?? me.FindItem("item_bloodthorn");
-                abyssal = me.FindItem("item_abyssal_blade");
-                mail = me.FindItem("item_blade_mail");
-                bkb = me.FindItem("item_black_king_bar");
-                blink = me.FindItem("item_blink");
-                medall = me.FindItem("item_medallion_of_courage") ?? me.FindItem("item_solar_crest");
-                sheep = e.ClassID == ClassID.CDOTA_Unit_Hero_Tidehunter ? null : me.FindItem("item_sheepstick");
-                vail = me.FindItem("item_veil_of_discord");
-                cheese = me.FindItem("item_cheese");
-                ghost = me.FindItem("item_ghost");
-                atos = me.FindItem("item_rod_of_atos");
-                soulring = me.FindItem("item_soul_ring");
-                arcane = me.FindItem("item_arcane_boots");
-                stick = me.FindItem("item_magic_stick") ?? me.FindItem("item_magic_wand");
-                Shiva = me.FindItem("item_shivas_guard");
-                var stoneModif = e.Modifiers.Any(y => y.Name == "modifier_medusa_stone_gaze_stone");
-                var charge = me.Modifiers.FirstOrDefault(y => y.Name == "modifier_earth_spirit_stone_caller_charge_counter");
+                
 
                 if (//W Skill
                        W != null
@@ -379,22 +379,7 @@ namespace DotaAllCombo.Heroes
                     ethereal.UseAbility(e);
                     Utils.Sleep(200, "ethereal");
                 } // ethereal Item end
-
-                if (
-                    blink != null
-                    && me.CanCast()
-                    && blink.CanBeCasted()
-                    && me.Distance2D(e) >= 450
-                    && me.Distance2D(e) <= 1150
-                    && remnant.Count == 0
-                    && menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name)
-                    && Utils.SleepCheck("blink")
-                    )
-                {
-                    blink.UseAbility(e.Position);
-                    Utils.Sleep(250, "blink");
-                }
-
+                
                 if ( // SoulRing Item 
                     soulring != null
                     && soulring.CanBeCasted()
@@ -771,8 +756,8 @@ namespace DotaAllCombo.Heroes
 				    {"item_blink", true},
 				    {"item_heavens_halberd", true},
 				    {"item_orchid", true},
-                    		    {"item_dagon", true},
-                    		    {"item_urn_of_shadows", true},
+                    {"item_dagon", true},
+                    {"item_urn_of_shadows", true},
 				    {"item_veil_of_discord", true},
 				    {"item_abyssal_blade", true},
 				    {"item_bloodthorn", true},
@@ -781,10 +766,10 @@ namespace DotaAllCombo.Heroes
 				})));
 			menu.AddItem(
 				new MenuItem("Item", "Items:").SetValue(new AbilityToggler(new Dictionary<string, bool>
-                		{
-                		    {"item_medallion_of_courage", true},
-                		    {"item_solar_crest", true},
-                		    {"item_shivas_guard", true},
+                {
+                    {"item_medallion_of_courage", true},
+                    {"item_solar_crest", true},
+                    {"item_shivas_guard", true},
 				    {"item_sheepstick", true},
 				    {"item_cheese", true},
 				    {"item_ghost", true},
