@@ -1,4 +1,6 @@
-﻿namespace DotaAllCombo.Heroes
+using SharpDX;
+
+namespace DotaAllCombo.Heroes
 {
 	using System;
 	using System.Collections.Generic;
@@ -58,8 +60,7 @@
                     me.Attack(e);
                     Utils.Sleep(150, "attack");
                 }
-                else
-				if (
+            else if (
 					(!me.CanAttack() || me.Distance2D(e) >= 0) && me.NetworkActivity != NetworkActivity.Attack &&
 					me.Distance2D(e) <= 600 && Utils.SleepCheck("Move")
 					)
@@ -70,21 +71,26 @@
 			}
 			if (Active && me.Distance2D(e) <= 1400 && e != null && e.IsAlive && !Toolset.invUnit(me))
 			{
-				if (
-					blink != null
-					&& me.CanCast()
-					&& blink.CanBeCasted()
-					&& me.Distance2D(e) < 1180
-					&& me.Distance2D(e) > 400
-					&& menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name)
-					&& Utils.SleepCheck("blink")
-					)
-				{
-					blink.UseAbility(e.Position);
-					Utils.Sleep(250, "blink");
-				}
-				if (
-					Q != null && Q.CanBeCasted() && me.Distance2D(e) <= 900
+                float angle = me.FindAngleBetween(e.Position, true);
+                Vector3 pos = new Vector3((float)(e.Position.X - 70 * Math.Cos(angle)), (float)(e.Position.Y - 70 * Math.Sin(angle)), 0);
+                if (
+                    blink != null
+                    && Q.CanBeCasted()
+                    && me.CanCast()
+                    && blink.CanBeCasted()
+                    && me.Distance2D(e) >= 490
+                    && me.Distance2D(pos) <= 1180
+                    && menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name)
+                    && Utils.SleepCheck("blink")
+                    )
+                {
+                    blink.UseAbility(pos);
+                    Utils.Sleep(250, "blink");
+                }
+                if (
+					Q != null 
+                    && Q.CanBeCasted() 
+                    && me.Distance2D(e) <= 900
 					&& menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name)
 					&& Utils.SleepCheck("Q")
 					)
@@ -93,7 +99,9 @@
 					Utils.Sleep(200, "Q");
 				}
 				if (
-					R != null && R.CanBeCasted() && me.Distance2D(e) <= 700
+					R != null 
+                    && R.CanBeCasted() 
+                    && me.Distance2D(e) <= 700
 					&& menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name)
 					&& Utils.SleepCheck("R")
 					)
@@ -102,7 +110,13 @@
 					Utils.Sleep(200, "R");
 				}
 				if (
-					E != null && E.CanBeCasted() && me.Distance2D(e) <= 700
+					E != null 
+                    && E.CanBeCasted() 
+                    && (me.Distance2D(e) <= 700
+                    || (blink!=null 
+                    && blink.CanBeCasted()
+                    && me.Distance2D(e)<=1190)
+                    )
 					&& menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(E.Name)
 					&& Utils.SleepCheck("E")
 					)
@@ -146,17 +160,21 @@
 					medall.UseAbility(e);
 					Utils.Sleep(250, "Medall");
 				} // Medall Item end
-				if (armlet != null && !armlet.IsToggled &&
-					menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(armlet.Name) &&
+				if (armlet != null 
+                    && !armlet.IsToggled 
+                    && menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(armlet.Name) &&
 					Utils.SleepCheck("armlet"))
 				{
 					armlet.ToggleAbility();
 					Utils.Sleep(300, "armlet");
 				}
 
-				if (Shiva != null && Shiva.CanBeCasted() && me.Distance2D(e) <= 600
+				if (Shiva != null 
+                    && Shiva.CanBeCasted() 
+                    && me.Distance2D(e) <= 600
 					&& menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(Shiva.Name)
-					&& !e.IsMagicImmune() && Utils.SleepCheck("Shiva"))
+					&& !e.IsMagicImmune() 
+                    && Utils.SleepCheck("Shiva"))
 				{
 					Shiva.UseAbility();
 					Utils.Sleep(100, "Shiva");
@@ -183,7 +201,9 @@
 					abyssal.UseAbility(e);
 					Utils.Sleep(250, "abyssal");
 				} // Abyssal Item end
-				if (urn != null && urn.CanBeCasted() && urn.CurrentCharges > 0 && me.Distance2D(e) <= 400
+				if (urn != null 
+                    && urn.CanBeCasted() 
+                    && urn.CurrentCharges > 0 && me.Distance2D(e) <= 400
 					&& menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(urn.Name) && Utils.SleepCheck("urn"))
 				{
 					urn.UseAbility(e);
@@ -195,8 +215,8 @@
 					&& me.CanCast()
 					&& !e.IsMagicImmune()
 					&& (e.NetworkActivity == NetworkActivity.Attack
-						|| e.NetworkActivity == NetworkActivity.Crit
-						|| e.NetworkActivity == NetworkActivity.Attack2)
+					|| e.NetworkActivity == NetworkActivity.Crit
+					|| e.NetworkActivity == NetworkActivity.Attack2)
 					&& Utils.SleepCheck("halberd")
 					&& me.Distance2D(e) <= 700
 					&& menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(halberd.Name)
