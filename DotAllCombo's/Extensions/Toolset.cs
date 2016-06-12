@@ -27,31 +27,20 @@ namespace DotaAllCombo.Service
 			return (float)(Math.PI - Math.Abs(Math.Atan2(Math.Sin(StartUnit.RotationRad - angle), Math.Cos(StartUnit.RotationRad - angle))));
 		}
 		public static float AttackRange;
-        
 		public static void Range()
 		{
             Item item = me.Inventory.Items.FirstOrDefault(x => x != null && x.IsValid && (x.Name.Contains("item_dragon_lance") || x.Name.Contains("item_hurricane_pike")));
+            var _q = me.Spellbook.Spell1;
 
-
-
-            if (me.ClassID == ClassID.CDOTA_Unit_Hero_TrollWarlord && me.HasModifier("modifier_troll_warlord_berserkers_rage"))
-                AttackRange = 150 + me.HullRadius + 24;
-            else if (me.ClassID == ClassID.CDOTA_Unit_Hero_TrollWarlord && !me.HasModifier("modifier_troll_warlord_berserkers_rage"))
+            if (me.ClassID == ClassID.CDOTA_Unit_Hero_TrollWarlord)
+                AttackRange = _q.IsToggled ? 150 + me.HullRadius + 24 : me.GetAttackRange() + me.HullRadius + 24;
+            if (me.ClassID == ClassID.CDOTA_Unit_Hero_TemplarAssassin)
                 AttackRange = me.GetAttackRange() + me.HullRadius + 24;
             else
-         if (me.ClassID == ClassID.CDOTA_Unit_Hero_TemplarAssassin)
-                AttackRange = me.GetAttackRange() + me.HullRadius;
-            else
-         if (me.ClassID == ClassID.CDOTA_Unit_Hero_DragonKnight && me.HasModifier("modifier_dragon_knight_dragon_form"))
+            if (item != null && me.IsRanged)
                 AttackRange = me.GetAttackRange() + me.HullRadius + 24;
             else
-         if (item == null && me.IsRanged)
                 AttackRange = me.GetAttackRange() + me.HullRadius + 24;
-            else
-        if (item != null && me.IsRanged)
-                AttackRange = me.GetAttackRange() + me.HullRadius + 24;
-            else
-                AttackRange = me.GetAttackRange() + me.HullRadius;
         }
 		public static bool checkFace(Ability z, Hero v)
 		{
@@ -64,89 +53,7 @@ namespace DotaAllCombo.Service
 		{
 			me = myHero;
 		}
-        public static Unit GetClosestToTarget(List<Unit> units, Unit target)
-        {
-            Unit closestHero = null;
-            foreach (var v in units.Where(v => closestHero == null || closestHero.Distance2D(target) > v.Distance2D(target)))
-            {
-                closestHero = v;
-            }
-            return closestHero;
-        }
 
-	    public static void UnAggro(List<Unit> z, Unit v)
-	    {
-	        var projectiles = ObjectManager.TrackingProjectiles.Where(x => x.Target.Handle == v.Handle).ToList();
-
-	        for (int i = 0; i < projectiles.Count(); ++i)
-            {
-                var closestCreepUnAgr = GetClosestToTarget(z, v);
-                if (v.ClassID == ClassID.CDOTA_Unit_Hero_Axe ||
-	                v.ClassID == ClassID.CDOTA_Unit_Hero_Legion_Commander)
-	            {
-	                if (projectiles[i].Source.ClassID == ClassID.CDOTA_BaseNPC_Tower
-	                    || projectiles[i].Source.ClassID == ClassID.CDOTA_Unit_Fountain)
-	                {
-                        
-
-	                    if (closestCreepUnAgr!=null && closestCreepUnAgr.Distance2D(v) <= 500 & Utils.SleepCheck("UnAgr"))
-	                    {
-	                        v.Attack(closestCreepUnAgr);
-	                        Utils.Sleep(300, "UnAgr");
-	                    }
-	                }
-	            }
-	            else if (v.ClassID != ClassID.CDOTA_Unit_Hero_Axe ||
-	                     v.ClassID != ClassID.CDOTA_Unit_Hero_Legion_Commander)
-	            {
-	                if (projectiles[i].Source.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
-	                    || projectiles[i].Source.ClassID == ClassID.CDOTA_BaseNPC_Tower
-	                    || projectiles[i].Source.ClassID == ClassID.CDOTA_Unit_Fountain
-	                    || projectiles[i].Source.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege)
-
-	                {
-
-	                    if (closestCreepUnAgr != null && closestCreepUnAgr.Distance2D(v) <= 500 & Utils.SleepCheck("UnAgr"))
-	                    {
-	                        v.Attack(closestCreepUnAgr);
-	                        Utils.Sleep(500, "UnAgr");
-	                    }
-	                }
-	            }
-	        }
-	    }
-
-
-	    public static void UnAggro(Unit v)
-        {
-
-            var creepsA = ObjectManager.GetEntities<Unit>().Where(creep =>
-                   (creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
-                   || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege
-                   || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral
-                   || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep) &&
-                  creep.IsAlive && creep.Team == me.Team && creep.IsVisible && creep.IsSpawned).ToList();
-            if (creepsA.Count(x => x.Distance2D(v) <= 500) == 0)
-            {
-                if (v.ClassID == ClassID.CDOTA_Unit_SpiritBear)
-                {
-                    creepsA = ObjectManager.GetEntities<Unit>().Where(creep => (
-                           creep.HasInventory && creep.Handle != v.Handle)
-                           && creep.IsAlive && creep.Team == me.Team 
-                           && creep.ClassID!=ClassID.CDOTA_Unit_Hero_LoneDruid
-                           && creep.IsVisible && creep.Health >= (creep.MaximumHealth * 0.5)).ToList();
-                }
-                else
-                {
-                    creepsA = ObjectManager.GetEntities<Unit>().Where(creep => (
-                          creep.HasInventory && creep.Handle != v.Handle)
-                          && creep.IsAlive && creep.Team == me.Team && creep.IsVisible && creep.Health >= (creep.MaximumHealth * 0.5)).ToList();
-                }
-            }
-             
-            
-            UnAggro(creepsA, v);
-        }
 		public static bool HasStun(Hero x)
 		{
 			if (x.FindSpell("dragon_knight_dragon_tail") != null &&

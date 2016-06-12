@@ -1,4 +1,4 @@
-using System.Security.Permissions;
+﻿using System.Security.Permissions;
 
 namespace DotaAllCombo.Addons
 {
@@ -54,6 +54,7 @@ namespace DotaAllCombo.Addons
 		private float _lastRange, AttackRange;
 		private ParticleEffect rangeDisplay;
 		private static double _aPoint;
+        private readonly uint[] Edistance = { 74, 149, 224, 299 };
         public void RunScript()
 		{
 			
@@ -73,27 +74,17 @@ namespace DotaAllCombo.Addons
             if (MainMenu.OthersMenu.Item("ShowAttakRange").GetValue<bool>())
 			{
                 Item item = me.Inventory.Items.FirstOrDefault(x => x != null && x.IsValid && (x.Name.Contains("item_dragon_lance") || x.Name.Contains("item_hurricane_pike")));
+                var _q = me.Spellbook.Spell1;
                 
-                
-
-                if (me.ClassID == ClassID.CDOTA_Unit_Hero_TrollWarlord && me.HasModifier("modifier_troll_warlord_berserkers_rage"))
-			        AttackRange = 150 + me.HullRadius+24;
-                   else if (me.ClassID == ClassID.CDOTA_Unit_Hero_TrollWarlord && !me.HasModifier("modifier_troll_warlord_berserkers_rage"))
-                    AttackRange = me.GetAttackRange() + me.HullRadius + 24;
-                else
+                if (me.ClassID == ClassID.CDOTA_Unit_Hero_TrollWarlord)
+                    AttackRange = _q.IsToggled ? 150 + me.HullRadius + 24 : me.GetAttackRange() + me.HullRadius + 24;
                 if (me.ClassID == ClassID.CDOTA_Unit_Hero_TemplarAssassin)
-                    AttackRange = me.GetAttackRange() + me.HullRadius;
-                else 
-                if (me.ClassID == ClassID.CDOTA_Unit_Hero_DragonKnight && me.HasModifier("modifier_dragon_knight_dragon_form"))
                     AttackRange = me.GetAttackRange() + me.HullRadius+24;
                 else
-                if(item == null && me.IsRanged)
-                    AttackRange = me.GetAttackRange() + me.HullRadius + 24;
+                if (item !=null && me.IsRanged)
+                    AttackRange = me.GetAttackRange() + me.HullRadius+24;
                 else
-               if (item !=null && me.IsRanged)
                     AttackRange = me.GetAttackRange() + me.HullRadius + 24;
-                else
-                    AttackRange = me.GetAttackRange() + me.HullRadius;
                 if (rangeDisplay == null)
 					{
 						if (me.IsAlive)
@@ -128,12 +119,9 @@ namespace DotaAllCombo.Addons
 					rangeDisplay = null;
 				}
 
-            if (MainMenu.OthersMenu.Item("Auto Un Aggro").GetValue<bool>())
-            {
-                Toolset.UnAggro(me);
-            }
 
-            var target = me.ClosestToMouseTarget(10000);
+
+			var target = me.ClosestToMouseTarget(10000);
 			if (target == null) return;
 			if (!target.IsIllusion && target.IsAlive)
 			{
