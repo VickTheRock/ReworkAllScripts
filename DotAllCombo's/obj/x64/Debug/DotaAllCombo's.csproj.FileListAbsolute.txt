@@ -1,0 +1,14 @@
+C:\Users\Vick\Desktop\DotAllCombo's\bin\Debug\DotaAllCombo's.exe.config
+C:\Users\Vick\Desktop\DotAllCombo's\bin\Debug\DotaAllCombo's.exe
+C:\Users\Vick\Desktop\DotAllCombo's\bin\Debug\DotaAllCombo's.pdb
+C:\Users\Vick\Desktop\DotAllCombo's\bin\Debug\Ensage.Common.dll
+C:\Users\Vick\Desktop\DotAllCombo's\bin\Debug\Ensage.dll
+C:\Users\Vick\Desktop\DotAllCombo's\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Vick\Desktop\DotAllCombo's\bin\Debug\SharpDX.Direct3D9.dll
+C:\Users\Vick\Desktop\DotAllCombo's\bin\Debug\SharpDX.dll
+C:\Users\Vick\Desktop\DotAllCombo's\bin\Debug\EnsageSharp.Sandbox.dll
+C:\Users\Vick\Desktop\DotAllCombo's\bin\Debug\Ensage.Common.pdb
+C:\Users\Vick\Desktop\DotAllCombo's\obj\x64\Debug\DotaAllCombo's.csprojResolveAssemblyReference.cache
+C:\Users\Vick\Desktop\DotAllCombo's\obj\x64\Debug\DotaAllCombo's.csproj.DotaAllCombo's.exe.config
+C:\Users\Vick\Desktop\DotAllCombo's\obj\x64\Debug\DotaAllCombo's.exe
+C:\Users\Vick\Desktop\DotAllCombo's\obj\x64\Debug\DotaAllCombo's.pdb
