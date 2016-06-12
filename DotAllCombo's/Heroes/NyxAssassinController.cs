@@ -1,4 +1,4 @@
-﻿namespace DotaAllCombo.Heroes
+namespace DotaAllCombo.Heroes
 {
     using System;
     using System.Collections.Generic;
@@ -8,7 +8,7 @@
     using Ensage.Common.Extensions;
     using Ensage.Common.Menu;
     using Service;
-	using Service.Debug;
+    using Service.Debug;
     using SharpDX;
     using SharpDX.Direct3D9;
 
@@ -28,8 +28,7 @@
 			//manta (when silenced)
 
 			target = me.ClosestToMouseTarget(2000);
-			if (target == null)
-				return;
+			if (target == null) return;
 			Active = Game.IsKeyDown(menu.Item("Combo Key").GetValue<KeyBind>().Key) && !Game.IsChatOpen;
 				Q = me.Spellbook.SpellQ;
             
@@ -69,11 +68,10 @@
 				mjollnir = me.FindItem("item_mjollnir");
 			var stoneModif = target.HasModifier("modifier_medusa_stone_gaze_stone");
 			var linkens = target.IsLinkensProtected();
-
+			var noBlade = target.HasModifier("modifier_item_blade_mail_reflect");
             if (Active && me.IsAlive && target.IsAlive)
-			{if(stoneModif)return;
-				var noBlade = target.HasModifier("modifier_item_blade_mail_reflect");
-				if (target.IsVisible && me.Distance2D(target) <= 2300 && !noBlade)
+			{
+		if (target.IsVisible && me.Distance2D(target) <= 2300 && !noBlade)
                 {
                     if (
                         me.Distance2D(target) <= 300 && (!me.IsAttackImmune() || !target.IsAttackImmune())
@@ -106,13 +104,15 @@
 					if (me.HasModifier("modifier_nyx_assassin_vendetta"))
 						return;
 					if (!R.CanBeCasted() ||
-						R == null && !me.HasModifier("modifier_nyx_assassin_vendetta") || !menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name))
+						R == null || !me.HasModifier("modifier_nyx_assassin_vendetta") || !menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name))
 					{
-						if (Q.CanBeCasted() &&
-							   blink.CanBeCasted() &&
-							   me.Position.Distance2D(target.Position) > 300 &&
-							   Utils.SleepCheck("blink")
-							   && menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name))
+                        		if (stoneModif) return;
+                        			if (Q.CanBeCasted() &&
+						blink.CanBeCasted() &&
+						me.Position.Distance2D(target.Position) > 300 &&
+						Utils.SleepCheck("blink")
+						&& !me.HasModifier("modifier_nyx_assassin_vendetta")
+						&& menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name))
 						{
 							blink.UseAbility(target.Position);
 							Utils.Sleep(250, "blink");
@@ -291,8 +291,8 @@
 										|| ethereal.Cooldown < 17))
 								&& !target.IsLinkensProtected()
 								&& dagon.CanBeCasted()
-                                && menu.Item("Items").GetValue<AbilityToggler>().IsEnabled("item_dagon")
-                                && !target.IsMagicImmune()
+								&& menu.Item("Items").GetValue<AbilityToggler>().IsEnabled("item_dagon")
+								&& !target.IsMagicImmune()
 								&& !stoneModif
 								&& Utils.SleepCheck("dagon")
 								)
@@ -345,14 +345,15 @@
 			menu.AddSubMenu(items);
 			items.AddItem(new MenuItem("Items", "Items").SetValue(new AbilityToggler(new Dictionary<string, bool>
 			{
-			    {"item_orchid", true}, {"item_bloodthorn", true},
+			    {"item_orchid", true}, 
+			    {"item_bloodthorn", true},
 			    {"item_ethereal_blade", true},
 			    {"item_veil_of_discord", true},
 			    {"item_rod_of_atos", true},
 			    {"item_sheepstick", true},
 			    {"item_arcane_boots", true},
-                {"item_dagon", true},
-                {"item_blink", true},
+			    {"item_dagon", true},
+			    {"item_blink", true},
 			    {"item_soul_ring", true},
 			    {"item_medallion_of_courage", true},
 			    {"item_mask_of_madness", true},

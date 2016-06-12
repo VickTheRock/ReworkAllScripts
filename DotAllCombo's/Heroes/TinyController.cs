@@ -1,7 +1,5 @@
-﻿using SharpDX;
-
 namespace DotaAllCombo.Heroes
-{
+{	using SharpDX;
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
@@ -78,16 +76,16 @@ namespace DotaAllCombo.Heroes
 					Utils.Sleep(350, "Move");
 				}
 			}
-			if (Active && me.Distance2D(e) <= 1400 && e != null && e.IsAlive && !ModifInv)
+			if (Active && me.Distance2D(e) <= 1400 && e.IsAlive && !ModifInv)
 			{
-                float angle = me.FindAngleBetween(target.Position, true);
-                Vector3 pos = new Vector3((float)(target.Position.X - 100 * Math.Cos(angle)), (float)(target.Position.Y - 100 * Math.Sin(angle)), 0);
+                float angle = me.FindAngleBetween(e.Position, true);
+                Vector3 pos = new Vector3((float)(e.Position.X - 100 * Math.Cos(angle)), (float)(e.Position.Y - 100 * Math.Sin(angle)), 0);
                 if (
                     blink != null
                     && Q.CanBeCasted()
                     && me.CanCast()
                     && blink.CanBeCasted()
-                    && me.Distance2D(target) >= Toolset.AttackRange+150
+                    && me.Distance2D(e) >= Toolset.AttackRange+150
                     && me.Distance2D(pos) <= 1180
                     && menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name)
                     && Utils.SleepCheck("blink")
@@ -133,8 +131,8 @@ namespace DotaAllCombo.Heroes
 					&& !e.IsLinkensProtected()
 					&& dagon.CanBeCasted()
 					&& me.Distance2D(e) <= 1400
-                    && menu.Item("Items").GetValue<AbilityToggler>().IsEnabled("item_dagon")
-                    && !e.IsMagicImmune()
+                			&& menu.Item("Items").GetValue<AbilityToggler>().IsEnabled("item_dagon")
+                    			&& !e.IsMagicImmune()
 					&& !stoneModif
 					&& Utils.SleepCheck("dagon")
 					)
@@ -292,10 +290,10 @@ namespace DotaAllCombo.Heroes
 				    {"item_mask_of_madness", true},
 				    {"item_heavens_halberd", true},
 				    {"item_orchid", true},
-                    { "item_bloodthorn", true},
+                    		    {"item_bloodthorn", true},
 				    {"item_mjollnir", true},
-                    {"item_dagon", true},
-                    {"item_urn_of_shadows", true},
+				    {"item_dagon", true},
+				    {"item_urn_of_shadows", true},
 				    {"item_ethereal_blade", true},
 				    {"item_veil_of_discord", true},
 				    {"item_abyssal_blade", true},
