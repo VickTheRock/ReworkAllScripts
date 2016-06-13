@@ -80,14 +80,14 @@ namespace DotaAllCombo.Heroes
 			}
 			if (Active && me.Distance2D(e) <= 1400 && e != null && e.IsAlive && !ModifInv)
 			{
-                float angle = me.FindAngleBetween(target.Position, true);
-                Vector3 pos = new Vector3((float)(target.Position.X - 100 * Math.Cos(angle)), (float)(target.Position.Y - 100 * Math.Sin(angle)), 0);
+                float angle = me.FindAngleBetween(e.Position, true);
+                Vector3 pos = new Vector3((float)(e.Position.X - 100 * Math.Cos(angle)), (float)(e.Position.Y - 100 * Math.Sin(angle)), 0);
                 if (
                     blink != null
                     && Q.CanBeCasted()
                     && me.CanCast()
                     && blink.CanBeCasted()
-                    && me.Distance2D(target) >= Toolset.AttackRange+150
+                    && me.Distance2D(e) >= Toolset.AttackRange+150
                     && me.Distance2D(pos) <= 1180
                     && menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name)
                     && Utils.SleepCheck("blink")
