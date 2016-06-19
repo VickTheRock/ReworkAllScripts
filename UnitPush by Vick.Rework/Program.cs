@@ -1,5 +1,3 @@
-
-
 namespace UnitAllPush
 {
     using System.Security.Permissions;
@@ -17,9 +15,6 @@ namespace UnitAllPush
     [PermissionSet(SecurityAction.Assert, Unrestricted = true)]
     internal class Program
     {
-        private static readonly List<ParticleEffect> Effects = new List<ParticleEffect>();
-        private const string EffectPath = @"particles\range_display_blue.vpcf";
-        private const string EffectPanicPath = @"particles\range_display_red.vpcf";
 
         private static bool activated;
         private static Font txt;
@@ -117,8 +112,6 @@ namespace UnitAllPush
 
 
 
-        static bool iscreated;
-
         private static void Game_OnUpdate(EventArgs args)
         {
 
@@ -199,35 +192,6 @@ namespace UnitAllPush
                         
                     }
                 }
-                /*
-                for (int i = 0; i < mid.Count(); ++i)
-                {
-                    if (!iscreated)
-                    {
-                        ParticleEffect effect = new ParticleEffect(EffectPanicPath, mid[i]);
-                        effect.SetControlPoint(1, new Vector3(100, 0, 0));
-                        Effects.Add(effect);
-                    }
-                }
-                for (int i = 0; i < bot.Count(); ++i)
-                {
-                    if (!iscreated)
-                    {
-                        ParticleEffect effect = new ParticleEffect(EffectPanicPath, bot[i]);
-                        effect.SetControlPoint(1, new Vector3(100, 0, 0));
-                        Effects.Add(effect);
-                    }
-                }
-                for (int i = 0; i < top.Count(); ++i)
-                {
-                    if (!iscreated)
-                    {
-                        ParticleEffect effect = new ParticleEffect(EffectPanicPath, top[i]);
-                        effect.SetControlPoint(1, new Vector3(100, 0, 0));
-                        Effects.Add(effect);
-                    }
-                }
-                iscreated = true;*/
             }
         }
 
