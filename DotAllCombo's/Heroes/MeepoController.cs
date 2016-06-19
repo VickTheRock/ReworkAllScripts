@@ -1,4 +1,4 @@
-﻿namespace DotaAllCombo.Heroes
+namespace DotaAllCombo.Heroes
 {
 	using System;
 	using System.Linq;
@@ -39,7 +39,12 @@
             PoofAutoMode = menu.Item("poofAutoMod").GetValue<KeyBind>().Active;
             SafePoof = menu.Item("poofSafe").IsActive();
             dodge = menu.Item("Dodge").GetValue<KeyBind>().Active;
-            var checkObj = ObjectManager.GetEntities<Unit>().Where(x => x.IsAlive && x.Team != me.Team && x.IsValid).ToList();
+            var checkObj = ObjectManager.GetEntities<Unit>().Where(x => (x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
+                        || x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege
+                        || x.ClassID == ClassID.CDOTA_BaseNPC_Creep
+                        || x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral
+                        || x.HasInventory
+                        || x.ClassID == ClassID.CDOTA_Unit_SpiritBear) && x.IsAlive && x.Team != me.Team && x.IsValid).ToList();
             var meepos = ObjectManager.GetEntities<Hero>().Where(x => x.IsControllable && x.IsAlive && x.ClassID == ClassID.CDOTA_Unit_Hero_Meepo).ToList();
 
 
@@ -63,24 +68,24 @@
                         .Where(x => x.IsAlive && x.Team == me.Team && !x.IsIllusion && x.IsControllable && x.ClassID == ClassID.CDOTA_Unit_Hero_Meepo)
                         .OrderBy(x => GetDistance2D(x.Position, fount.OrderBy(y => GetDistance2D(x.Position, y.Position)).FirstOrDefault().Position))
                         .FirstOrDefault();
-
-            Ability[] q = new Ability[meepos.Count()];
-            for (int i = 0; i < meepos.Count(); i++) q[i] = meepos[i].Spellbook.SpellQ;
-            Ability[] w = new Ability[meepos.Count()];
-            for (int i = 0; i < meepos.Count(); i++) w[i] = meepos[i].Spellbook.SpellW;
+		    var meeposCount = meepos.Count();
+            Ability[] q = new Ability[meeposCount];
+            for (int i = 0; i < meeposCount; ++i) q[i] = meepos[i].Spellbook.SpellQ;
+            Ability[] w = new Ability[meeposCount];
+            for (int i = 0; i < meeposCount; ++i) w[i] = meepos[i].Spellbook.SpellW;
             if (dodge && me.IsAlive)
             {
                 var baseDota =
                   ObjectManager.GetEntities<Unit>().Where(unit => unit.Name == "npc_dota_base" && unit.Team != me.Team).ToList();
                 if (baseDota != null)
                 {
-                    for (int t = 0; t < baseDota.Count(); t++)
+                    for (int t = 0; t < baseDota.Count(); ++t)
                     {
-                        for (int i = 0; i < meepos.Count(); i++)
+                        for (int i = 0; i < meeposCount; ++i)
                         {
                             float angle = meepos[i].FindAngleBetween(baseDota[t].Position, true);
                             Vector3 pos = new Vector3((float)(baseDota[t].Position.X - 710 * Math.Cos(angle)), (float)(baseDota[t].Position.Y - 710 * Math.Sin(angle)), 0);
-                            if (meepos[i].Distance2D(baseDota[t]) <= 700 && meepos[i].Modifiers.Any(y => y.Name != "modifier_bloodseeker_rupture") && Utils.SleepCheck(meepos[i].Handle + "MoveDodge"))
+                            if (meepos[i].Distance2D(baseDota[t]) <= 700 && !meepos[i].HasModifier("modifier_bloodseeker_rupture") && Utils.SleepCheck(meepos[i].Handle + "MoveDodge"))
                             {
                                 meepos[i].Move(pos);
                                 Utils.Sleep(120, meepos[i].Handle + "MoveDodge");
@@ -98,13 +103,13 @@
                    ObjectManager.GetEntities<Unit>().Where(unit => unit.Name == "npc_dota_thinker" && unit.Team != me.Team).ToList();
                 if (thinker != null)
                 {
-                    for (int i = 0; i < thinker.Count(); i++)
+                    for (int i = 0; i < thinker.Count(); ++i)
                     {
-                        for (int j = 0; j < meepos.Count(); j++)
+                        for (int j = 0; j < meeposCount; ++j)
                         {
                             float angle = meepos[j].FindAngleBetween(thinker[i].Position, true);
                             Vector3 pos = new Vector3((float)(thinker[i].Position.X - 360 * Math.Cos(angle)), (float)(thinker[i].Position.Y - 360 * Math.Sin(angle)), 0);
-                            if (meepos[j].Distance2D(thinker[i]) <= 350 && meepos[j].Modifiers.Any(y => y.Name != "modifier_bloodseeker_rupture"))
+                            if (meepos[j].Distance2D(thinker[i]) <= 350 && !meepos[j].HasModifier("modifier_bloodseeker_rupture"))
                             {
 
                                 if (Utils.SleepCheck(meepos[j].Handle + "MoveDodge"))
@@ -120,7 +125,7 @@
                 foreach (var v in meepos)
                 {
                     if (Utils.SleepCheck(v.Handle + "_move") && v.Health <= v.MaximumHealth / 100 * menu.Item("healh").GetValue<Slider>().Value
-                        && v.Modifiers.Any(y => y.Name != "modifier_bloodseeker_rupture")
+                        && !v.HasModifier("modifier_bloodseeker_rupture")
                         && v.Distance2D(fount.First().Position) >= 1000
                         )
                     {
@@ -131,6 +136,7 @@
                     {
                         float angle = v.FindAngleBetween(fount.First().Position, true);
                         Vector3 pos = new Vector3((float)(fount.First().Position.X - 500 * Math.Cos(angle)), (float)(fount.First().Position.Y - 500 * Math.Sin(angle)), 0);
+
                         if (
                             v.Health >= v.MaximumHealth * 0.58
                             && v.Distance2D(fount.First()) <= 400
@@ -154,7 +160,7 @@
                     }
                 }
 
-                for (int i = 0; i < meepos.Count(); i++)
+                for (int i = 0; i < meeposCount; ++i)
                 {
                     travel = meepos[i].FindItem("item_travel_boots") ?? meepos[i].FindItem("item_travel_boots_2");
                     if (w[i] != null
@@ -188,6 +194,26 @@
                         travel.UseAbility(fount.First().Position);
                         Utils.Sleep(1000, meepos[i].Handle + "travel");
                     }
+                    if (meepos[i].HasModifier("modifier_bloodseeker_rupture"))
+                    {
+
+                        if (w[i] != null
+                            && w[i].CanBeCasted()
+                            && meepos[i].Handle != f.Handle
+                            && Utils.SleepCheck(meepos[i].Handle + "W"))
+                        {
+                            w[i].UseAbility(f);
+                            Utils.Sleep(500, meepos[i].Handle + "W");
+                        }
+                        else if (travel != null && travel.CanBeCasted()
+                                 && !w[i].CanBeCasted()
+                                 && meepos[i].Distance2D(fount.First().Position) >= 1200
+                                 && Utils.SleepCheck(meepos[i].Handle + "travel"))
+                        {
+                            travel.UseAbility(fount.First().Position);
+                            Utils.Sleep(1000, meepos[i].Handle + "travel");
+                        }
+                    }
                     if (e != null
                         && q[i] != null
                         && meepos[i].Health <= meepos[i].MaximumHealth
@@ -203,7 +229,7 @@
                     }
                     else if (!q[i].CanBeCasted() && meepos[i].Health <= meepos[i].MaximumHealth / 100 * menu.Item("healh").GetValue<Slider>().Value)
                     {
-                        for (var j = 0; j < meepos.Count(); j++)
+                        for (var j = 0; j < meeposCount; ++j)
                         {
                             if (e != null
                                 && q[j] != null
@@ -262,9 +288,9 @@
             /***************************************************POOF*************************************************************/
             if (PoofKey)
             {
-                for (int i = 0; i < meepos.Count(); i++)
+                for (int i = 0; i < meeposCount; ++i)
                 {
-                    for (int j = 0; j < checkObj.Count(); j++)
+                    for (int j = 0; j < checkObj.Count(); ++j)
                     {
                         if (w[i] != null
                             && ((meepos[i].Distance2D(checkObj[j]) <= 365
@@ -287,12 +313,12 @@
 
             if (PoofAutoMode)
             {
-                for (int i = 0; i < meepos.Count(); i++)
+                for (int i = 0; i < meeposCount; i++)
                 {
                     var nCreeps = ObjectManager.GetEntities<Unit>().Where(x => (x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
                         || x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege
                         || x.ClassID == ClassID.CDOTA_BaseNPC_Creep
-                        || x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral) && x.Team != me.Team && x.IsSpawned && x.IsAlive).Where(x => x.Distance2D(meepos[i]) <= 345).Count();
+                        || x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral) && x.Team != me.Team && x.IsSpawned && x.IsAlive).Where(x => x.Distance2D(meepos[i]) <= 345).ToList().Count();
 
                     SliderCountUnit = nCreeps >= (skills.Item("poofCount").GetValue<Slider>().Value);
 
@@ -315,7 +341,7 @@
             /**************************************************COMBO*************************************************************/
             if (activated)
             {
-                for (int i = 0; i < meepos.Count(); i++)
+                for (int i = 0; i < meeposCount; ++i)
                 {
                     target = ClosestToMouse(meepos[i]);
 
@@ -451,7 +477,7 @@
                             Utils.Sleep(200, "13");
                         }
 
-                        Task.Delay(1350 - (int)Game.Ping).ContinueWith(_ =>
+                        Task.Delay(1340 - (int)Game.Ping).ContinueWith(_ =>
                         {
                             if (blink.CanBeCasted()
                             && menu.Item("blinkDelay").IsActive()
@@ -461,7 +487,7 @@
                                 Utils.Sleep(200, "12");
                             }
                         });
-                        for (int j = 0; j < meepos.Count(); j++)
+                        for (int j = 0; j < meeposCount; ++j)
                         {
                             if (
                             w[j] != null
@@ -481,16 +507,16 @@
                             }
                         }
                     }
-
                     if (
                        meepos[i].Distance2D(target) <= 200 && (!meepos[i].IsAttackImmune() || !target.IsAttackImmune())
                        && meepos[i].NetworkActivity != NetworkActivity.Attack && meepos[i].CanAttack()
                        && meepos[i].Health >= meepos[i].MaximumHealth / 100 * menu.Item("healh").GetValue<Slider>().Value
+                       && !meepos[i].IsChanneling() 
                        && Utils.SleepCheck(meepos[i].Handle + "Attack")
                        )
                     {
                         meepos[i].Attack(target);
-                        Utils.Sleep(200, meepos[i].Handle + "Attack");
+                        Utils.Sleep(180, meepos[i].Handle + "Attack");
                     }
                     else if (((
                        (!meepos[i].CanAttack()
@@ -504,6 +530,7 @@
                        && !blink.CanBeCasted()))
                        || blink == null)
                        && meepos[i].Health >= meepos[i].MaximumHealth / 100 * menu.Item("healh").GetValue<Slider>().Value
+                       && !meepos[i].IsChanneling()
                        && Utils.SleepCheck(meepos[i].Handle + "Move"))
                     {
                         meepos[i].Move(target.Predict(450));
@@ -697,9 +724,9 @@
 			return closestHero;
 		}
 		
-		double GetDistance2D(Vector3 A, Vector3 B)
+		double GetDistance2D(Vector3 a, Vector3 b)
 		{
-			return Math.Sqrt(Math.Pow(A.X - B.X, 2) + Math.Pow(A.Y - B.Y, 2));
+			return Math.Sqrt(Math.Pow(a.X - b.X, 2) + Math.Pow(a.Y - b.Y, 2));
 		}
 
 
