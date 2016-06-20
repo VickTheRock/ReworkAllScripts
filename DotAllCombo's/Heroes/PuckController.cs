@@ -48,15 +48,7 @@ namespace DotaAllCombo.Heroes
 			sheep = me.FindItem("item_sheepstick");
 
 			//Starting Combo
-
-
-			var target2 =
-				ObjectManager.GetEntities<Hero>()
-					.Where(
-						hero =>
-							hero.IsAlive && hero.Player.Hero.Handle != target.Handle && !hero.IsIllusion && hero.IsVisible &&
-							hero.Team != me.Team)
-					.ToList();
+            
 			var _Is_in_Advantage = (target.HasModifier("modifier_item_blade_mail_reflect") ||
 									target.HasModifier("modifier_item_lotus_orb_active") ||
 									target.HasModifier("modifier_nyx_assassin_spiked_carapace") ||
@@ -72,6 +64,10 @@ namespace DotaAllCombo.Heroes
 				{
                     if (me.CanCast())
                     {
+                        var v =
+                      ObjectManager.GetEntities<Hero>()
+                          .Where(x => x.Team != me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && !x.IsMagicImmune())
+                          .ToList();
                         var X = me.Position.X;
                         var Y = me.Position.Y;
                         var pos = new Vector3(X, Y, me.Position.Z);
@@ -174,6 +170,14 @@ namespace DotaAllCombo.Heroes
                         {
                             Shiva.UseAbility();
                         }
+                        else elsecount++;
+                        if (elsecount == 9 && R != null && R.CanBeCasted() && (v.Count(x => x.Distance2D(me) <= 650) >=
+                                                                 (menu.Item("Heel").GetValue<Slider>().Value)) &&
+                            menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name) && Utils.SleepCheck("R"))
+                        {
+                            R.UseAbility(target.Position);
+                            Utils.Sleep(100, "R");
+                        }
                     }
                 }
 				Utils.Sleep(250, "combo");
@@ -183,7 +187,9 @@ namespace DotaAllCombo.Heroes
 				target.IsVisible && target.IsAlive && !target.IsMagicImmune() &&
 				Utils.SleepCheck("combo2"))
 			{
-				if (me.CanCast())
+			   
+
+                if (me.CanCast())
 				{
 					var X = me.Position.X;
 					var Y = me.Position.Y;
@@ -349,7 +355,8 @@ namespace DotaAllCombo.Heroes
 			menu.AddItem(new MenuItem("Full", "Full Combo(Please use only if you have blink)").SetValue(new KeyBind('A', KeyBindType.Press)));
 			menu.AddItem(new MenuItem("Escape", "Escape Combo(Please use only if you have blink)").SetValue(new KeyBind('D', KeyBindType.Press)));
 
-			menu.AddItem(
+            menu.AddItem(new MenuItem("Heel", "Min targets to Ult(Full Combo)").SetValue(new Slider(2, 1, 5)));
+            menu.AddItem(
 				new MenuItem("Skills", "Skills").SetValue(new AbilityToggler(new Dictionary<string, bool>
 				{
 					{"puck_dream_coil", true},
