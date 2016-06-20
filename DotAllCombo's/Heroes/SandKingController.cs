@@ -1,4 +1,4 @@
-﻿namespace DotaAllCombo.Heroes
+namespace DotaAllCombo.Heroes
 {
     using System;
     using System.Collections.Generic;
@@ -86,7 +86,7 @@
 				Vector3 pos = new Vector3((float)(e.Position.X - (Q.CastRange - 100) * Math.Cos(angle)),
 					(float)(e.Position.Y - (Q.CastRange - 100) * Math.Sin(angle)), 0);
 				uint elsecount = 1;
-				if (elsecount == 1 && ((blink != null && blink.CanBeCasted() && me.Distance2D(e) <= blink.CastRange + Q.CastRange - 300) || (Q.CanBeCasted() && me.Distance2D(e) <= Q.CastRange - 30 || (e.IsStunned() && me.Distance2D(e) <= 200))))
+				if (elsecount == 1 && (blink != null && blink.CanBeCasted() && me.Distance2D(pos) <= 1100 || blink == null && me.Distance2D(e) <= Q.CastRange - 50))
 				{
 					if (
 						R != null && R.CanBeCasted()
@@ -104,8 +104,20 @@
 				if (!Utils.SleepCheck("Combo") || me.IsChanneling() || R.IsChanneling || R.IsInAbilityPhase) return;
 
 				if (!menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name) || !R.CanBeCasted())
-				{
-					if (
+                {
+                    if (
+                        blink != null
+                        && blink.CanBeCasted()
+                        && me.Distance2D(e) >= (Q.CanBeCasted() ? Q.CastRange : 450)
+                        && me.Distance2D(pos) <= 1190
+                        && menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name)
+                        && Utils.SleepCheck("blink")
+                        )
+                    {
+                        blink.UseAbility(pos);
+                        Utils.Sleep(250, "blink");
+                    }
+                    if (
 						blink != null
 						&& blink.CanBeCasted()
 						&& me.Distance2D(e) < 1180
@@ -118,18 +130,6 @@
 						Utils.Sleep(250, "blink");
 					}
 
-					if (
-						blink != null
-						&& blink.CanBeCasted()
-						&& me.Distance2D(e) >= (Q.CanBeCasted() ? Q.CastRange : 450)
-						&& me.Distance2D(pos) <= 1190
-						&& menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name)
-						&& Utils.SleepCheck("blink")
-						)
-					{
-						blink.UseAbility(pos);
-						Utils.Sleep(250, "blink");
-					}
 					if (
 					Q != null && Q.CanBeCasted() && me.Distance2D(e) <= Q.CastRange + 300
 					&& menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name)
@@ -293,7 +293,6 @@
 							Utils.Sleep(100, "bkb");
 						}
 					}
-
 				}
 				if (me.IsChanneling() || R.IsChanneling || R.IsInAbilityPhase) return;
 				else elsecount++;
