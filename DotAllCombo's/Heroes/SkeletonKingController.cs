@@ -1,4 +1,4 @@
-﻿namespace DotaAllCombo.Heroes
+namespace DotaAllCombo.Heroes
 {
 	using System;
 	using System.Collections.Generic;
@@ -13,7 +13,7 @@
 
 	internal class SkeletonKingController : Variables, IHeroController
 	{
-		private Ability Q;
+		private Ability Q,R;
 
 		private Item urn, ethereal, dagon, halberd, mjollnir, abyssal, mom, Shiva, mail, bkb, satanic, blink, armlet, medall;
 
@@ -24,9 +24,9 @@
 			Active = Game.IsKeyDown(menu.Item("keyBind").GetValue<KeyBind>().Key);
 
 			Q = me.Spellbook.SpellQ;
+            R = me.Spellbook.SpellR;
 
-
-			mom = me.FindItem("item_mask_of_madness");
+            mom = me.FindItem("item_mask_of_madness");
 			urn = me.FindItem("item_urn_of_shadows");
 			dagon = me.Inventory.Items.FirstOrDefault(x => x.Name.Contains("item_dagon"));
 			ethereal = me.FindItem("item_ethereal_blade");
@@ -66,7 +66,7 @@
 					Utils.Sleep(390, "Move");
 				}
 			}
-			if (Active && me.Distance2D(e) <= 1400 && e != null && e.IsAlive && !Toolset.invUnit(me))
+			if (Active && me.Distance2D(e) <= 1400 && e.IsAlive && !Toolset.invUnit(me))
 			{
 				if (
 					blink != null
@@ -84,6 +84,9 @@
 				}
 				if (
 					Q != null && Q.CanBeCasted() && me.Distance2D(e) <= 900
+                			&& (R.CanBeCasted() && me.Mana>R.ManaCost+Q.ManaCost 
+                    			|| !R.CanBeCasted()
+                    			|| R==null)
 					&& menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name)
 					&& Utils.SleepCheck("Q")
 					)
