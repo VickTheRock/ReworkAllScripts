@@ -558,8 +558,7 @@ namespace DotaAllCombo.Heroes
                             lotus.UseAbility(me);
                             Utils.Sleep(250, "lotus");
                         }
-                        
-                        else if (
+                        if (
                             glimmer != null
                             && glimmer.CanBeCasted()
                             && creeps.Count(x => x.Distance2D(me) <= 1100) >= 2
@@ -570,23 +569,11 @@ namespace DotaAllCombo.Heroes
                             glimmer.UseAbility(me);
                             Utils.Sleep(250, "glimmer");
                         }
-                        else if (
+                         if (
                            E != null && E.CanBeCasted()
                            && !R.IsChanneling
                            && (me.Distance2D(safe) <= HIDE_AWAY_RANGE
                            || !menu.Item("pushSafe").IsActive())
-                           && creeps.Count(x => x.Distance2D(me) <= 1100) >= 2
-                           && menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(E.Name)
-                           && Utils.SleepCheck("E")
-                           )
-                        {
-                            E.UseAbility(Prediction.InFront(me, 200));
-                            Utils.Sleep(250, "E");
-                        }
-                        else if (
-                           E != null && E.CanBeCasted()
-                           && !R.IsChanneling
-                           && (me.Distance2D(safe) >= 900 || creeps.Count(x => x.Distance2D(safe) <= 900) <= 1)
                            && creeps.Count(x => x.Distance2D(me) <= 900) >= 2
                            && menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(E.Name)
                            && Utils.SleepCheck("E")
@@ -595,10 +582,21 @@ namespace DotaAllCombo.Heroes
                             E.UseAbility(Prediction.InFront(me, 200));
                             Utils.Sleep(250, "E");
                         }
-                        else if (
+                         if (
+                           E != null && E.CanBeCasted()
+                           && !R.IsChanneling
+                           && (creeps.Count(x => x.Distance2D(safe) <= 900) <= 1 || me.Distance2D(safe) >= 1190)
+                           && creeps.Count(x => x.Distance2D(me) <= 900) >= 2
+                           && menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(E.Name)
+                           && Utils.SleepCheck("E")
+                           )
+                        {
+                            E.UseAbility(Prediction.InFront(me, 200));
+                            Utils.Sleep(250, "E");
+                        }
+                         if (
                           E != null && !E.CanBeCasted()
                           && !R.IsChanneling
-                          && creeps.Count(x => x.Distance2D(me) <= 900) >= 2
                           && me.Distance2D(safe) >= 1190
                           && menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(E.Name)
                           && Utils.SleepCheck("E")
@@ -607,7 +605,7 @@ namespace DotaAllCombo.Heroes
                             me.Move(safe);
                             Utils.Sleep(250, "E");
                         }
-                        else if (
+                         if (
                          blink != null
                          && me.CanCast()
                          && (menu.Item("pushSafe").IsActive()
@@ -625,7 +623,7 @@ namespace DotaAllCombo.Heroes
                                 Utils.Sleep(250, "blink");
                             }
                         }
-                        else if (
+                         if (
                             blink != null
                             && me.CanCast()
                             && menu.Item("panicMod").IsActive()
@@ -658,7 +656,7 @@ namespace DotaAllCombo.Heroes
                       && R.CanBeCasted()
                       && travel != null
                       && !travel.CanBeCasted()
-                      && me.Distance2D(fount.First().Position) <= 1200
+                      && me.Distance2D(fount.First().Position) <= 900
                       && !R.IsChanneling
                       && menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name)
                       && Utils.SleepCheck("R")
@@ -682,7 +680,7 @@ namespace DotaAllCombo.Heroes
                     soul.UseAbility();
                     Utils.Sleep(500, "soul");
                 }
-                else
+                
                     if (
                         travel != null
                         && travel.CanBeCasted()
@@ -696,7 +694,7 @@ namespace DotaAllCombo.Heroes
                     travel.UseAbility(fount.First().Position);
                     Utils.Sleep(300, "travel");
                 }
-                else
+                
                     if (
                         travel != null
                         && travel.CanBeCasted()
