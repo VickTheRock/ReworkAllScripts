@@ -57,7 +57,7 @@ namespace ControlCreep_By_Vick
 		public static void Game_OnUpdate(EventArgs args)
 		{
 			var me = ObjectMgr.LocalHero;
-			if (!Game.IsInGame || me.ClassID != ClassID.CDOTA_Unit_Hero_BountyHunter || me == null)
+			if (!Game.IsInGame || me == null || me.ClassID != ClassID.CDOTA_Unit_Hero_BountyHunter)
 			{
 				return;
 			}
@@ -93,7 +93,7 @@ namespace ControlCreep_By_Vick
         {
 			var me = ObjectMgr.LocalHero;
 			var player = ObjectMgr.LocalPlayer;
-			if (player == null || player.Team == Team.Observer || me.ClassID != ClassID.CDOTA_Unit_Hero_BountyHunter)
+			if (player == null || player.Team == Team.Observer || me == null || me.ClassID != ClassID.CDOTA_Unit_Hero_BountyHunter)
 				return;
 			if (Game.IsKeyDown(keyTrack) && !Game.IsChatOpen && Utils.SleepCheck("toggle"))
             {
