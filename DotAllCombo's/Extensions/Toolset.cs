@@ -1,4 +1,4 @@
-﻿
+
 namespace DotaAllCombo.Service
 {
 	using System.Linq;
@@ -77,43 +77,24 @@ namespace DotaAllCombo.Service
 	    public static void UnAggro(List<Unit> z, Unit v)
 	    {
 	        var projectiles = ObjectManager.TrackingProjectiles.Where(x => x.Target.Handle == v.Handle).ToList();
-
-	        for (int i = 0; i < projectiles.Count(); ++i)
-            {
-                var closestCreepUnAgr = GetClosestToTarget(z, v);
-                if (v.ClassID == ClassID.CDOTA_Unit_Hero_Axe ||
-	                v.ClassID == ClassID.CDOTA_Unit_Hero_Legion_Commander)
-	            {
-	                if (projectiles[i].Source.ClassID == ClassID.CDOTA_BaseNPC_Tower
-	                    || projectiles[i].Source.ClassID == ClassID.CDOTA_Unit_Fountain)
-	                {
-                        
-
-	                    if (closestCreepUnAgr!=null && closestCreepUnAgr.Distance2D(v) <= 500 & Utils.SleepCheck("UnAgr"))
-	                    {
-	                        v.Attack(closestCreepUnAgr);
-	                        Utils.Sleep(300, "UnAgr");
-	                    }
-	                }
-	            }
-	            else if (v.ClassID != ClassID.CDOTA_Unit_Hero_Axe ||
-	                     v.ClassID != ClassID.CDOTA_Unit_Hero_Legion_Commander)
-	            {
-	                if (projectiles[i].Source.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
-	                    || projectiles[i].Source.ClassID == ClassID.CDOTA_BaseNPC_Tower
-	                    || projectiles[i].Source.ClassID == ClassID.CDOTA_Unit_Fountain
-	                    || projectiles[i].Source.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege)
-
+			if (v == null) return;
+			if (projectiles == null) return;
+			for (int i = 0; i < projectiles.Count(); ++i)
+			{
+				var closestCreepUnAgr = GetClosestToTarget(z, v);
+				if (closestCreepUnAgr == null) return;
+                
+                    if (projectiles[i].Source.ClassID == ClassID.CDOTA_BaseNPC_Tower
+                    || projectiles[i].Source.ClassID == ClassID.CDOTA_Unit_Fountain)
 	                {
 
-	                    if (closestCreepUnAgr != null && closestCreepUnAgr.Distance2D(v) <= 500 & Utils.SleepCheck("UnAgr"))
+	                    if (closestCreepUnAgr.Distance2D(v) <= 500 & Utils.SleepCheck("UnAgr"))
 	                    {
 	                        v.Attack(closestCreepUnAgr);
 	                        Utils.Sleep(500, "UnAgr");
 	                    }
 	                }
-	            }
-	        }
+			}
 	    }
 
 
@@ -122,13 +103,14 @@ namespace DotaAllCombo.Service
 
             var creepsA = ObjectManager.GetEntities<Unit>().Where(creep =>
                    (creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
-                   || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege
                    || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral
                    || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep) &&
                   creep.IsAlive && creep.Team == me.Team && creep.IsVisible && creep.IsSpawned).ToList();
+            
             if (creepsA.Count(x => x.Distance2D(v) <= 500) == 0)
-            {
-                if (v.ClassID == ClassID.CDOTA_Unit_SpiritBear)
+			{
+				if (creepsA.Count == 0) return;
+				if (v.ClassID == ClassID.CDOTA_Unit_SpiritBear)
                 {
                     creepsA = ObjectManager.GetEntities<Unit>().Where(creep => (
                            creep.HasInventory && creep.Handle != v.Handle)
@@ -143,9 +125,10 @@ namespace DotaAllCombo.Service
                           && creep.IsAlive && creep.Team == me.Team && creep.IsVisible && creep.Health >= (creep.MaximumHealth * 0.5)).ToList();
                 }
             }
-             
-            
-            UnAggro(creepsA, v);
+
+			if (creepsA.Count == 0) return;
+			if(v==null) return;
+			UnAggro(creepsA, v);
         }
 		public static bool HasStun(Hero x)
 		{
