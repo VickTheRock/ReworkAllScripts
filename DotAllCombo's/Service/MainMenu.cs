@@ -30,7 +30,7 @@ namespace DotaAllCombo.Service
 
 			othersMenu.AddItem(new MenuItem("others", "Others Addon's").SetValue(true));
 			othersMenu.AddItem(new MenuItem("ShowAttakRange", "Show AttackRange").SetValue(true));
-            othersMenu.AddItem(new MenuItem("Auto Un Aggro", "Auto Un Aggro Creeps|Towers|Fountain").SetValue(true));
+            othersMenu.AddItem(new MenuItem("Auto Un Aggro", "Auto Un Aggro Towers|Fountain").SetValue(true));
             addonsMenu.AddSubMenu(othersMenu);
             
 
