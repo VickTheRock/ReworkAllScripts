@@ -51,7 +51,7 @@ namespace DotaAllCombo.Heroes
 					.Where(x => x.Team != me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && !x.IsMagicImmune())
 					.ToList();
 
-			if (Active && me.Distance2D(e) <= 1400 && e.IsAlive && !me.IsInvisible())
+			if (Active && me.Distance2D(e) <= 2000 && e.IsAlive && !me.IsInvisible())
 			{
 				if (
 					blink != null
@@ -218,8 +218,8 @@ namespace DotaAllCombo.Heroes
 				}
 				else
 				if (
-					(!me.CanAttack() || me.Distance2D(e) >= 0) && me.NetworkActivity != NetworkActivity.Attack &&
-					me.Distance2D(e) <= 600 && Utils.SleepCheck("Move")
+					(!me.CanAttack() || me.Distance2D(e) >= 0) && me.NetworkActivity != NetworkActivity.Attack
+					&& Utils.SleepCheck("Move")
 					)
 				{
 					me.Move(e.Predict(300));
