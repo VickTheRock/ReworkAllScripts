@@ -1,8 +1,6 @@
-
-using System.Security.Permissions;
-
 namespace DotaAllCombo
 {
+	using System.Security.Permissions;
 	using System;
 	using System.Threading;
 	internal class Program
@@ -14,7 +12,7 @@ namespace DotaAllCombo
             /*new Thread(delegate () {
 				
 			}).Start();*/
-        Service.Bootstrap.Initialize();
+			Service.Bootstrap.Initialize();
 			Service.Debug.Print.ConsoleMessage.Success("[DotaAllCombo's] Pre-initialization complete!");
 
 

@@ -17,7 +17,7 @@ namespace DotaAllCombo.Addons
         private Item midas, abyssal, mjollnir, boots, medall, mom;
 		private Font txt;
 		private Font not;
-		private Hero me, target;
+		private Hero me, e;
 
 		public void Load()
 		{
@@ -59,13 +59,12 @@ namespace DotaAllCombo.Addons
 		
 		public void RunScript()
 		{
-
 			me = ObjectManager.LocalHero;
 			if (!MainMenu.CCMenu.Item("controll").IsActive() || !Game.IsInGame || me == null || Game.IsPaused ||
 				Game.IsChatOpen) return;
 
 
-			target = me.ClosestToMouseTarget(10000);
+			e = me.ClosestToMouseTarget(10000);
 
 			var Units = ObjectManager.GetEntities<Unit>().Where(creep =>
 				(creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral
@@ -114,7 +113,7 @@ namespace DotaAllCombo.Addons
 						else
 						if (Units[i].Name == "npc_dota_neutral_ogre_magi")
 						{
-							for (int z = 0; z < v.Count(); z++)
+							for (int z = 0; z < v.Count(); ++z)
 							{
 								var armor = Units[i].Spellbook.SpellQ;
 
@@ -129,129 +128,127 @@ namespace DotaAllCombo.Addons
 						else
 						if (Units[i].Name == "npc_dota_neutral_forest_troll_high_priest")
 						{
-
-
 							if (Units[i].Spellbook.SpellQ.CanBeCasted())
 							{
-								for (int z = 0; z < v.Count(); z++)
+								for (int z = 0; z < v.Count(); ++z)
 								{
 									if (v[z].Health <= (v[z].MaximumHealth * 0.9) && Units[i].Position.Distance2D(v[z]) <= 900
-									&& Utils.SleepCheck(Units[i].Handle.ToString() + "high_priest"))
+									&& Utils.SleepCheck(Units[i].Handle+"high_priest"))
 									{
 										Units[i].Spellbook.SpellQ.UseAbility(v[z]);
-										Utils.Sleep(350, Units[i].Handle.ToString() + "high_priest");
+										Utils.Sleep(350, Units[i].Handle+"high_priest");
 									}
 								}
 							}
 						}
 
 
-						if (target == null)
+						if (e == null)
 							return;
 
 
 
 
-						if (target.IsAlive && !target.IsInvul() && (Game.MousePosition.Distance2D(target) <= 1000 || target.Distance2D(me) <= 600))
+						if (e.IsAlive && !e.IsInvul() && (Game.MousePosition.Distance2D(e) <= 1000 || e.Distance2D(me) <= 600))
 						{
 
 							//spell
-							var CheckStun = target.HasModifier("modifier_centaur_hoof_stomp");
-							var CheckSetka = target.HasModifier("modifier_dark_troll_warlord_ensnare");
+							var CheckStun = e.HasModifier("modifier_centaur_hoof_stomp");
+							var CheckSetka = e.HasModifier("modifier_dark_troll_warlord_ensnare");
 							if (Units[i].Name == "npc_dota_neutral_dark_troll_warlord")
 							{
-								if (target.Position.Distance2D(Units[i].Position) < 550 && (!CheckSetka || !CheckStun || !target.IsHexed() || !target.IsStunned()) && Units[i].Spellbook.SpellQ.CanBeCasted() &&
-										 Utils.SleepCheck(Units[i].Handle.ToString() + "warlord"))
+								if (e.Position.Distance2D(Units[i].Position) < 550 && (!CheckSetka || !CheckStun || !e.IsHexed() || !e.IsStunned()) && Units[i].Spellbook.SpellQ.CanBeCasted() &&
+										 Utils.SleepCheck(Units[i].Handle+"warlord"))
 								{
-									Units[i].Spellbook.SpellQ.UseAbility(target);
-									Utils.Sleep(450, Units[i].Handle.ToString() + "warlord");
+									Units[i].Spellbook.SpellQ.UseAbility(e);
+									Utils.Sleep(450, Units[i].Handle+"warlord");
 								}
 							}
 							else
 								if (Units[i].Name == "npc_dota_neutral_big_thunder_lizard")
 							{
-								if (target.Position.Distance2D(Units[i].Position) < 250 && Units[i].Spellbook.SpellQ.CanBeCasted() &&
-									Utils.SleepCheck(Units[i].Handle.ToString() + "lizard"))
+								if (e.Position.Distance2D(Units[i].Position) < 250 && Units[i].Spellbook.SpellQ.CanBeCasted() &&
+									Utils.SleepCheck(Units[i].Handle+"lizard"))
 								{
 									Units[i].Spellbook.SpellQ.UseAbility();
-									Utils.Sleep(450, Units[i].Handle.ToString() + "lizard");
+									Utils.Sleep(450, Units[i].Handle+"lizard");
 								}
-								if (target.Position.Distance2D(Units[i].Position) < 550 && Units[i].Spellbook.SpellW.CanBeCasted() &&
-									Utils.SleepCheck(Units[i].Handle.ToString() + "lizard"))
+								if (e.Position.Distance2D(Units[i].Position) < 550 && Units[i].Spellbook.SpellW.CanBeCasted() &&
+									Utils.SleepCheck(Units[i].Handle+"lizard"))
 								{
 									Units[i].Spellbook.SpellW.UseAbility();
-									Utils.Sleep(450, Units[i].Handle.ToString() + "lizard");
+									Utils.Sleep(450, Units[i].Handle+"lizard");
 								}
 							}
 							else
 								if (Units[i].Name == "npc_dota_neutral_centaur_khan")
 							{
-								if (target.Position.Distance2D(Units[i].Position) < 200 && (!CheckSetka || !CheckStun || !target.IsHexed() || !target.IsStunned()) && Units[i].Spellbook.SpellQ.CanBeCasted() &&
-									Utils.SleepCheck(Units[i].Handle.ToString() + "centaur"))
+								if (e.Position.Distance2D(Units[i].Position) < 200 && (!CheckSetka || !CheckStun || !e.IsHexed() || !e.IsStunned()) && Units[i].Spellbook.SpellQ.CanBeCasted() &&
+									Utils.SleepCheck(Units[i].Handle+"centaur"))
 								{
 									Units[i].Spellbook.SpellQ.UseAbility();
-									Utils.Sleep(450, Units[i].Handle.ToString() + "centaur");
+									Utils.Sleep(450, Units[i].Handle+"centaur");
 								}
 							}
 							else
 								if (Units[i].Name == "npc_dota_neutral_satyr_hellcaller")
 							{
-								if (target.Position.Distance2D(Units[i].Position) < 850 && Units[i].Spellbook.SpellQ.CanBeCasted() &&
-									Utils.SleepCheck(Units[i].Handle.ToString() + "satyr"))
+								if (e.Position.Distance2D(Units[i].Position) < 850 && Units[i].Spellbook.SpellQ.CanBeCasted() &&
+									Utils.SleepCheck(Units[i].Handle+"satyr"))
 								{
-									Units[i].Spellbook.SpellQ.UseAbility(target);
-									Utils.Sleep(350, Units[i].Handle.ToString() + "satyr");
+									Units[i].Spellbook.SpellQ.UseAbility(e);
+									Utils.Sleep(350, Units[i].Handle+"satyr");
 								}
 							}
 							else
 								if (Units[i].Name == "npc_dota_neutral_satyr_trickster")
 							{
-								if (target.Position.Distance2D(Units[i].Position) < 850 && Units[i].Spellbook.SpellQ.CanBeCasted() &&
-									Utils.SleepCheck(Units[i].Handle.ToString() + "satyr_trickster"))
+								if (e.Position.Distance2D(Units[i].Position) < 850 && Units[i].Spellbook.SpellQ.CanBeCasted() &&
+									Utils.SleepCheck(Units[i].Handle+"satyr_trickster"))
 								{
-									Units[i].Spellbook.SpellQ.UseAbility(target);
-									Utils.Sleep(350, Units[i].Handle.ToString() + "satyr_trickster");
+									Units[i].Spellbook.SpellQ.UseAbility(e);
+									Utils.Sleep(350, Units[i].Handle+"satyr_trickster");
 								}
 							}
 							else
 								if (Units[i].Name == "npc_dota_neutral_satyr_soulstealer")
 							{
-								if (target.Position.Distance2D(Units[i].Position) < 850 && Units[i].Spellbook.SpellQ.CanBeCasted() &&
-									Utils.SleepCheck(Units[i].Handle.ToString() + "satyrsoulstealer"))
+								if (e.Position.Distance2D(Units[i].Position) < 850 && Units[i].Spellbook.SpellQ.CanBeCasted() &&
+									Utils.SleepCheck(Units[i].Handle+"satyrsoulstealer"))
 								{
-									Units[i].Spellbook.SpellQ.UseAbility(target);
-									Utils.Sleep(350, Units[i].Handle.ToString() + "satyrsoulstealer");
+									Units[i].Spellbook.SpellQ.UseAbility(e);
+									Utils.Sleep(350, Units[i].Handle+"satyrsoulstealer");
 								}
 							}
 							else
 								if (Units[i].Name == "npc_dota_neutral_black_dragon")
 							{
-								if (target.Position.Distance2D(Units[i].Position) < 700 && Units[i].Spellbook.SpellQ.CanBeCasted() &&
-									Utils.SleepCheck(Units[i].Handle.ToString() + "dragonspawn"))
+								if (e.Position.Distance2D(Units[i].Position) < 700 && Units[i].Spellbook.SpellQ.CanBeCasted() &&
+									Utils.SleepCheck(Units[i].Handle+"dragonspawn"))
 								{
-									Units[i].Spellbook.SpellQ.UseAbility(target.Predict(600));
-									Utils.Sleep(350, Units[i].Handle.ToString() + "dragonspawn");
+									Units[i].Spellbook.SpellQ.UseAbility(e.Predict(600));
+									Utils.Sleep(350, Units[i].Handle+"dragonspawn");
 								}
 							}
 							else
 								if (Units[i].Name == "npc_dota_neutral_big_thunder_lizard")
 							{
-								if (target.Position.Distance2D(Units[i].Position) < 200 && Units[i].Spellbook.SpellQ.CanBeCasted() &&
-									Utils.SleepCheck(Units[i].Handle.ToString() + "lizard"))
+								if (e.Position.Distance2D(Units[i].Position) < 200 && Units[i].Spellbook.SpellQ.CanBeCasted() &&
+									Utils.SleepCheck(Units[i].Handle+"lizard"))
 								{
 									Units[i].Spellbook.SpellQ.UseAbility();
-									Utils.Sleep(350, Units[i].Handle.ToString() + "lizard");
+									Utils.Sleep(350, Units[i].Handle+"lizard");
 								}
 
 								for (int z = 0; z < v.Count(); z++)
 								{
 									if (Units[i].Spellbook.SpellW.CanBeCasted() && Units[i].Position.Distance2D(v[z]) <= 900)
 									{
-										if (target.Position.Distance2D(v[z]) < v[z].AttackRange + 150 &&
-										Utils.SleepCheck(Units[i].Handle.ToString() + "lizard"))
+										if (e.Position.Distance2D(v[z]) < v[z].AttackRange + 150 &&
+										Utils.SleepCheck(Units[i].Handle+"lizard"))
 										{
 											Units[i].Spellbook.SpellW.UseAbility(v[z]);
-											Utils.Sleep(350, Units[i].Handle.ToString() + "lizard");
+											Utils.Sleep(350, Units[i].Handle+"lizard");
 										}
 									}
 								}
@@ -259,32 +256,32 @@ namespace DotaAllCombo.Addons
 							else
 								if (Units[i].Name == "npc_dota_neutral_mud_golem")
 							{
-								if (target.Position.Distance2D(Units[i].Position) < 850 && (!CheckSetka || !CheckStun || !target.IsHexed() || !target.IsStunned())
+								if (e.Position.Distance2D(Units[i].Position) < 850 && (!CheckSetka || !CheckStun || !e.IsHexed() || !e.IsStunned())
 									&& Units[i].Spellbook.SpellQ.CanBeCasted() &&
-									Utils.SleepCheck(Units[i].Handle.ToString() + "golem"))
+									Utils.SleepCheck(Units[i].Handle+"golem"))
 								{
-									Units[i].Spellbook.SpellQ.UseAbility(target);
-									Utils.Sleep(350, Units[i].Handle.ToString() + "golem");
+									Units[i].Spellbook.SpellQ.UseAbility(e);
+									Utils.Sleep(350, Units[i].Handle+"golem");
 								}
 							}
 							else
 								if (Units[i].Name == "npc_dota_neutral_polar_furbolg_ursa_warrior")
 							{
-								if (target.Position.Distance2D(Units[i].Position) < 240 && Units[i].Spellbook.SpellQ.CanBeCasted() &&
-									Utils.SleepCheck(Units[i].Handle.ToString() + "ursa"))
+								if (e.Position.Distance2D(Units[i].Position) < 240 && Units[i].Spellbook.SpellQ.CanBeCasted() &&
+									Utils.SleepCheck(Units[i].Handle+"ursa"))
 								{
 									Units[i].Spellbook.SpellQ.UseAbility();
-									Utils.Sleep(350, Units[i].Handle.ToString() + "ursa");
+									Utils.Sleep(350, Units[i].Handle+"ursa");
 								}
 							}
 							else
 								if (Units[i].Name == "npc_dota_neutral_harpy_storm")
 							{
-								if (target.Position.Distance2D(Units[i].Position) < 900 && Units[i].Spellbook.SpellQ.CanBeCasted() &&
-										Utils.SleepCheck(Units[i].Handle.ToString() + "harpy"))
+								if (e.Position.Distance2D(Units[i].Position) < 900 && Units[i].Spellbook.SpellQ.CanBeCasted() &&
+										Utils.SleepCheck(Units[i].Handle+"harpy"))
 								{
-									Units[i].Spellbook.SpellQ.UseAbility(target);
-									Utils.Sleep(350, Units[i].Handle.ToString() + "harpy");
+									Units[i].Spellbook.SpellQ.UseAbility(e);
+									Utils.Sleep(350, Units[i].Handle+"harpy");
 								}
 							}
 							else
@@ -292,10 +289,10 @@ namespace DotaAllCombo.Addons
 							{
 								if (Units[i].ClassID == ClassID.CDOTA_BaseNPC_Tusk_Sigil)
 								{
-									if (target.Position.Distance2D(Units[i].Position) < 1550 &&
+									if (e.Position.Distance2D(Units[i].Position) < 1550 &&
 											Utils.SleepCheck(Units[i].Handle.ToString()))
 									{
-										Units[i].Move(target.Predict(1500));
+										Units[i].Move(e.Predict(1500));
 										Utils.Sleep(700, Units[i].Handle.ToString());
 									}
 								}
@@ -305,11 +302,11 @@ namespace DotaAllCombo.Addons
 							{
 								if (Units[i].Name == "npc_dota_necronomicon_archer")
 								{
-									if (target.Position.Distance2D(Units[i].Position) <= 700 && Units[i].Spellbook.SpellQ.CanBeCasted() &&
+									if (e.Position.Distance2D(Units[i].Position) <= 700 && Units[i].Spellbook.SpellQ.CanBeCasted() &&
 										Utils.SleepCheck(Units[i].Handle.ToString()))
 
 									{
-										Units[i].Spellbook.SpellQ.UseAbility(target);
+										Units[i].Spellbook.SpellQ.UseAbility(e);
 										Utils.Sleep(300, Units[i].Handle.ToString());
 									}
 								}
@@ -322,14 +319,14 @@ namespace DotaAllCombo.Addons
 									var damageModif = Units[i].Modifiers.FirstOrDefault(x => x.Name == "modifier_visage_summon_familiars_damage_charge");
 
 
-									if (target.Position.Distance2D(Units[i].Position) < 1550 && Units[i].Health < 6 && Units[i].Spellbook.Spell1.CanBeCasted() &&
+									if (e.Position.Distance2D(Units[i].Position) < 1550 && Units[i].Health < 6 && Units[i].Spellbook.Spell1.CanBeCasted() &&
 										Utils.SleepCheck(Units[i].Handle.ToString()))
 									{
 										Units[i].Spellbook.Spell1.UseAbility();
 										Utils.Sleep(200, Units[i].Handle.ToString());
 									}
 
-									if (target.Position.Distance2D(Units[i].Position) < 340 && ((damageModif.StackCount < 1) && !target.IsStunned()) && Units[i].Spellbook.Spell1.CanBeCasted() &&
+									if (e.Position.Distance2D(Units[i].Position) < 340 && ((damageModif.StackCount < 1) && !e.IsStunned()) && Units[i].Spellbook.Spell1.CanBeCasted() &&
 										Utils.SleepCheck(Units[i].Handle.ToString()))
 									{
 										Units[i].Spellbook.Spell1.UseAbility();
@@ -342,13 +339,13 @@ namespace DotaAllCombo.Addons
 							{
 								if (Units[i].ClassID == ClassID.CDOTA_Unit_Brewmaster_PrimalEarth)
 								{
-									if (target.Position.Distance2D(Units[i].Position) < 1300 && Units[i].Spellbook.SpellQ.CanBeCasted() &&
+									if (e.Position.Distance2D(Units[i].Position) < 1300 && Units[i].Spellbook.SpellQ.CanBeCasted() &&
 										Utils.SleepCheck(Units[i].Handle.ToString()))
 									{
-										Units[i].Spellbook.SpellQ.UseAbility(target);
+										Units[i].Spellbook.SpellQ.UseAbility(e);
 										Utils.Sleep(400, Units[i].Handle.ToString());
 									}
-									if (target.Position.Distance2D(Units[i].Position) < 340 && Units[i].Spellbook.SpellR.CanBeCasted() &&
+									if (e.Position.Distance2D(Units[i].Position) < 340 && Units[i].Spellbook.SpellR.CanBeCasted() &&
 									   Utils.SleepCheck(Units[i].Handle.ToString()))
 									{
 										Units[i].Spellbook.SpellR.UseAbility();
@@ -360,22 +357,22 @@ namespace DotaAllCombo.Addons
 								{
 									if (Units != null)
 									{
-										if (target.Position.Distance2D(Units[i].Position) < 700 && Units[i].Spellbook.SpellQ.CanBeCasted() &&
+										if (e.Position.Distance2D(Units[i].Position) < 700 && Units[i].Spellbook.SpellQ.CanBeCasted() &&
 											Utils.SleepCheck(Units[i].Handle.ToString()))
 										{
-											Units[i].Spellbook.SpellQ.UseAbility(target.Position);
+											Units[i].Spellbook.SpellQ.UseAbility(e.Position);
 											Utils.Sleep(400, Units[i].Handle.ToString());
 										}
-										if (target.Position.Distance2D(Units[i].Position) < 900 && Units[i].Spellbook.SpellE.CanBeCasted() &&
+										if (e.Position.Distance2D(Units[i].Position) < 900 && Units[i].Spellbook.SpellE.CanBeCasted() &&
 											Utils.SleepCheck(Units[i].Handle.ToString()))
 										{
 											Units[i].Spellbook.SpellE.UseAbility();
 											Utils.Sleep(400, Units[i].Handle.ToString());
 										}
-										if (target.Position.Distance2D(Units[i].Position) < 850 && Units[i].Spellbook.SpellR.CanBeCasted() &&
+										if (e.Position.Distance2D(Units[i].Position) < 850 && Units[i].Spellbook.SpellR.CanBeCasted() &&
 											   Utils.SleepCheck(Units[i].Handle.ToString()))
 										{
-											Units[i].Spellbook.SpellR.UseAbility(target);
+											Units[i].Spellbook.SpellR.UseAbility(e);
 											Utils.Sleep(400, Units[i].Handle.ToString());
 										}
 									}
@@ -401,45 +398,45 @@ namespace DotaAllCombo.Addons
 										medall = Units[i].FindItem("item_medallion_of_courage") ?? Units[i].FindItem("item_solar_crest");
 
 
-										if (boots != null && target.Position.Distance2D(Units[i].Position) < 1550 && boots.CanBeCasted() &&
+										if (boots != null && e.Position.Distance2D(Units[i].Position) < 1550 && boots.CanBeCasted() &&
 											Utils.SleepCheck(Units[i].Handle.ToString()))
 										{
 											boots.UseAbility();
 											Utils.Sleep(350, Units[i].Handle.ToString());
 										}
-										if (mjollnir != null && target.Position.Distance2D(Units[i].Position) < 525 && mjollnir.CanBeCasted() &&
+										if (mjollnir != null && e.Position.Distance2D(Units[i].Position) < 525 && mjollnir.CanBeCasted() &&
 											Utils.SleepCheck(Units[i].Handle.ToString()))
 										{
 											mjollnir.UseAbility(Units[i]);
 											Utils.Sleep(350, Units[i].Handle.ToString());
 										}
-										if (medall != null && target.Position.Distance2D(Units[i].Position) < 525 && medall.CanBeCasted() &&
+										if (medall != null && e.Position.Distance2D(Units[i].Position) < 525 && medall.CanBeCasted() &&
 										   Utils.SleepCheck(Units[i].Handle.ToString()))
 										{
-											medall.UseAbility(target);
+											medall.UseAbility(e);
 											Utils.Sleep(350, Units[i].Handle.ToString());
 										}
 
-										if (mom != null && target.Position.Distance2D(Units[i].Position) < 525 && mom.CanBeCasted() &&
+										if (mom != null && e.Position.Distance2D(Units[i].Position) < 525 && mom.CanBeCasted() &&
 										   Utils.SleepCheck(Units[i].Handle.ToString()))
 										{
 											mom.UseAbility();
 											Utils.Sleep(350, Units[i].Handle.ToString());
 										}
-										if (abyssal != null && target.Position.Distance2D(Units[i].Position) < 500 && abyssal.CanBeCasted() &&
+										if (abyssal != null && e.Position.Distance2D(Units[i].Position) < 500 && abyssal.CanBeCasted() &&
 											Utils.SleepCheck(Units[i].Handle.ToString()))
 										{
-											abyssal.UseAbility(target);
+											abyssal.UseAbility(e);
 											Utils.Sleep(350, Units[i].Handle.ToString());
 										}
 										if (midas != null)
 										{
-											var Neutrals = ObjectManager.GetEntities<Creep>().Where(creep => (creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral || creep.ClassID == ClassID.CDOTA_BaseNPC_Invoker_Forged_Spirit || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep &&
+											var neutrals = ObjectManager.GetEntities<Creep>().Where(creep => (creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral || creep.ClassID == ClassID.CDOTA_BaseNPC_Invoker_Forged_Spirit || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep &&
 												creep.IsAlive && creep.IsVisible && creep.IsSpawned) && creep.Team != me.Team).ToList();
 
-											foreach (var f in Neutrals)
+											foreach (var f in neutrals)
 											{
-												if (target.Position.Distance2D(f.Position) < 650 && midas.CanBeCasted() &&
+												if (e.Position.Distance2D(f.Position) < 650 && midas.CanBeCasted() &&
 													Utils.SleepCheck(f.Handle.ToString()))
 												{
 													midas.UseAbility(f);
@@ -458,9 +455,10 @@ namespace DotaAllCombo.Addons
 									if (Units[i].Name == "npc_dota_templar_assassin_psionic_trap")
 									{
 
-										if (target.Position.Distance2D(Units[i].Position) < 250
-											&& Units[i].Spellbook.Spell1.CanBeCasted() &&
-											Utils.SleepCheck(Units[i].Handle.ToString()))
+										if (e.Position.Distance2D(Units[i].Position) < 250
+											&& Units[i].Spellbook.Spell1.CanBeCasted()
+											&& e.Distance2D(Game.MousePosition)<=1000
+											&& Utils.SleepCheck(Units[i].Handle.ToString()))
 										{
 											Units[i].Spellbook.Spell1.UseAbility();
 											Utils.Sleep(250, Units[i].Handle.ToString());
@@ -469,20 +467,20 @@ namespace DotaAllCombo.Addons
 								}
 							}
 							
-							if (Units[i].Distance2D(target) <= Units[i].AttackRange + 100 && (!Units[i].IsAttackImmune() || !target.IsAttackImmune())
-							&& Units[i].NetworkActivity != NetworkActivity.Attack && Units[i].CanAttack() && Utils.SleepCheck(Units[i].Handle.ToString() + "Attack")
+							if (Units[i].Distance2D(e) <= Units[i].AttackRange + 100 && (!Units[i].IsAttackImmune() || !e.IsAttackImmune())
+							&& Units[i].NetworkActivity != NetworkActivity.Attack && Units[i].CanAttack() && Utils.SleepCheck(Units[i].Handle+"Attack")
 							)
 							{
-								Units[i].Attack(target);
-								Utils.Sleep(250, Units[i].Handle.ToString() + "Attack");
+								Units[i].Attack(e);
+								Utils.Sleep(250, Units[i].Handle+"Attack");
 							}
-							else if ((!Units[i].CanAttack() || Units[i].Distance2D(target) >= 0) && Units[i].NetworkActivity != NetworkActivity.Attack
+							else if ((!Units[i].CanAttack() || Units[i].Distance2D(e) >= 0) && Units[i].NetworkActivity != NetworkActivity.Attack
 								&& Units[i].CanMove() &&
-									Units[i].Distance2D(target) <= 600 && Utils.SleepCheck(Units[i].Handle.ToString() + "Move")
+									Units[i].Distance2D(e) <= 600 && Utils.SleepCheck(Units[i].Handle+"Move")
 								)
 							{
-								Units[i].Move(target.Predict(300));
-								Utils.Sleep(350, Units[i].Handle.ToString() + "Move");
+								Units[i].Move(e.Predict(300));
+								Utils.Sleep(350, Units[i].Handle+"Move");
 							}
 						}
 						Utils.Sleep(500, "delay");

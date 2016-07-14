@@ -11,16 +11,16 @@
 	using Service;
 	using Service.Debug;
 
-    internal class ZuusController : Variables, IHeroController
+    internal class EarthshakerController : Variables, IHeroController
     {
-        private Ability Q, W, R;
-        private readonly int[] eDmg = new [] { 0, 4, 6, 8, 10 };
+        private Ability Q, W, E, R;
         private readonly Menu skills = new Menu("Skills", "Skills");
         private readonly Menu items = new Menu("Items", "Items");
         private readonly Menu ult = new Menu("AutoUlt", "AutoUlt");
         
         private Item orchid, sheep, vail, soul, arcane, blink, shiva, dagon, atos, ethereal, cheese, ghost;
-        private int[] rDmg;
+		private int[] eDmg;
+		private int[] rDmg;
 	    private int[] wDmg;
 		private int[] qDmg;
 		public void Combo()
@@ -34,7 +34,9 @@
 
             W = me.Spellbook.SpellW;
 
-            R = me.Spellbook.SpellR;
+			E = me.Spellbook.SpellE;
+
+			R = me.Spellbook.SpellR;
 
             // Item
             ethereal = me.FindItem("item_ethereal_blade");
@@ -66,29 +68,17 @@
             
             var modifEther = e.HasModifier("modifier_item_ethereal_blade_slow");
             var stoneModif = e.HasModifier("modifier_medusa_stone_gaze_stone");
-
-            if (Game.IsKeyDown(70) && Q.CanBeCasted() && e != null)
-            {
-                if (
-                    Q != null
-                    && Q.CanBeCasted()
-                    && (e.IsLinkensProtected()
-                        || !e.IsLinkensProtected())
-                    && me.CanCast()
-                    && me.Distance2D(e) < 900
-                    && !stoneModif
-                    && Utils.SleepCheck("Q")
-                    )
-                {
-                    Q.UseAbility(e);
-                    Utils.Sleep(200, "Q");
-                }
-            }
+			
             if (Active && me.IsAlive && e.IsAlive && Utils.SleepCheck("activated"))
             {
                 var noBlade = e.HasModifier("modifier_item_blade_mail_reflect");
                 if (e.IsVisible && me.Distance2D(e) <= 2300 && !noBlade)
                 {
+	                if (me.HasModifier("modifier_earthshaker_enchant_totem") && me.Distance2D(e) <= 300 && Utils.SleepCheck("WMod"))
+	                {
+						me.Attack(e);
+						Utils.Sleep(250, "WMod");
+					}
                     if ( // atos Blade
                         atos != null
                         && atos.CanBeCasted()
@@ -106,11 +96,11 @@
 
                     if (
                         blink != null
-                        && Q.CanBeCasted()
                         && me.CanCast()
                         && blink.CanBeCasted()
-                        && me.Distance2D(e) > 1000
-                        && !stoneModif
+                        && me.Distance2D(e) > 400
+						&& me.Distance2D(e) <= 1180
+						&& !stoneModif
                         && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name)
                         && Utils.SleepCheck("blink")
                         )
@@ -173,20 +163,34 @@
                                     W != null
                                     && W.CanBeCasted()
                                     && me.CanCast()
-                                    && me.Distance2D(e) < 1300
+									&& !me.HasModifier("modifier_earthshaker_enchant_totem")
+                                    && me.Distance2D(e) < 2300
+									&& me.Distance2D(e)>= 1200
                                     && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name)
                                     && Utils.SleepCheck("W"))
                                 {
-                                    W.UseAbility(e.Position);
+                                    W.UseAbility();
                                     Utils.Sleep(200, "W");
                                 }
-                                if (
+								if (
+									W != null
+									&& W.CanBeCasted()
+									&& me.CanCast()
+									&& !me.HasModifier("modifier_earthshaker_enchant_totem")
+									&& me.Distance2D(e) < W.GetCastRange()
+									&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name)
+									&& Utils.SleepCheck("W"))
+								{
+									W.UseAbility();
+									Utils.Sleep(200, "W");
+								}
+								if (
                                     Q != null
                                     && Q.CanBeCasted()
                                     && (e.IsLinkensProtected()
                                         || !e.IsLinkensProtected())
                                     && me.CanCast()
-                                    && me.Distance2D(e) < 1400
+                                    && me.Distance2D(e) < 1500
                                     && !stoneModif
                                     && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name)
                                     && Utils.SleepCheck("Q")
@@ -194,21 +198,6 @@
                                 {
                                     Q.UseAbility(e);
                                     Utils.Sleep(330, "Q");
-                                }
-                                if (
-                                    R != null
-                                    && R.CanBeCasted()
-                                    && !Q.CanBeCasted()
-                                    && !W.CanBeCasted()
-                                    && me.CanCast()
-                                    && me.Position.Distance2D(e) < 1200
-                                    && e.Health <= (e.MaximumHealth * 0.5)
-                                    && !stoneModif
-                                    && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name)
-                                    && Utils.SleepCheck("R"))
-                                {
-                                    R.UseAbility();
-                                    Utils.Sleep(330, "R");
                                 }
                                 if ( // SoulRing Item 
                                     soul != null
@@ -257,7 +246,6 @@
                                     && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(shiva.Name)
                                     && me.Distance2D(e) <= 600
                                     )
-
                                 {
                                     shiva.UseAbility();
                                     Utils.Sleep(250, "shiva");
@@ -268,6 +256,9 @@
                                     && me.CanCast()
                                     && !e.IsLinkensProtected()
                                     && !e.IsMagicImmune()
+									&& !e.IsRooted()
+									&& !e.IsHexed()
+									&& !e.IsStunned()
                                     && me.Distance2D(e) <= 1400
                                     && !stoneModif
                                     && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(sheep.Name)
@@ -287,8 +278,9 @@
                                     && !e.IsLinkensProtected()
                                     && dagon.CanBeCasted()
                                     && me.Distance2D(e) <= 1400
-                                    && !e.IsMagicImmune()
-                                    && !stoneModif
+                                    && !e.IsMagicImmune() 
+									&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled("item_dagon")
+									&& !stoneModif
                                     && Utils.SleepCheck("dagon")
                                     )
                                 {
@@ -314,11 +306,7 @@
                     }
                     Utils.Sleep(200, "activated");
                 }
-				if (Menu.Item("orbwalk").GetValue<bool>() && me.Distance2D(e) <= 1900)
-				{
-					Orbwalking.Orbwalk(e, 0, 1600, true, true);
-				}
-			}
+            }
             A();
         }
 
@@ -336,13 +324,14 @@
 
 			skills.AddItem(new MenuItem("Skills", "Skills").SetValue(new AbilityToggler(new Dictionary<string, bool>
 			{
-			    {"zuus_arc_lightning", true},
-			    {"zuus_lightning_bolt", true},
-			    {"zuus_thundergods_wrath", true}
+			    {"earthshaker_echo_slam", true},
+			    {"earthshaker_enchant_totem", true},
+			    {"earthshaker_fissure", true}
 			})));
 			items.AddItem(new MenuItem("Items", "Items:").SetValue(new AbilityToggler(new Dictionary<string, bool>
 			{
-			    {"item_orchid", true},
+				{"item_dagon", true},
+				{"item_orchid", true},
                 { "item_bloodthorn", true},
 			    {"item_ethereal_blade", true},
 			    {"item_veil_of_discord", true},
@@ -358,9 +347,8 @@
 			ult.AddItem(new MenuItem("autoUlt", "AutoUlt").SetValue(true));
 			ult.AddItem(new MenuItem("AutoUlt", "AutoUlt").SetValue(new AbilityToggler(new Dictionary<string, bool>
 			{
-				{ "zuus_arc_lightning", true},
-				{ "zuus_lightning_bolt", true},
-				{"zuus_thundergods_wrath", true}
+				{"earthshaker_fissure", true},
+				{"earthshaker_echo_slam", true}
 			})));
 			items.AddItem(new MenuItem("Link", "Auto triggre Linken").SetValue(new AbilityToggler(new Dictionary<string, bool>
 			{
@@ -376,7 +364,74 @@
 		{
 			
 		}
+		private Unit GetLowestToQ(List<Hero> units, Unit z)
+		{
 
+			Q = me.Spellbook.SpellQ;
+			qDmg = new[] {0, 110, 160, 210, 260 };
+			eDmg = new[] { 0, 50, 75, 100, 125 };
+			rDmg =  new[] { 0 , 160, 210, 270 };
+			int[] creepsDmg = { 0, 40, 55, 70 };
+			//int[] enemyDmg = { 20, 40, 60, 80 };
+			int enemiesCount;
+			int creepsECount;
+			double damage = 0;
+			foreach (var v in units.Where(x => !x.IsMagicImmune()))
+			{
+				creepsECount = ObjectManager.GetEntities<Unit>().Where(creep =>
+					(creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
+					 || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege
+					 || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral
+					 || creep.ClassID == ClassID.CDOTA_Unit_Broodmother_Spiderling
+					 || creep.ClassID == ClassID.CDOTA_Unit_SpiritBear
+					 || creep.ClassID == ClassID.CDOTA_BaseNPC_Invoker_Forged_Spirit
+					 || creep.ClassID == ClassID.CDOTA_BaseNPC_Warlock_Golem
+					 || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep
+					 ||creep.HasInventory ) &&
+					creep.IsAlive && creep.Team != me.Team && creep.IsVisible && me.Distance2D(creep) <= 600+me.HullRadius &&
+					creep.IsSpawned).ToList().Count();
+
+
+
+				enemiesCount = ObjectManager.GetEntities<Hero>().Where(x =>
+					x.Team != me.Team && x.IsAlive && x.IsVisible && me.Distance2D(x) <= 600 + me.HullRadius).ToList().Count();
+				/*if (enemiesCount == 0)
+				{
+					enemiesCount = 0;
+				}*/
+
+
+				if (creepsECount == 0)
+				{
+					creepsECount = 0;
+				}
+				damage = ((creepsECount * creepsDmg[R.Level]) +
+							 rDmg[R.Level]) * (1 - v.MagicDamageResist);
+				if (me.Distance2D(v) < E.CastRange)
+					damage = damage + eDmg[E.Level] * (1 - v.MagicDamageResist);
+				if (v.NetworkName == "CDOTA_Unit_Hero_Spectre" && v.Spellbook.Spell3.Level > 0)
+				{
+					damage = ((creepsECount * creepsDmg[R.Level]) +
+								 rDmg[R.Level]) *
+										   (1 - (0.10 + v.Spellbook.Spell3.Level * 0.04)) * (1 - v.MagicDamageResist);
+					if (me.Distance2D(v) < E.CastRange)
+						damage = damage + eDmg[E.Level] *
+										   (1 - (0.10 + v.Spellbook.Spell3.Level * 0.04)) * (1 - v.MagicDamageResist);
+				}
+				if (v.NetworkName == "CDOTA_Unit_Hero_SkeletonKing" &&
+					v.Spellbook.SpellR.CanBeCasted())
+					damage = 0;
+				var rum = v.HasModifier("modifier_kunkka_ghost_ship_damage_absorb");
+				if (rum) damage = damage * 0.5;
+				var mom = v.HasModifier("modifier_item_mask_of_madness_berserk");
+				if (mom) damage = damage * 1.3;
+				//Console.WriteLine(damage);
+
+				if (damage >= v.Health && z.Distance2D(v) <= Q.CastRange)
+					return v;
+			}
+			return null;
+		}
 		public void A()
 		{
             if (!me.IsAlive)return;
@@ -388,10 +443,7 @@
 			{
 				foreach (var v in enemies)
 				{
-					if (me.HasItem(ClassID.CDOTA_Item_UltimateScepter))
-						rDmg = new [] { 440, 540, 640 };
-					else
-						rDmg = new [] { 225, 325, 425 };
+						rDmg = me.AghanimState()? new[] { 440, 540, 640 }: new[] { 225, 325, 425 };
 
 						qDmg = new[] { 85, 100, 115, 145 };
 
@@ -400,7 +452,7 @@
 					var lens = me.HasModifier("modifier_item_aether_lens");
 					var spellamplymult = 1 + (me.TotalIntelligence / 16 / 100);
 					var damageR = Math.Floor(rDmg[R.Level - 1] * (1 - v.MagicDamageResist));
-					if (me.Distance2D(v) < 1150)
+					if (me.Distance2D(v) < E.CastRange)
 						damageR = damageR + eDmg[me.Spellbook.Spell3.Level] * 0.01 * v.Health * (1 - v.MagicDamageResist);
 					if (v.NetworkName == "CDOTA_Unit_Hero_Spectre" && v.Spellbook.Spell3.Level > 0)
 					{
@@ -612,17 +664,7 @@
 						Utils.Sleep(150, v.Handle.ToString());
 						return;
 					}
-
-					if (v.IsLinkensProtected() && (me.IsVisibleToEnemies && !me.IsInvisible() || Active))
-					{
-						if (Q != null && Q.CanBeCasted() && me.Distance2D(v) < Q.CastRange &&
-							Menu.Item("Link").GetValue<AbilityToggler>().IsEnabled(Q.Name) &&
-							Utils.SleepCheck(v.Handle.ToString()))
-						{
-							Q.UseAbility(v);
-							Utils.Sleep(500, v.Handle.ToString());
-						}
-					}
+					
 				}
 			}
 		}

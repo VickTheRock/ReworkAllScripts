@@ -57,7 +57,7 @@ namespace ControlCreep_By_Vick
 		public static void Game_OnUpdate(EventArgs args)
 		{
 			var me = ObjectMgr.LocalHero;
-			if (!Game.IsInGame || me.ClassID != ClassID.CDOTA_Unit_Hero_BountyHunter || me == null)
+			if (!Game.IsInGame || me == null || me.ClassID != ClassID.CDOTA_Unit_Hero_BountyHunter)
 			{
 				return;
 			}

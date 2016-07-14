@@ -17,12 +17,9 @@ namespace DotaAllCombo.Service
 		public static object HeroInst { get; set; } // Экземпляр класса соответствующего этому герою
 		public static Type HeroClass  { get; set; } // Класс соответствующий этому герою
 
-		public static Menu MenuOptions;
-
 		public static void Load()
 		{
 			var me = ObjectManager.LocalHero;
-			//MenuOptions = new Menu("Combo", "options", false, me.Name.Replace("npc_dota_hero_",""), HeroName != null);
 			Toolset.InitToolset(me);
 
 			HeroName = Utilites.FirstUpper(Utilites.GetHeroName(me.Name)).Replace("_", "");
@@ -47,7 +44,7 @@ namespace DotaAllCombo.Service
 			HeroClass.GetField("me").SetValue(HeroInst, me);
 			
 			// Создаем меню опций персонажа
-			HeroClass.GetField("menu").SetValue(HeroInst, new Menu(HeroName, "options", false, me.Name, HeroName != null));
+			HeroClass.GetField("Menu").SetValue(HeroInst, new Menu(HeroName, "options", false, me.Name, HeroName != null));
 			IsSelected = true;
 		}
 

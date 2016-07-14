@@ -8,9 +8,10 @@ namespace DotaAllCombo.Heroes
     [PermissionSet(SecurityAction.Assert, Unrestricted = true)]
     class Variables
 	{
-		protected Hero target, e;
+		protected Hero e;
 		public Hero me;
-		public Menu menu;
+		public Menu Menu;
+	    public bool Active, CastW, CastE, Push, CastQ;
 	}
 
 	interface IHeroController

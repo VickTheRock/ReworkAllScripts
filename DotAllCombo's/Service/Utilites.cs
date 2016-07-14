@@ -14,14 +14,14 @@ namespace DotaAllCombo.Service
         [PermissionSet(SecurityAction.Assert, Unrestricted = true)]
         public static string GetHeroName(string Name)
 		{
-			return Name.Split(new string[] { "npc_dota_hero_" }, StringSplitOptions.None)[1];
+			return Name.Split(new [] { "npc_dota_hero_" }, StringSplitOptions.None)[1];
 		}
 
 		public static string FirstUpper(string str)
 		{
 			string[] s = str.Split(' ');
 
-			for (int i = 0; i < s.Length; i++)
+			for (int i = 0; i < s.Length; ++i)
 			{
 				if (s[i].Length > 1)
 					s[i] = s[i].Substring(0, 1).ToUpper() + s[i].Substring(1, s[i].Length - 1).ToLower();
@@ -31,7 +31,7 @@ namespace DotaAllCombo.Service
 
 			string[] s1 = str.Split('_');
 
-			for (int i = 0; i < s1.Length; i++)
+			for (int i = 0; i < s1.Length; ++i)
 			{
 				if (s1[i].Length > 1)
 					s1[i] = s1[i].Substring(0, 1).ToUpper() + s1[i].Substring(1, s1[i].Length - 1).ToLower();

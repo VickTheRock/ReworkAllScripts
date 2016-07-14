@@ -1,28 +1,30 @@
 ﻿namespace DotaAllCombo.Heroes
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using Ensage;
-    using Ensage.Common;
-    using Ensage.Common.Extensions;
-    using Ensage.Common.Menu;
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using Ensage;
+	using Ensage.Common;
+	using Ensage.Common.Extensions;
+	using Ensage.Common.Menu;
 
 	using Service;
 	using Service.Debug;
 
-    internal class SlardarController : Variables, IHeroController
-    {
-        private Ability Q, W, R;
+	internal class SlardarController : Variables, IHeroController
+	{
+		private Ability Q, W, R;
 
 		private Item urn, dagon, mjollnir, abyssal, mom, armlet, Shiva, mail, bkb, satanic, medall, blink;
 
-        private bool Active;
+#pragma warning disable CS0108 // 'SlardarController.Active' hides inherited member 'Variables.Active'. Use the new keyword if hiding was intended.
+		private bool Active;
+#pragma warning restore CS0108 // 'SlardarController.Active' hides inherited member 'Variables.Active'. Use the new keyword if hiding was intended.
 
 		public void Combo()
 		{
-			Active = Game.IsKeyDown(menu.Item("keyBind").GetValue<KeyBind>().Key);
-			if (!menu.Item("enabled").IsActive())
+			Active = Game.IsKeyDown(Menu.Item("keyBind").GetValue<KeyBind>().Key);
+			if (!Menu.Item("enabled").IsActive())
 				return;
 			Q = me.Spellbook.SpellQ;
 			W = me.Spellbook.SpellW;
@@ -41,25 +43,26 @@
 			medall = me.FindItem("item_medallion_of_courage") ?? me.FindItem("item_solar_crest");
 			Shiva = me.FindItem("item_shivas_guard");
 
+			e = me.ClosestToMouseTarget(1800);
+			if (e == null) return;
 			var ModifR = e.Modifiers.Any(y => y.Name == "modifier_slardar_amplify_damage");
 			var stoneModif = e.Modifiers.Any(y => y.Name == "modifier_medusa_stone_gaze_stone");
-
 
 			var v =
 				ObjectManager.GetEntities<Hero>()
 					.Where(x => x.Team != me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && !x.IsMagicImmune())
 					.ToList();
-		    e = me.ClosestToMouseTarget(1800);
 
-			if (Active && me.Distance2D(e) <= 1400 && e != null && e.IsAlive && !me.IsInvisible())
+			if (Active && me.Distance2D(e) <= 2000 && e.IsAlive && !me.IsInvisible())
 			{
 				if (
 					blink != null
 					&& me.CanCast()
 					&& blink.CanBeCasted()
+					&& ModifR
 					&& me.Distance2D(e) < 1180
 					&& me.Distance2D(e) > 400
-					&& menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name)
+					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name)
 					&& Utils.SleepCheck("blink")
 					)
 				{
@@ -70,7 +73,7 @@
 					mom != null
 					&& mom.CanBeCasted()
 					&& me.CanCast()
-					&& menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(mjollnir.Name)
+					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(mjollnir.Name)
 					&& Utils.SleepCheck("mom")
 					&& me.Distance2D(e) <= 700
 					)
@@ -80,7 +83,7 @@
 				}
 				if (
 					Q != null && Q.CanBeCasted() && me.Distance2D(e) >= 700
-					&& menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name)
+					&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name)
 					&& Utils.SleepCheck("Q")
 					)
 				{
@@ -92,7 +95,7 @@
 					&& mjollnir.CanBeCasted()
 					&& me.CanCast()
 					&& !e.IsMagicImmune()
-					&& menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(mjollnir.Name)
+					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(mjollnir.Name)
 					&& Utils.SleepCheck("mjollnir")
 					&& me.Distance2D(e) <= 900
 					)
@@ -104,7 +107,7 @@
 					medall != null
 					&& medall.CanBeCasted()
 					&& Utils.SleepCheck("Medall")
-					&& menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(medall.Name)
+					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(medall.Name)
 					&& me.Distance2D(e) <= 700
 					)
 				{
@@ -113,7 +116,8 @@
 				} // Medall Item end
 				else if (
 					R != null && R.CanBeCasted() && me.Distance2D(e) <= 900
-					&& menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name)
+					&& !ModifR
+					&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name)
 					&& Utils.SleepCheck("W")
 					)
 				{
@@ -122,7 +126,7 @@
 				}
 				else if (
 					W != null && W.CanBeCasted() && (ModifR || R == null) && me.Distance2D(e) <= 200
-					&& menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name)
+					&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name)
 					&& Utils.SleepCheck("W")
 					)
 				{
@@ -143,7 +147,7 @@
 					Utils.Sleep(250, "abyssal");
 				} // Abyssal Item end
 				if (armlet != null && !armlet.IsToggled &&
-					menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(armlet.Name) &&
+					Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(armlet.Name) &&
 					Utils.SleepCheck("armlet"))
 				{
 					armlet.ToggleAbility();
@@ -151,7 +155,7 @@
 				}
 
 				if (Shiva != null && Shiva.CanBeCasted() && me.Distance2D(e) <= 600
-					&& menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(Shiva.Name)
+					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(Shiva.Name)
 					&& !e.IsMagicImmune() && Utils.SleepCheck("Shiva"))
 				{
 					Shiva.UseAbility();
@@ -165,7 +169,7 @@
 					&& dagon.CanBeCasted()
 					&& !e.IsMagicImmune()
 					&& !stoneModif
-					&& menu.Item("Items").GetValue<AbilityToggler>().IsEnabled("item_dagon")
+					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled("item_dagon")
 					&& Utils.SleepCheck("dagon")
 					)
 				{
@@ -175,7 +179,7 @@
 
 
 				if (urn != null && urn.CanBeCasted() && urn.CurrentCharges > 0 && me.Distance2D(e) <= 400
-					&& menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(urn.Name) && Utils.SleepCheck("urn"))
+					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(urn.Name) && Utils.SleepCheck("urn"))
 				{
 					urn.UseAbility(e);
 					Utils.Sleep(240, "urn");
@@ -185,7 +189,7 @@
 					me.Health <= (me.MaximumHealth * 0.3) &&
 					satanic.CanBeCasted() &&
 					me.Distance2D(e) <= me.AttackRange + 50
-					&& menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(satanic.Name)
+					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(satanic.Name)
 					&& Utils.SleepCheck("satanic")
 					)
 				{
@@ -193,35 +197,22 @@
 					Utils.Sleep(240, "satanic");
 				} // Satanic Item end
 				if (mail != null && mail.CanBeCasted() && (v.Count(x => x.Distance2D(me) <= 650) >=
-														   (menu.Item("Heelm").GetValue<Slider>().Value)) &&
-					menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(mail.Name) && Utils.SleepCheck("mail"))
+														   (Menu.Item("Heelm").GetValue<Slider>().Value)) &&
+					Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(mail.Name) && Utils.SleepCheck("mail"))
 				{
 					mail.UseAbility();
 					Utils.Sleep(100, "mail");
 				}
 				if (bkb != null && bkb.CanBeCasted() && (v.Count(x => x.Distance2D(me) <= 650) >=
-														 (menu.Item("Heel").GetValue<Slider>().Value)) &&
-					menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(bkb.Name) && Utils.SleepCheck("bkb"))
+														 (Menu.Item("Heel").GetValue<Slider>().Value)) &&
+					Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(bkb.Name) && Utils.SleepCheck("bkb"))
 				{
 					bkb.UseAbility();
 					Utils.Sleep(100, "bkb");
 				}
-                if (
-                    me.Distance2D(e) <= me.AttackRange + 100 && (!me.IsAttackImmune() || !e.IsAttackImmune())
-                    && me.NetworkActivity != NetworkActivity.Attack && me.CanAttack() && Utils.SleepCheck("attack")
-                    )
-                {
-                    me.Attack(e);
-                    Utils.Sleep(150, "attack");
-                }
-                else
-                if (
-					(!me.CanAttack() || me.Distance2D(e) >= 0) && me.NetworkActivity != NetworkActivity.Attack &&
-					me.Distance2D(e) <= 600 && Utils.SleepCheck("Move")
-					)
+				if (Menu.Item("orbwalk").GetValue<bool>() && me.Distance2D(e) <= 1900)
 				{
-					me.Move(e.Predict(300));
-					Utils.Sleep(390, "Move");
+					Orbwalking.Orbwalk(e, 0, 1600, true, true);
 				}
 			}
 		}
@@ -232,35 +223,36 @@
 
 			Print.LogMessage.Success("I came a long way to see you die.");
 
-			menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true));
-			menu.AddItem(new MenuItem("keyBind", "Combo key").SetValue(new KeyBind('D', KeyBindType.Press)));
+			Menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true));
+			Menu.AddItem(new MenuItem("orbwalk", "orbwalk").SetValue(true));
+			Menu.AddItem(new MenuItem("keyBind", "Combo key").SetValue(new KeyBind('D', KeyBindType.Press)));
 
-		    menu.AddItem(
+			Menu.AddItem(
 				new MenuItem("Skills", "Skills").SetValue(new AbilityToggler(new Dictionary<string, bool>
 				{
-				    {"slardar_amplify_damage", true},
-				    {"slardar_sprint", true},
-				    {"slardar_slithereen_crush", true}
+					{"slardar_amplify_damage", true},
+					{"slardar_sprint", true},
+					{"slardar_slithereen_crush", true}
 				})));
-			menu.AddItem(
+			Menu.AddItem(
 				new MenuItem("Items", "Items:").SetValue(new AbilityToggler(new Dictionary<string, bool>
 				{
-				    {"item_dagon", true},
-				    {"item_blink", true},
-				    {"item_armlet", true},
-				    {"item_heavens_halberd", true},
-				    {"item_urn_of_shadows", true},
-				    {"item_veil_of_discord", true},
-				    {"item_abyssal_blade", true},
-				    {"item_shivas_guard", true},
-				    {"item_blade_mail", true},
-				    {"item_black_king_bar", true},
-				    {"item_satanic", true},
-				    {"item_medallion_of_courage", true},
-				    {"item_solar_crest", true}
+					{"item_dagon", true},
+					{"item_blink", true},
+					{"item_armlet", true},
+					{"item_heavens_halberd", true},
+					{"item_urn_of_shadows", true},
+					{"item_veil_of_discord", true},
+					{"item_abyssal_blade", true},
+					{"item_shivas_guard", true},
+					{"item_blade_mail", true},
+					{"item_black_king_bar", true},
+					{"item_satanic", true},
+					{"item_medallion_of_courage", true},
+					{"item_solar_crest", true}
 				})));
-			menu.AddItem(new MenuItem("Heel", "Min targets to BKB").SetValue(new Slider(2, 1, 5)));
-			menu.AddItem(new MenuItem("Heelm", "Min targets to BladeMail").SetValue(new Slider(2, 1, 5)));
+			Menu.AddItem(new MenuItem("Heel", "Min targets to BKB").SetValue(new Slider(2, 1, 5)));
+			Menu.AddItem(new MenuItem("Heelm", "Min targets to BladeMail").SetValue(new Slider(2, 1, 5)));
 		}
 
 		public void OnCloseEvent()

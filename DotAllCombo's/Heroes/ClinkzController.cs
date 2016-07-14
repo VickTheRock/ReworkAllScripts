@@ -11,32 +11,42 @@
 	using Service;
 	using Service.Debug;
 
-	internal class SkeletonKingController : Variables, IHeroController
+
+	internal class ClinkzController : Variables, IHeroController
 	{
-		private Ability Q,R;
+		private Ability Q, W, R;
 
-		private Item urn, ethereal, dagon, halberd, mjollnir, abyssal, mom, Shiva, mail, bkb, satanic, blink, armlet, medall;
-
-        
-
+		private Item urn, orchid,
+			ethereal,
+			dagon,
+			halberd,
+			mjollnir,
+			abyssal,
+			mom,
+			Shiva,
+			mail,
+			bkb,
+			satanic,
+            medall;
 		public void Combo()
 		{
 			Active = Game.IsKeyDown(Menu.Item("keyBind").GetValue<KeyBind>().Key);
 
 			Q = me.Spellbook.SpellQ;
-            R = me.Spellbook.SpellR;
+			W = me.Spellbook.SpellW;
+			R = me.Spellbook.SpellR;
 
-            mom = me.FindItem("item_mask_of_madness");
+
+			mom = me.FindItem("item_mask_of_madness");
 			urn = me.FindItem("item_urn_of_shadows");
 			dagon = me.Inventory.Items.FirstOrDefault(x => x.Name.Contains("item_dagon"));
 			ethereal = me.FindItem("item_ethereal_blade");
 			halberd = me.FindItem("item_heavens_halberd");
 			mjollnir = me.FindItem("item_mjollnir");
-			armlet = me.FindItem("item_armlet");
+			orchid = me.FindItem("item_orchid") ?? me.FindItem("item_bloodthorn");
 			abyssal = me.FindItem("item_abyssal_blade");
 			mail = me.FindItem("item_blade_mail");
 			bkb = me.FindItem("item_black_king_bar");
-			blink = me.FindItem("item_blink");
 			satanic = me.FindItem("item_satanic");
 			medall = me.FindItem("item_medallion_of_courage") ?? me.FindItem("item_solar_crest");
 			Shiva = me.FindItem("item_shivas_guard");
@@ -44,52 +54,97 @@
 				ObjectManager.GetEntities<Hero>()
 					.Where(x => x.Team != me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && !x.IsMagicImmune())
 					.ToList();
-		    e = me.ClosestToMouseTarget(1800);
+
+
+			var modifInv = Toolset.invUnit(me);
+			var Units = ObjectManager.GetEntities<Unit>().Where(creep =>
+				 (creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral
+				 || creep.ClassID == ClassID.CDOTA_BaseNPC_Invoker_Forged_Spirit
+				 || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep
+				 || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
+				 || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege
+				 || creep.ClassID == ClassID.CDOTA_Unit_Hero_Beastmaster_Boar
+				 )
+				 && creep.Health >= (creep.MaximumHealth * 0.7) 
+				 && creep.IsAlive
+				 && creep.Distance2D(me)<=R.GetCastRange()+me.HullRadius
+				 && creep.IsSpawned
+				 && creep.Team != me.Team).ToList();
+
+
+
+			
+			e = me.ClosestToMouseTarget(1800);
 			if (e == null)
 				return;
+			if (R != null && R.CanBeCasted() 
+				&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name) 
+				&& Utils.SleepCheck("R")
+				&& !me.HasModifier("modifier_clinkz_death_pact")
+				&& !me.IsInvisible())
+			{
+				R.UseAbility(Units.OrderBy(x => x.Health).Last());
+				Utils.Sleep(150, "R");
+			}
 			if (Active)
-            {
-				if (Menu.Item("orbwalk").GetValue<bool>() && me.Distance2D(e) <= 1900)
+			{
+				if ((W!=null && W.CanBeCasted() && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name)))
 				{
-					Orbwalking.Orbwalk(e, 0, 1600, true, true);
+					if (Menu.Item("orbwalk").GetValue<bool>() && me.Distance2D(e) <= 1900)
+					{
+						Orbwalking.Orbwalk(e, 0, 1600, true, true);
+					}
 				}
 			}
-			if (Active && me.Distance2D(e) <= 1400 && e.IsAlive && !Toolset.invUnit(me))
+			if (Active && me.Distance2D(e) <= 1400 && e != null && e.IsAlive && !modifInv)
 			{
-				if (
-					blink != null
-					&& me.CanCast()
-					&& blink.CanBeCasted()
-					&& me.Distance2D(e) < 1180
-					&& me.Distance2D(e) > 400
-					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name)
-					&& Utils.SleepCheck("blink")
-					)
+				if ((!W.CanBeCasted() || !Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name)))
 				{
-					blink.UseAbility(e.Position);
-
-					Utils.Sleep(250, "blink");
+					if (Menu.Item("orbwalk").GetValue<bool>() && me.Distance2D(e) <= 1900)
+					{
+						Orbwalking.Orbwalk(e, 0, 1600, false, true);
+					}
 				}
 				if (
-					Q != null && Q.CanBeCasted() && me.Distance2D(e) <= 900
-                    && (R.CanBeCasted() && me.Mana>R.ManaCost+Q.ManaCost 
-                    || !R.CanBeCasted()
-                    || R==null)
+					Q != null && Q.CanBeCasted() && me.Distance2D(e) <= me.AttackRange + 50
+					&& me.CanAttack()
 					&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name)
 					&& Utils.SleepCheck("Q")
 					)
 				{
-					Q.UseAbility(e);
-					Utils.Sleep(200, "Q");
+					Q.UseAbility();
+					Utils.Sleep(150, "Q");
+				}
+				if (W != null && W.CanBeCasted()
+					&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name))
+				{
+					if (Menu.Item("orbwalk").GetValue<bool>() && me.Distance2D(e) <= 1900)
+					{
+						Orbwalking.Orbwalk(e, 0, 1600, true, true);
+					}
+				}
+				var creep = ObjectManager.GetEntities<Creep>().Where(x => x.IsAlive && x.IsSpawned && x.Team != me.Team && x.Health >= 990 && x.Health >= (x.MaximumHealth * 0.9)).ToList();
+				for (int i = 0; i < creep.Count(); i++)
+				{
+					if (
+					R != null && R.CanBeCasted() && me.Distance2D(creep[i]) <= R.CastRange + 10
+					&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name)
+					&& me.Mana >= 190
+					&& Utils.SleepCheck("R")
+					)
+					{
+						R.UseAbility(creep[i]);
+						Utils.Sleep(250, "R");
+					}
 				}
 				if ( // MOM
-					mom != null
-					&& mom.CanBeCasted()
-					&& me.CanCast()
-					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(mom.Name)
-					&& Utils.SleepCheck("mom")
-					&& me.Distance2D(e) <= 700
-					)
+				mom != null
+				&& mom.CanBeCasted()
+				&& me.CanCast()
+				&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(mom.Name)
+				&& Utils.SleepCheck("mom")
+				&& me.Distance2D(e) <= 700
+				)
 				{
 					mom.UseAbility();
 					Utils.Sleep(250, "mom");
@@ -118,13 +173,20 @@
 					medall.UseAbility(e);
 					Utils.Sleep(250, "Medall");
 				} // Medall Item end
-				if (armlet != null && !armlet.IsToggled &&
-					Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(armlet.Name) &&
-					Utils.SleepCheck("armlet"))
+				if ( // orchid
+					orchid != null
+					&& orchid.CanBeCasted()
+					&& me.CanCast()
+					&& !e.IsLinkensProtected()
+					&& !e.IsMagicImmune()
+					&& me.Distance2D(e) <= me.AttackRange + 40
+					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(orchid.Name)
+					&& Utils.SleepCheck("orchid")
+					)
 				{
-					armlet.ToggleAbility();
-					Utils.Sleep(300, "armlet");
-				}
+					orchid.UseAbility(e);
+					Utils.Sleep(250, "orchid");
+				} // orchid Item end
 
 				if (Shiva != null && Shiva.CanBeCasted() && me.Distance2D(e) <= 600
 					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(Shiva.Name)
@@ -220,7 +282,7 @@
 		{
 			AssemblyExtensions.InitAssembly("VickTheRock", "0.1b");
 
-			Print.LogMessage.Success("You've never known war unless you've warred with a Wraith!");
+			Print.LogMessage.Success("Go Rampage!");
 
 			Menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true));
 			Menu.AddItem(new MenuItem("orbwalk", "orbwalk").SetValue(true));
@@ -229,15 +291,17 @@
 		    Menu.AddItem(
 				new MenuItem("Skills", "Skills").SetValue(new AbilityToggler(new Dictionary<string, bool>
 				{
-				    {"skeleton_king_hellfire_blast", true}
+				    {"clinkz_death_pact", true},
+				    {"clinkz_searing_arrows", true},
+				    {"clinkz_strafe", true}
 				})));
 			Menu.AddItem(
 				new MenuItem("Items", "Items:").SetValue(new AbilityToggler(new Dictionary<string, bool>
 				{
 				    {"item_mask_of_madness", true},
 				    {"item_heavens_halberd", true},
-				    {"item_armlet", true},
-				    {"item_blink", true},
+				    {"item_orchid", true},
+                    { "item_bloodthorn", true},
 				    {"item_mjollnir", true},
 				    {"item_urn_of_shadows", true},
 				    {"item_ethereal_blade", true},

@@ -13,7 +13,6 @@
 
 		public static void Initialize()
 		{
-			Game.OnUpdate += OnUpdateEvent;
 			Events.OnLoad += OnLoadEvent;
 			Events.OnClose += OnCloseEvent;
 		}
@@ -40,7 +39,8 @@
 				HeroSelector.Load();
 				HeroSelector.ControllerLoadEvent();
 				MainMenu.Load();
-				
+				Game.OnUpdate += OnUpdateEvent;
+
 			}
 			catch (Exception)
 			{
@@ -52,10 +52,11 @@
 		{
 			try
 			{
+				Game.OnUpdate -= OnUpdateEvent;
 				HeroSelector.ControllerCloseEvent();
 				MainMenu.Unload();
 				HeroSelector.Unload();
-				
+
 				// Выгрузка аддонов
 				AddonsManager.Unload();
 

@@ -11,22 +11,35 @@
 	using Service;
 	using Service.Debug;
 
-	internal class SkeletonKingController : Variables, IHeroController
+	internal class DrowRangerController : Variables, IHeroController
 	{
-		private Ability Q,R;
+		private Ability Q, W;
 
-		private Item urn, ethereal, dagon, halberd, mjollnir, abyssal, mom, Shiva, mail, bkb, satanic, blink, armlet, medall;
+		private Item urn,
+			ethereal,
+			dagon,
+			halberd,
+			mjollnir,
+			abyssal,
+			mom,
+			Shiva,
+			mail,
+			bkb,
+			satanic,
+			armlet,
+            medall;
 
-        
+		
 
 		public void Combo()
 		{
 			Active = Game.IsKeyDown(Menu.Item("keyBind").GetValue<KeyBind>().Key);
 
 			Q = me.Spellbook.SpellQ;
-            R = me.Spellbook.SpellR;
+			W = me.FindSpell("drow_ranger_silence");
 
-            mom = me.FindItem("item_mask_of_madness");
+
+			mom = me.FindItem("item_mask_of_madness");
 			urn = me.FindItem("item_urn_of_shadows");
 			dagon = me.Inventory.Items.FirstOrDefault(x => x.Name.Contains("item_dagon"));
 			ethereal = me.FindItem("item_ethereal_blade");
@@ -36,7 +49,6 @@
 			abyssal = me.FindItem("item_abyssal_blade");
 			mail = me.FindItem("item_blade_mail");
 			bkb = me.FindItem("item_black_king_bar");
-			blink = me.FindItem("item_blink");
 			satanic = me.FindItem("item_satanic");
 			medall = me.FindItem("item_medallion_of_courage") ?? me.FindItem("item_solar_crest");
 			Shiva = me.FindItem("item_shivas_guard");
@@ -48,39 +60,36 @@
 			if (e == null)
 				return;
 			if (Active)
-            {
-				if (Menu.Item("orbwalk").GetValue<bool>() && me.Distance2D(e) <= 1900)
-				{
-					Orbwalking.Orbwalk(e, 0, 1600, true, true);
+			{
+                if ((!Q.CanBeCasted() || !Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name)))
+                {
+					if (Menu.Item("orbwalk").GetValue<bool>() && me.Distance2D(e) <= 1900)
+					{
+						Orbwalking.Orbwalk(e, 0, 1600, false, true);
+					}
 				}
 			}
-			if (Active && me.Distance2D(e) <= 1400 && e.IsAlive && !Toolset.invUnit(me))
+			if (Active && me.Distance2D(e) <= 1400 && e != null && e.IsAlive && !Toolset.invUnit(me))
 			{
 				if (
-					blink != null
-					&& me.CanCast()
-					&& blink.CanBeCasted()
-					&& me.Distance2D(e) < 1180
-					&& me.Distance2D(e) > 400
-					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name)
-					&& Utils.SleepCheck("blink")
+					W != null && W.CanBeCasted() && me.Distance2D(e) <= 700
+					&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name)
+					&& me.NetworkActivity != NetworkActivity.Attack
+					&& Utils.SleepCheck("W")
 					)
 				{
-					blink.UseAbility(e.Position);
-
-					Utils.Sleep(250, "blink");
+					W.UseAbility(e.Position);
+					Utils.Sleep(200, "W");
 				}
 				if (
-					Q != null && Q.CanBeCasted() && me.Distance2D(e) <= 900
-                    && (R.CanBeCasted() && me.Mana>R.ManaCost+Q.ManaCost 
-                    || !R.CanBeCasted()
-                    || R==null)
+					Q != null && Q.CanBeCasted()
 					&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name)
-					&& Utils.SleepCheck("Q")
 					)
 				{
-					Q.UseAbility(e);
-					Utils.Sleep(200, "Q");
+					if (Menu.Item("orbwalk").GetValue<bool>() && me.Distance2D(e) <= 1900)
+					{
+						Orbwalking.Orbwalk(e, 0, 1600, true, true);
+					}
 				}
 				if ( // MOM
 					mom != null
@@ -220,7 +229,7 @@
 		{
 			AssemblyExtensions.InitAssembly("VickTheRock", "0.1b");
 
-			Print.LogMessage.Success("You've never known war unless you've warred with a Wraith!");
+			Print.LogMessage.Success("Go Rampage!");
 
 			Menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true));
 			Menu.AddItem(new MenuItem("orbwalk", "orbwalk").SetValue(true));
@@ -229,7 +238,8 @@
 		    Menu.AddItem(
 				new MenuItem("Skills", "Skills").SetValue(new AbilityToggler(new Dictionary<string, bool>
 				{
-				    {"skeleton_king_hellfire_blast", true}
+				    {"drow_ranger_silence", true},
+				    {"drow_ranger_frost_arrows", true}
 				})));
 			Menu.AddItem(
 				new MenuItem("Items", "Items:").SetValue(new AbilityToggler(new Dictionary<string, bool>
@@ -237,7 +247,6 @@
 				    {"item_mask_of_madness", true},
 				    {"item_heavens_halberd", true},
 				    {"item_armlet", true},
-				    {"item_blink", true},
 				    {"item_mjollnir", true},
 				    {"item_urn_of_shadows", true},
 				    {"item_ethereal_blade", true},

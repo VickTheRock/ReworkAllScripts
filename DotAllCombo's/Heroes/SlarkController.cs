@@ -14,11 +14,9 @@
 	using System.Threading.Tasks;
 	internal class SlarkController : Variables, IHeroController
     {
-		
-		private bool Active;
 		private Ability Q, W, R;
-		private bool trying = false;
-		private Item urn, ethereal, dagon, halberd, mjollnir, abyssal, mom, Shiva, mail, bkb, satanic, blink, armlet, medall, orchid;
+		private bool trying;
+		private Item urn, ethereal, dagon, halberd, mjollnir, abyssal, mom, mail, bkb, satanic, blink, armlet, medall, orchid;
 		private Font text;
 		private Line line;
 
@@ -28,17 +26,18 @@
 
             Print.LogMessage.Success("If I'd known I'd end up here, I'd have stayed in Dark Reef Prison.");
             AppDomain.CurrentDomain.DomainUnload += CurrentDomain_DomainUnload;
-		    menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true));
-			menu.AddItem(new MenuItem("keyBind", "Key Combo").SetValue(new KeyBind(32, KeyBindType.Press)));
-			menu.AddItem(new MenuItem("healUlt", "Use Ult if me Health % <").SetValue(new Slider(25, 15, 80)));
-			menu.AddItem(
+			Menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true));
+			Menu.AddItem(new MenuItem("orbwalk", "orbwalk").SetValue(true));
+			Menu.AddItem(new MenuItem("keyBind", "Key Combo").SetValue(new KeyBind(32, KeyBindType.Press)));
+			Menu.AddItem(new MenuItem("healUlt", "Use Ult if me Health % <").SetValue(new Slider(25, 15, 80)));
+			Menu.AddItem(
 			new MenuItem("Skills", ":").SetValue(new AbilityToggler(new Dictionary<string, bool>
 			{
 			    {"slark_shadow_dance", true},
 			    {"slark_pounce", true},
 			    {"slark_dark_pact", true}
 			})));
-			menu.AddItem(
+			Menu.AddItem(
 				new MenuItem("Items", ":").SetValue(new AbilityToggler(new Dictionary<string, bool>
 				{
 				    {"item_mask_of_madness", true},
@@ -57,8 +56,8 @@
 				    {"item_medallion_of_courage", true},
 				    {"item_solar_crest", true}
 				})));
-			menu.AddItem(new MenuItem("Heel", "Min targets to BKB").SetValue(new Slider(2, 1, 5)));
-			menu.AddItem(new MenuItem("Heelm", "Min targets to BladeMail").SetValue(new Slider(2, 1, 5)));
+			Menu.AddItem(new MenuItem("Heel", "Min targets to BKB").SetValue(new Slider(2, 1, 5)));
+			Menu.AddItem(new MenuItem("Heelm", "Min targets to BladeMail").SetValue(new Slider(2, 1, 5)));
 			text = new Font(
 				Drawing.Direct3DDevice9,
 				new FontDescription
@@ -76,7 +75,7 @@
 		{
 			if (!Game.IsInGame || Game.IsPaused || Game.IsWatchingGame) return;
 			
-			if (!menu.Item("enabled").IsActive()) return;
+			if (!Menu.Item("enabled").IsActive()) return;
 
 			e = me.ClosestToMouseTarget(1700);
 
@@ -104,12 +103,12 @@
 
 			
 
-			Active = Game.IsKeyDown(menu.Item("keyBind").GetValue<KeyBind>().Key);
+			Active = Game.IsKeyDown(Menu.Item("keyBind").GetValue<KeyBind>().Key);
 
 			if (invisModif) return;
 			if (Active)
 			{
-
+				
 				if (e != null && (!e.IsValid || !e.IsVisible || !e.IsAlive))
 				{
 					e = null;
@@ -123,14 +122,14 @@
 
 						if (blink != null
 							&& blink.Cooldown <= 0
-							&& me.Distance2D(e) <= 1180
+							&& me.Distance2D(pos) <= 1180
 							&& me.Distance2D(e) >= 400 &&
-							menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name))
+							Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name))
 						{
 							blink.UseAbility(pos);
 						}
 						if (W != null && W.CanBeCasted()
-						&& menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name))
+						&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name))
 						{
 							if (e.NetworkActivity == NetworkActivity.Move)
 							{
@@ -174,37 +173,16 @@
 								}
 							}
 						}
-						if (me.Distance2D(e) <= +me.AttackRange + 250 &&
-							(!me.IsAttackImmune()
-							|| !e.IsAttackImmune())
-							&& (!W.CanBeCasted()
-							|| !menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name))
-							&& me.NetworkActivity != NetworkActivity.Attack
-							&& me.CanAttack()
-							&& !me.IsAttacking()
-							&& Utils.SleepCheck("attack")
-							)
+						if (!W.CanBeCasted() || !Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name))
 							{
-								me.Attack(e);
-								Utils.Sleep(150, "attack");
-							}
-							else if (
-								(!me.CanAttack()
-								|| me.Distance2D(e) >= 250)
-								&& me.NetworkActivity != NetworkActivity.Attack
-								&& (!W.CanBeCasted()
-								|| !menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name))
-								&& me.Distance2D(e) <= 2500
-								&& !me.IsAttacking()
-								&& Utils.SleepCheck("Move")
-								)
+							if (Menu.Item("orbwalk").GetValue<bool>() && me.Distance2D(e) <= 1900)
 							{
-								me.Move(Prediction.InFront(e, 100));
-								Utils.Sleep(400, "Move");
+								Orbwalking.Orbwalk(e, 0, 1600, true, true);
 							}
+						}
 						if (Q != null 
 							&& Q.CanBeCasted()
-							&& menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name)
+							&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name)
 							&& me.Distance2D(e) <= 325
 							&& Utils.SleepCheck("Q"))
 						{
@@ -214,7 +192,7 @@
 						if (orchid != null 
 							&& orchid.CanBeCasted() 
 							&& me.Distance2D(e) <= 400
-							&& menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(orchid.Name) 
+							&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(orchid.Name) 
 							&& Utils.SleepCheck("orchid"))
 						{
 							orchid.UseAbility(e);
@@ -223,8 +201,8 @@
 						if (R != null 
 							&& R.IsValid 
 							&& R.CanBeCasted() 
-							&& menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name)
-							&& me.Health <= me.MaximumHealth / 100 * menu.Item("healUlt").GetValue<Slider>().Value 
+							&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name)
+							&& me.Health <= me.MaximumHealth / 100 * Menu.Item("healUlt").GetValue<Slider>().Value 
 							&& Utils.SleepCheck("R"))
 						{
 							R.UseAbility();
@@ -235,7 +213,7 @@
 							mom != null
 							&& mom.CanBeCasted()
 							&& me.CanCast()
-							&& menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(mom.Name)
+							&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(mom.Name)
 							&& Utils.SleepCheck("mom")
 							&& me.Distance2D(e) <= 700
 							)
@@ -248,7 +226,7 @@
 							&& mjollnir.CanBeCasted()
 							&& me.CanCast()
 							&& !e.IsMagicImmune()
-							&& menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(mjollnir.Name)
+							&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(mjollnir.Name)
 							&& Utils.SleepCheck("mjollnir")
 							&& me.Distance2D(e) <= 900
 							)
@@ -260,7 +238,7 @@
 							medall != null
 							&& medall.CanBeCasted()
 							&& Utils.SleepCheck("Medall")
-							&& menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(medall.Name)
+							&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(medall.Name)
 							&& me.Distance2D(e) <= 700
 							)
 						{
@@ -268,24 +246,17 @@
 							Utils.Sleep(250, "Medall");
 						} // Medall Item end
 						if (armlet != null && !armlet.IsToggled &&
-							menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(armlet.Name) &&
+							Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(armlet.Name) &&
 							Utils.SleepCheck("armlet"))
 						{
 							armlet.ToggleAbility();
 							Utils.Sleep(300, "armlet");
 						}
-
-						if (Shiva != null && Shiva.CanBeCasted() && me.Distance2D(e) <= 600
-							&& menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(Shiva.Name)
-							&& !e.IsMagicImmune() && Utils.SleepCheck("Shiva"))
-						{
-							Shiva.UseAbility();
-							Utils.Sleep(100, "Shiva");
-						}
+						
 
 						if (ethereal != null && ethereal.CanBeCasted()
 							&& me.Distance2D(e) <= 700 && me.Distance2D(e) <= 400
-							&& menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(ethereal.Name) &&
+							&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(ethereal.Name) &&
 							Utils.SleepCheck("ethereal"))
 						{
 							ethereal.UseAbility(e);
@@ -307,7 +278,7 @@
 							&& !e.IsStunned()
 							&& !e.IsHexed()
 							&& Utils.SleepCheck("abyssal")
-							&& menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(abyssal.Name)
+							&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(abyssal.Name)
 							&& me.Distance2D(e) <= 400
 							)
 						{
@@ -315,7 +286,7 @@
 							Utils.Sleep(250, "abyssal");
 						} // Abyssal Item end
 						if (urn != null && urn.CanBeCasted() && urn.CurrentCharges > 0 && me.Distance2D(e) <= 400
-							&& menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(urn.Name) && Utils.SleepCheck("urn"))
+							&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(urn.Name) && Utils.SleepCheck("urn"))
 						{
 							urn.UseAbility(e);
 							Utils.Sleep(240, "urn");
@@ -330,7 +301,7 @@
 								|| e.NetworkActivity == NetworkActivity.Attack2)
 							&& Utils.SleepCheck("halberd")
 							&& me.Distance2D(e) <= 700
-							&& menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(halberd.Name)
+							&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(halberd.Name)
 							)
 						{
 							halberd.UseAbility(e);
@@ -341,7 +312,7 @@
 							me.Health <= (me.MaximumHealth * 0.3) &&
 							satanic.CanBeCasted() &&
 							me.Distance2D(e) <= me.AttackRange + 50
-							&& menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(satanic.Name)
+							&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(satanic.Name)
 							&& Utils.SleepCheck("satanic")
 							)
 						{
@@ -351,15 +322,15 @@
 						var v = ObjectManager.GetEntities<Hero>().Where(x => x.Team != me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && !x.IsMagicImmune())
 					.ToList();
 						if (mail != null && mail.CanBeCasted() && (v.Count(x => x.Distance2D(me) <= 650) >=
-																   (menu.Item("Heelm").GetValue<Slider>().Value)) &&
-							menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(mail.Name) && Utils.SleepCheck("mail"))
+																   (Menu.Item("Heelm").GetValue<Slider>().Value)) &&
+							Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(mail.Name) && Utils.SleepCheck("mail"))
 						{
 							mail.UseAbility();
 							Utils.Sleep(100, "mail");
 						}
 						if (bkb != null && bkb.CanBeCasted() && (v.Count(x => x.Distance2D(me) <= 650) >=
-																 (menu.Item("Heel").GetValue<Slider>().Value)) &&
-							menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(bkb.Name) && Utils.SleepCheck("bkb"))
+																 (Menu.Item("Heel").GetValue<Slider>().Value)) &&
+							Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(bkb.Name) && Utils.SleepCheck("bkb"))
 						{
 							bkb.UseAbility();
 							Utils.Sleep(100, "bkb");
@@ -484,11 +455,7 @@
 			text.Dispose();
 			line.Dispose();
 		}
-
 		
-
-		
-
 		public void OnCloseEvent()
 		{
 			AppDomain.CurrentDomain.DomainUnload -= CurrentDomain_DomainUnload;

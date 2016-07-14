@@ -28,10 +28,10 @@
 		{
 			public static void Encolored(string text, ConsoleColor color, params object[] arguments)
 			{
-				var clr = System.Console.ForegroundColor;
-				System.Console.ForegroundColor = color;
-				System.Console.WriteLine(text, arguments);
-				System.Console.ForegroundColor = clr;
+				var clr = Console.ForegroundColor;
+				Console.ForegroundColor = color;
+				Console.WriteLine(text, arguments);
+				Console.ForegroundColor = clr;
 			}
 
 			public static void Error(string text, params object[] arguments)

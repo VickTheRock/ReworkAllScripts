@@ -11,11 +11,11 @@
 	using Service;
 	using Service.Debug;
 
-	internal class SkeletonKingController : Variables, IHeroController
+	internal class ViperController : Variables, IHeroController
 	{
-		private Ability Q,R;
+		private Ability Q, R;
 
-		private Item urn, ethereal, dagon, halberd, mjollnir, abyssal, mom, Shiva, mail, bkb, satanic, blink, armlet, medall;
+		private Item urn, orchid, ethereal, dagon, halberd, blink, mjollnir, abyssal, mom, Shiva, mail, bkb, satanic, medall;
 
         
 
@@ -24,19 +24,20 @@
 			Active = Game.IsKeyDown(Menu.Item("keyBind").GetValue<KeyBind>().Key);
 
 			Q = me.Spellbook.SpellQ;
-            R = me.Spellbook.SpellR;
+			//R = me.Spellbook.SpellR;
+			R = me.Spellbook.SpellR;
 
-            mom = me.FindItem("item_mask_of_madness");
+			mom = me.FindItem("item_mask_of_madness");
 			urn = me.FindItem("item_urn_of_shadows");
 			dagon = me.Inventory.Items.FirstOrDefault(x => x.Name.Contains("item_dagon"));
 			ethereal = me.FindItem("item_ethereal_blade");
 			halberd = me.FindItem("item_heavens_halberd");
 			mjollnir = me.FindItem("item_mjollnir");
-			armlet = me.FindItem("item_armlet");
+			blink = me.FindItem("item_blink");
+			orchid = me.FindItem("item_orchid") ?? me.FindItem("item_bloodthorn");
 			abyssal = me.FindItem("item_abyssal_blade");
 			mail = me.FindItem("item_blade_mail");
 			bkb = me.FindItem("item_black_king_bar");
-			blink = me.FindItem("item_blink");
 			satanic = me.FindItem("item_satanic");
 			medall = me.FindItem("item_medallion_of_courage") ?? me.FindItem("item_solar_crest");
 			Shiva = me.FindItem("item_shivas_guard");
@@ -48,48 +49,73 @@
 			if (e == null)
 				return;
 			if (Active)
-            {
+			{
 				if (Menu.Item("orbwalk").GetValue<bool>() && me.Distance2D(e) <= 1900)
 				{
 					Orbwalking.Orbwalk(e, 0, 1600, true, true);
 				}
+
 			}
-			if (Active && me.Distance2D(e) <= 1400 && e.IsAlive && !Toolset.invUnit(me))
+			if (Active && me.Distance2D(e) <= 1400 && e != null && e.IsAlive && !Toolset.invUnit(me))
 			{
 				if (
-					blink != null
-					&& me.CanCast()
-					&& blink.CanBeCasted()
-					&& me.Distance2D(e) < 1180
-					&& me.Distance2D(e) > 400
-					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name)
-					&& Utils.SleepCheck("blink")
-					)
+						blink != null
+						&& me.CanCast()
+						&& blink.CanBeCasted()
+						&& me.Distance2D(e) < 1190
+						&& me.Distance2D(e) > me.AttackRange
+						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name)
+						&& Utils.SleepCheck("blink")
+						)
 				{
 					blink.UseAbility(e.Position);
-
 					Utils.Sleep(250, "blink");
 				}
 				if (
-					Q != null && Q.CanBeCasted() && me.Distance2D(e) <= 900
-                    && (R.CanBeCasted() && me.Mana>R.ManaCost+Q.ManaCost 
-                    || !R.CanBeCasted()
-                    || R==null)
+					Q != null && Q.CanBeCasted() && me.Distance2D(e) <= Q.CastRange + 150
+					&& me.CanAttack()
 					&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name)
 					&& Utils.SleepCheck("Q")
 					)
 				{
 					Q.UseAbility(e);
-					Utils.Sleep(200, "Q");
+					Utils.Sleep(100, "Q");
 				}
-				if ( // MOM
-					mom != null
-					&& mom.CanBeCasted()
-					&& me.CanCast()
-					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(mom.Name)
-					&& Utils.SleepCheck("mom")
-					&& me.Distance2D(e) <= 700
+				if (
+					R != null && R.CanBeCasted() && me.Distance2D(e) <= 1200
+					&& !Q.CanBeCasted()
+					&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name)
+					&& me.NetworkActivity != NetworkActivity.Attack
+					&& Utils.SleepCheck("R")
 					)
+				{
+					R.UseAbility(e);
+					Utils.Sleep(150, "R");
+				}
+				/*
+				var enemy = ObjectManager.GetEntities<Hero>().Where(x => x.IsAlive && x.Team != me.Team).ToList();
+				for (int i = 0; i < enemy.Count(); i++)
+				{
+					if (
+					R != null && R.CanBeCasted() && me.Distance2D(enemy[i]) <= 800
+					&& !Q.CanBeCasted()
+					&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name)
+					&& Utils.SleepCheck("R")
+					)
+					{
+						R.UseAbility();
+						Utils.Sleep(250, "R");
+					}
+				}
+				*/
+				if ( // MOM
+				mom != null
+				&& mom.CanBeCasted()
+				&& me.CanCast()
+				&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(mom.Name)
+				&& Utils.SleepCheck("mom")
+				&& me.Distance2D(e) <= 700
+				)
 				{
 					mom.UseAbility();
 					Utils.Sleep(250, "mom");
@@ -118,13 +144,20 @@
 					medall.UseAbility(e);
 					Utils.Sleep(250, "Medall");
 				} // Medall Item end
-				if (armlet != null && !armlet.IsToggled &&
-					Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(armlet.Name) &&
-					Utils.SleepCheck("armlet"))
+				if ( // orchid
+					orchid != null
+					&& orchid.CanBeCasted()
+					&& me.CanCast()
+					&& !e.IsLinkensProtected()
+					&& !e.IsMagicImmune()
+					&& me.Distance2D(e) <= me.AttackRange + 40
+					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(orchid.Name)
+					&& Utils.SleepCheck("orchid")
+					)
 				{
-					armlet.ToggleAbility();
-					Utils.Sleep(300, "armlet");
-				}
+					orchid.UseAbility(e);
+					Utils.Sleep(250, "orchid");
+				} // orchid Item end
 
 				if (Shiva != null && Shiva.CanBeCasted() && me.Distance2D(e) <= 600
 					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(Shiva.Name)
@@ -220,7 +253,7 @@
 		{
 			AssemblyExtensions.InitAssembly("VickTheRock", "0.1b");
 
-			Print.LogMessage.Success("You've never known war unless you've warred with a Wraith!");
+			Print.LogMessage.Success("Go Rampage!");
 
 			Menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true));
 			Menu.AddItem(new MenuItem("orbwalk", "orbwalk").SetValue(true));
@@ -229,14 +262,15 @@
 		    Menu.AddItem(
 				new MenuItem("Skills", "Skills").SetValue(new AbilityToggler(new Dictionary<string, bool>
 				{
-				    {"skeleton_king_hellfire_blast", true}
+				    {"viper_viper_strike", true},
+				    {"viper_poison_attack", true}
 				})));
 			Menu.AddItem(
 				new MenuItem("Items", "Items:").SetValue(new AbilityToggler(new Dictionary<string, bool>
 				{
 				    {"item_mask_of_madness", true},
 				    {"item_heavens_halberd", true},
-				    {"item_armlet", true},
+				    {"item_orchid", true}, {"item_bloodthorn", true},
 				    {"item_blink", true},
 				    {"item_mjollnir", true},
 				    {"item_urn_of_shadows", true},

@@ -1,4 +1,6 @@
-﻿namespace DotaAllCombo.Heroes
+﻿using SharpDX;
+
+namespace DotaAllCombo.Heroes
 {
 	using System;
 	using System.Collections.Generic;
@@ -11,22 +13,23 @@
 	using Service;
 	using Service.Debug;
 
-	internal class SkeletonKingController : Variables, IHeroController
+	internal class NightStalkerController : Variables, IHeroController
 	{
-		private Ability Q,R;
+		private Ability Q, W, R;
 
-		private Item urn, ethereal, dagon, halberd, mjollnir, abyssal, mom, Shiva, mail, bkb, satanic, blink, armlet, medall;
-
-        
+		private Item urn, ethereal, dagon, halberd, mjollnir, abyssal, mom, Shiva, mail, bkb, satanic, armlet, medall;
+		private int time = 190, dayTime = 190, nightTime = 480, count;
 
 		public void Combo()
 		{
 			Active = Game.IsKeyDown(Menu.Item("keyBind").GetValue<KeyBind>().Key);
 
 			Q = me.Spellbook.SpellQ;
-            R = me.Spellbook.SpellR;
+			W = me.Spellbook.SpellW;
+			R = me.Spellbook.SpellR;
 
-            mom = me.FindItem("item_mask_of_madness");
+
+			mom = me.FindItem("item_mask_of_madness");
 			urn = me.FindItem("item_urn_of_shadows");
 			dagon = me.Inventory.Items.FirstOrDefault(x => x.Name.Contains("item_dagon"));
 			ethereal = me.FindItem("item_ethereal_blade");
@@ -36,7 +39,6 @@
 			abyssal = me.FindItem("item_abyssal_blade");
 			mail = me.FindItem("item_blade_mail");
 			bkb = me.FindItem("item_black_king_bar");
-			blink = me.FindItem("item_blink");
 			satanic = me.FindItem("item_satanic");
 			medall = me.FindItem("item_medallion_of_courage") ?? me.FindItem("item_solar_crest");
 			Shiva = me.FindItem("item_shivas_guard");
@@ -44,37 +46,64 @@
 				ObjectManager.GetEntities<Hero>()
 					.Where(x => x.Team != me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && !x.IsMagicImmune())
 					.ToList();
-		    e = me.ClosestToMouseTarget(1800);
+			if (R != null && R.CanBeCasted()
+				 && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name))
+			{
+				dayTime = 190;
+				for (int i = 0; i <= 15; ++i)
+				{
+					if ((int)Game.GameTime == dayTime)
+						time = dayTime;
+					dayTime += 480;
+				}
+				//night
+				nightTime = 480;
+				for (int i = 0; i <= 15; ++i)
+				{
+					if ((int)Game.GameTime == nightTime)
+						time = nightTime;
+					else
+						nightTime += 480;
+				}
+				if ((((int)(Game.GameTime)) == time))
+				{
+					if (count == 0)
+					{
+						count = 1;
+						R.UseAbility();
+						Utils.Sleep(1000, "time");
+					}
+					else if (Utils.SleepCheck("time") && count == 1)
+					{
+						count = 0;
+					}
+				}
+			}
+			e = me.ClosestToMouseTarget(1800);
 			if (e == null)
 				return;
 			if (Active)
-            {
+			{
 				if (Menu.Item("orbwalk").GetValue<bool>() && me.Distance2D(e) <= 1900)
 				{
 					Orbwalking.Orbwalk(e, 0, 1600, true, true);
 				}
 			}
-			if (Active && me.Distance2D(e) <= 1400 && e.IsAlive && !Toolset.invUnit(me))
+			
+			if (Active && me.Distance2D(e) <= 1400 && e != null && e.IsAlive && !Toolset.invUnit(me))
 			{
 				if (
-					blink != null
-					&& me.CanCast()
-					&& blink.CanBeCasted()
-					&& me.Distance2D(e) < 1180
-					&& me.Distance2D(e) > 400
-					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name)
-					&& Utils.SleepCheck("blink")
+					W != null && W.CanBeCasted() && me.Distance2D(e) <= 700
+					&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name)
+					&& !e.IsSilenced()
+					&& Utils.SleepCheck("W")
 					)
 				{
-					blink.UseAbility(e.Position);
-
-					Utils.Sleep(250, "blink");
+					W.UseAbility(e);
+					Utils.Sleep(200, "W");
 				}
 				if (
 					Q != null && Q.CanBeCasted() && me.Distance2D(e) <= 900
-                    && (R.CanBeCasted() && me.Mana>R.ManaCost+Q.ManaCost 
-                    || !R.CanBeCasted()
-                    || R==null)
 					&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name)
 					&& Utils.SleepCheck("Q")
 					)
@@ -220,8 +249,7 @@
 		{
 			AssemblyExtensions.InitAssembly("VickTheRock", "0.1b");
 
-			Print.LogMessage.Success("You've never known war unless you've warred with a Wraith!");
-
+			Print.LogMessage.Success("Darkness time!");
 			Menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true));
 			Menu.AddItem(new MenuItem("orbwalk", "orbwalk").SetValue(true));
 			Menu.AddItem(new MenuItem("keyBind", "Combo key").SetValue(new KeyBind('D', KeyBindType.Press)));
@@ -229,7 +257,9 @@
 		    Menu.AddItem(
 				new MenuItem("Skills", "Skills").SetValue(new AbilityToggler(new Dictionary<string, bool>
 				{
-				    {"skeleton_king_hellfire_blast", true}
+				    {"night_stalker_void", true},
+				    {"night_stalker_crippling_fear", true},
+				    {"night_stalker_darkness", true}
 				})));
 			Menu.AddItem(
 				new MenuItem("Items", "Items:").SetValue(new AbilityToggler(new Dictionary<string, bool>
@@ -237,7 +267,6 @@
 				    {"item_mask_of_madness", true},
 				    {"item_heavens_halberd", true},
 				    {"item_armlet", true},
-				    {"item_blink", true},
 				    {"item_mjollnir", true},
 				    {"item_urn_of_shadows", true},
 				    {"item_ethereal_blade", true},

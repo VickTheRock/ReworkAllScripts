@@ -55,20 +55,20 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Ensage">
-      <HintPath>D:\Program Files (x86)\PlaySharp\System\Ensage.dll</HintPath>
+      <HintPath>D:\Program Files (x86)\PlaySharp\References\Ensage.dll</HintPath>
     </Reference>
     <Reference Include="Ensage.Common">
-      <HintPath>D:\Program Files (x86)\PlaySharp\System\Ensage.Common.dll</HintPath>
+      <HintPath>D:\Program Files (x86)\PlaySharp\References\Ensage.Common.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\Program Files (x86)\PlaySharp\System\Newtonsoft.Json.dll</HintPath>
+      <HintPath>D:\Program Files (x86)\PlaySharp\References\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX">
-      <HintPath>D:\Program Files (x86)\PlaySharp\System\SharpDX.dll</HintPath>
+      <HintPath>D:\Program Files (x86)\PlaySharp\References\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Direct3D9">
-      <HintPath>D:\Program Files (x86)\PlaySharp\System\SharpDX.Direct3D9.dll</HintPath>
+      <HintPath>D:\Program Files (x86)\PlaySharp\References\SharpDX.Direct3D9.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -86,14 +86,23 @@
     <Compile Include="Addons\_Addon.cs" />
     <Compile Include="Extensions\Toolset.cs" />
     <Compile Include="Heroes\AntimageController.cs" />
+    <Compile Include="Heroes\BloodseekerController.cs" />
+    <Compile Include="Heroes\BountyHunterController.cs" />
+    <Compile Include="Heroes\BrewmasterController.cs" />
     <Compile Include="Heroes\BroodmotherController.cs" />
+    <Compile Include="Heroes\ClinkzController.cs" />
+    <Compile Include="Heroes\DrowRangerController.cs" />
     <Compile Include="Heroes\EarthSpiritController.cs" />
     <Compile Include="Heroes\EmberSpiritController.cs" />
     <Compile Include="Heroes\JuggernautController.cs" />
+    <Compile Include="Heroes\LegionCommanderController.cs" />
     <Compile Include="Heroes\LinaController.cs" />
+    <Compile Include="Heroes\LionController.cs" />
     <Compile Include="Heroes\MeepoController.cs" />
+    <Compile Include="Heroes\NightStalkerController.cs" />
     <Compile Include="Heroes\NyxAssassinController.cs" />
     <Compile Include="Heroes\OmniknightController.cs" />
+    <Compile Include="Heroes\OracleController.cs" />
     <Compile Include="Heroes\PhantomAssassinController.cs" />
     <Compile Include="Heroes\PuckController.cs" />
     <Compile Include="Heroes\RikiController.cs" />
@@ -109,6 +118,7 @@
     <Compile Include="Heroes\TuskController.cs" />
     <Compile Include="Heroes\UrsaController.cs" />
     <Compile Include="Heroes\VenomancerController.cs" />
+    <Compile Include="Heroes\ViperController.cs" />
     <Compile Include="Heroes\WindrunnerController.cs" />
     <Compile Include="Heroes\ZuusController.cs" />
     <Compile Include="Heroes\_HeroController.cs" />

@@ -1,25 +1,25 @@
-using System.Security.Permissions;
+﻿
+using System.Collections.Generic;
+using Ensage.Common.Menu;
 
 namespace DotaAllCombo.Addons
 {
-	using System.Reflection;
+	using System.Security.Permissions;
 	using Ensage;
 	using Ensage.Common;
 	using Ensage.Common.Extensions;
-	using Ensage.Common.Menu;
 	using SharpDX;
 	using System;
+	using Heroes;
+
 	using System.Linq;
-	using System.Collections.Generic;
 	using SharpDX.Direct3D9;
-	using System.Windows.Input;
 	using Service;
     [PermissionSet(SecurityAction.Assert, Unrestricted = true)]
-    public class OthersAddons : IAddon
+	internal class OthersAddons : Variables, IAddon
 	{
-		private static Hero me;
+#pragma warning disable CS0414 // The field 'OthersAddons._load' is assigned but its value is never used
 		private static bool _load;
-		private static int _seconds;
 		private static Font _text;
 		public static Line _line = new Line(Drawing.Direct3DDevice9);
 
@@ -53,29 +53,87 @@ namespace DotaAllCombo.Addons
 		}
 		private float _lastRange, AttackRange;
 		private ParticleEffect rangeDisplay;
-		private static double _aPoint;
-        public void RunScript()
+		/*
+		public static readonly List<TrackingProjectile> Projectiles = ObjectManager.TrackingProjectiles.Where(x=>
+						x.Source.ClassID == ClassID.CDOTA_Unit_Hero_ArcWarden
+						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_Terrorblade
+						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_TemplarAssassin
+						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_DrowRanger
+						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_Weaver
+						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_Windrunner
+						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_Enchantress
+						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_Nevermore
+						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_Obsidian_Destroyer
+						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_Clinkz
+						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_Silencer
+						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_Huskar
+						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_Viper
+						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_Sniper
+						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_Razor
+						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_StormSpirit
+						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_TrollWarlord
+						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_Morphling
+						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_DragonKnight).ToList(); */
+		public void RunScript()
 		{
-			
+			if (!MainMenu.OthersMenu.Item("others").IsActive() || !Game.IsInGame || me == null || Game.IsPaused || Game.IsWatchingGame) return;
+
+
+			e = me.ClosestToMouseTarget(10000);
+			//TODO:UNAGRRO
+			if (MainMenu.OthersMenu.Item("Auto Un Aggro").GetValue<bool>())
+			{
+				Toolset.UnAggro(me);
+			}
+			//TODO:ESCAPE
+			/*
+	        if (MainMenu.OthersMenu.Item("EscapeAttack").GetValue<bool>() && me.Level>= Menu.Item("minLVL").GetValue<Slider>().Value)
+			{
+				
+				var meed = Toolset.IfITarget(me, Projectiles);
+				var v =
+					 ObjectManager.GetEntities<Hero>()
+						 .Where(x => x.Team != me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && x.ClassID == meed.Source.ClassID)
+						 .ToList();
+				foreach (var victim in v)
+				{
+					if (victim.Distance2D(me) <= 1000 && me.IsVisibleToEnemies && (victim.Handle!=e.Handle || me.Health <= (me.MaximumHealth * 0.4)))
+					{
+						AutoDodge.qqNyx();
+						AutoDodge.qqTemplarRefraction();
+						AutoDodge.qqallHex(victim);
+						AutoDodge.qquseShiva();
+						AutoDodge.qquseManta();
+						AutoDodge.qquseHelbard(victim);
+						AutoDodge.qquseGhost();
+						AutoDodge.qquseEulEnem(victim);
+						AutoDodge.qquseSDisription(victim);
+						AutoDodge.qquseSheep(victim);
+						AutoDodge.qquseColba(victim);
+						AutoDodge.qqsilencerLastWord(victim);
+						AutoDodge.qquseSDisription(victim);
+						AutoDodge.qquseSheep(victim);
+						AutoDodge.qquseColba(victim);
+						AutoDodge.qqsilencerLastWord(victim);
+						AutoDodge.qqabadonWme();
+						AutoDodge.qqodImprisomentMe(victim);
+						AutoDodge.qqallStun(victim);
+					}
+				}
+	        }*/
 		}
 		void Drawing_OnDraw(EventArgs args)
 		{
-			if (!Game.IsInGame || Game.IsWatchingGame)
-				return;
 
 			if (me == null)
 				return;
-			if (!MainMenu.OthersMenu.Item("others").IsActive() || !Game.IsInGame || me == null || Game.IsPaused ||
-				Game.IsChatOpen) return;
+			if (!MainMenu.OthersMenu.Item("others").IsActive() || !Game.IsInGame || me == null || Game.IsPaused || Game.IsWatchingGame) return;
 
-				
-            
-            if (MainMenu.OthersMenu.Item("ShowAttakRange").GetValue<bool>())
+			//TODO:ATTACKRANGE
+			if (MainMenu.OthersMenu.Item("ShowAttakRange").GetValue<bool>())
 			{
                 Item item = me.Inventory.Items.FirstOrDefault(x => x != null && x.IsValid && (x.Name.Contains("item_dragon_lance") || x.Name.Contains("item_hurricane_pike")));
                 
-                
-
                 if (me.ClassID == ClassID.CDOTA_Unit_Hero_TrollWarlord && me.HasModifier("modifier_troll_warlord_berserkers_rage"))
 			        AttackRange = 150 + me.HullRadius+24;
                    else if (me.ClassID == ClassID.CDOTA_Unit_Hero_TrollWarlord && !me.HasModifier("modifier_troll_warlord_berserkers_rage"))
@@ -128,22 +186,31 @@ namespace DotaAllCombo.Addons
 					rangeDisplay = null;
 				}
 
-            if (MainMenu.OthersMenu.Item("Auto Un Aggro").GetValue<bool>())
-            {
-                Toolset.UnAggro(me);
-            }
 
-            var target = me.ClosestToMouseTarget(10000);
-			if (target == null) return;
-			if (!target.IsIllusion && target.IsAlive)
+			//TODO:TARGETMARKER
+			e = me.ClosestToMouseTarget(10000);
+			if (e == null) return;
+			if (!e.IsIllusion && e.IsAlive)
 			{
-				Vector2 target_health_bar = HeroPositionOnScreen(target);
-				Drawing.DrawText("Target to Death", target_health_bar, new Vector2(16, 20), me.Distance2D(target) < 1200 ? Color.Coral : Color.WhiteSmoke, FontFlags.AntiAlias | FontFlags.Additive | FontFlags.DropShadow);
+
+				if (!OnScreen(e.Position)) return;
+				var screenPos = HUDInfo.GetHPbarPosition(e);
+				var text = "Target to Death";
+				var size = new Vector2(18, 18);
+				var textSize = Drawing.MeasureText(text, "Arial", size, FontFlags.AntiAlias);
+				var position = new Vector2(screenPos.X - textSize.X + 85, screenPos.Y -35);
+				Drawing.DrawText(text,position,size,(me.Distance2D(e) <= 1200 ? Color.Coral : Color.White),
+					FontFlags.AntiAlias);
+				Drawing.DrawText(text, new Vector2(screenPos.X - textSize.X + 84, screenPos.Y - 35),
+					 size, Color.Black,FontFlags.AntiAlias);
+				// Drawing.DrawText("Target to Death", HeroPositionOnScreen(e), new Vector2(16, 20), me.Distance2D(e) < 1200 ? Color.Coral : Color.WhiteSmoke, FontFlags.AntiAlias | FontFlags.Additive | FontFlags.DropShadow);
 			}
-
 		}
-		
 
+		private bool OnScreen(Vector3 v)
+		{
+			return !(Drawing.WorldToScreen(v).X < 0 || Drawing.WorldToScreen(v).X > Drawing.Width || Drawing.WorldToScreen(v).Y < 0 || Drawing.WorldToScreen(v).Y > Drawing.Height);
+		}
 		private static void Drawing_OnPostReset(EventArgs args)
 		{
 			_text.OnResetDevice();
@@ -154,16 +221,6 @@ namespace DotaAllCombo.Addons
 			_text.OnLostDevice();
 		}
 		
-
-		Vector2 HeroPositionOnScreen(Hero x)
-		{
-			float scaleX = HUDInfo.ScreenSizeX();
-			float scaleY = HUDInfo.ScreenSizeY();
-			Vector2 PicPosition;
-			Drawing.WorldToScreen(x.Position, out PicPosition);
-			PicPosition = new Vector2((float)(PicPosition.X + (scaleX * -0.035)), (float)((PicPosition.Y) + (scaleY * -0.10)));
-			return PicPosition;
-		}
 		private void OnLoadMessage()
 		{
 			Game.PrintMessage("<font face='verdana' color='#ffa420'>@addon OtherAddons is Loaded!</font>", MessageType.LogMessage);

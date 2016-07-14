@@ -15,39 +15,33 @@ namespace DotaAllCombo.Heroes
 
     internal class RikiController : Variables, IHeroController
     {
-        private static Ability Q, W, R;
-        private static Item urn, dagon, diff,  mjollnir, orchid, abyssal, mom, Shiva, mail, bkb, satanic, medall, blink;
-        private static Font txt;
-		private static Font not;
-        private static bool Active;
-
-        private static bool loaded;
+        private Ability Q, W, R;
+        private Item urn, dagon, diff, mjollnir, orchid, abyssal, mom, Shiva, mail, bkb, satanic, medall, blink;
         public void OnLoadEvent()
         {
             AssemblyExtensions.InitAssembly("VickTheRock", "0.1");
 
             Print.LogMessage.Success("Into the shadows.");
-            menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true));
-            menu.AddItem(new MenuItem("keyBind", "Combo key").SetValue(new KeyBind('D', KeyBindType.Press)));
+			Menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true));
+			Menu.AddItem(new MenuItem("orbwalk", "orbwalk").SetValue(true));
+			Menu.AddItem(new MenuItem("keyBind", "Combo key").SetValue(new KeyBind('D', KeyBindType.Press)));
             
-            menu.AddItem(
+            Menu.AddItem(
                 new MenuItem("Skills", "Skills").SetValue(new AbilityToggler(new Dictionary<string, bool>
                 {
                     {"riki_smoke_screen", true},
                     {"riki_blink_strike", true},
                     {"riki_tricks_of_the_trade", true}
                 })));
-            menu.AddItem(
+            Menu.AddItem(
                 new MenuItem("Items", "Items:").SetValue(new AbilityToggler(new Dictionary<string, bool>
                 {
                     {"item_blink", true},
                     {"item_diffusal_blade", true},
                     {"item_diffusal_blade_2", true},
-                    {"item_heavens_halberd", true},
                     {"item_orchid", true},
                     {"item_bloodthorn", true},
                     {"item_urn_of_shadows", true},
-                    {"item_veil_of_discord", true},
                     {"item_abyssal_blade", true},
                     {"item_shivas_guard", true},
                     {"item_blade_mail", true},
@@ -56,46 +50,20 @@ namespace DotaAllCombo.Heroes
                     {"item_medallion_of_courage", true},
                     {"item_solar_crest", true}
                 })));
-            menu.AddItem(new MenuItem("Heel", "Min targets to BKB").SetValue(new Slider(2, 1, 5)));
-            menu.AddItem(new MenuItem("Ult", "Min targets to Ultimate").SetValue(new Slider(3, 1, 5)));
-            menu.AddItem(new MenuItem("Heelm", "Min targets to BladeMail").SetValue(new Slider(2, 1, 5)));
-			
-			txt = new Font(
-			   Drawing.Direct3DDevice9,
-			   new FontDescription
-			   {
-				   FaceName = "Tahoma",
-				   Height = 12,
-				   OutputPrecision = FontPrecision.Default,
-				   Quality = FontQuality.Default
-			   });
-
-			not = new Font(
-			   Drawing.Direct3DDevice9,
-			   new FontDescription
-			   {
-				   FaceName = "Tahoma",
-				   Height = 170,
-				   OutputPrecision = FontPrecision.Default,
-				   Quality = FontQuality.Default
-			   });
-
-			Drawing.OnPreReset += Drawing_OnPreReset;
-			Drawing.OnPostReset += Drawing_OnPostReset;
-			Drawing.OnEndScene += Drawing_OnEndScene;
-			AppDomain.CurrentDomain.DomainUnload += CurrentDomain_DomainUnload;
+            Menu.AddItem(new MenuItem("Heel", "Min targets to BKB").SetValue(new Slider(2, 1, 5)));
+            Menu.AddItem(new MenuItem("Ult", "Min targets to Ultimate").SetValue(new Slider(3, 1, 5)));
+            Menu.AddItem(new MenuItem("Heelm", "Min targets to BladeMail").SetValue(new Slider(2, 1, 5)));
 		}
 
         public void Combo()
         {
             
             me = ObjectManager.LocalHero;
-			if (!Game.IsInGame || me.ClassID != ClassID.CDOTA_Unit_Hero_Riki)return;
-
-            if (!menu.Item("enabled").IsActive()) return;
-            e = me.ClosestToMouseTarget(1800);
+			
+            if (!Menu.Item("enabled").IsActive()) return;
+			Active = Game.IsKeyDown(Menu.Item("keyBind").GetValue<KeyBind>().Key);
+			e = me.ClosestToMouseTarget(1800);
             if (e == null) return;
-            Active = Game.IsKeyDown(menu.Item("keyBind").GetValue<KeyBind>().Key) && !Game.IsChatOpen;
 
             Q = me.Spellbook.SpellQ;
             W = me.Spellbook.SpellW;
@@ -114,69 +82,40 @@ namespace DotaAllCombo.Heroes
             blink = me.FindItem("item_blink");
             medall = me.FindItem("item_medallion_of_courage") ?? me.FindItem("item_solar_crest");
 
-            var stoneModif = e.Modifiers.All(y => y.Name == "modifier_medusa_stone_gaze_stone");
+            var stoneModif = e.HasModifier("modifier_medusa_stone_gaze_stone");
             
-
             var v =
                 ObjectManager.GetEntities<Hero>()
                     .Where(x => x.Team != me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && !x.IsMagicImmune())
                     .ToList();
 
-            if (me.HasModifier("modifier_riki_tricks_of_the_trade_phase") || R.IsInAbilityPhase) return;
-            if (Active && me.Distance2D(e) <= 1700 && e.IsAlive)
+            if (R.IsInAbilityPhase || me.HasModifier("modifier_riki_tricks_of_the_trade_phase")) return;
+            if (Active && e.IsAlive)
             {
-                if (me.HasModifier("modifier_riki_tricks_of_the_trade_phase") || R.IsInAbilityPhase) return;
-                if (
-                    me.Distance2D(e) <= 300 && (!me.IsAttackImmune() || !e.IsAttackImmune())
-                    && me.NetworkActivity != NetworkActivity.Attack && me.CanAttack() && Utils.SleepCheck("attack")
-                    )
-                {
-                    me.Attack(e);
-                    Utils.Sleep(190, "attack");
-                }
-           else if (
-                    (!me.CanAttack() || me.Distance2D(e) >= 0) && me.NetworkActivity != NetworkActivity.Attack &&
-                    me.Distance2D(e) <= 1500 && Utils.SleepCheck("Move")
-                    )
-                {
-                    me.Move(e.Predict(350));
-                    Utils.Sleep(350, "Move");
-                }
-            }
-            if (Active && me.Distance2D(e) <= 1400 && e.IsAlive && (!me.IsInvisible() || me.IsVisibleToEnemies || e.Health <= (me.MaximumHealth * 0.5)))
-            {
-                if (me.HasModifier("modifier_riki_tricks_of_the_trade_phase") || R.IsInAbilityPhase) return;
 
+				if (Menu.Item("orbwalk").GetValue<bool>() && me.Distance2D(e) <= 1900)
+				{
+					Orbwalking.Orbwalk(e, 0, 1600, true, true);
+				}
+			}
+            if (Active && me.Distance2D(e) <= 1400 && e.IsAlive && (!me.IsInvisible() || me.IsVisibleToEnemies || e.Health <= (e.MaximumHealth * 0.7)))
+            {
                 if (stoneModif) return;
-                if (e.IsVisible && me.Distance2D(e) <= 1200)
-                {
-
-                    if (diff != null
-                        && diff.CanBeCasted()
-                        && diff.CurrentCharges > 0
-                        && me.Distance2D(e) <= 400
-                        && !e.HasModifier("modifier_item_diffusal_blade_slow")
-                        && menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(diff.Name) &&
-                        Utils.SleepCheck("diff"))
-                    {
-                        diff.UseAbility(e);
-                        Utils.Sleep(350, "diff");
-                    }
-                    else if (
+                    if (
                         Q != null
                         && Q.CanBeCasted()
                         && me.Distance2D(e) <= 300
-                        && menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name)
+                        && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name)
                         && Utils.SleepCheck("Q")
                         )
                     {
-                        Q.UseAbility(Prediction.InFront(e, 50));
+                        Q.UseAbility(Prediction.InFront(e, 80));
                         Utils.Sleep(200, "Q");
-                    }
-                    if (
+					}
+				if (
                         W != null && W.CanBeCasted()
                         && me.Distance2D(e) <= W.CastRange
-                        && menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name)
+                        && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name)
                         && Utils.SleepCheck("W")
                         )
                     {
@@ -189,7 +128,7 @@ namespace DotaAllCombo.Heroes
                         && blink.CanBeCasted()
                         && me.Distance2D(e) < 1180
                         && me.Distance2D(e) > 300
-                        && menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name)
+                        && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name)
                         && Utils.SleepCheck("blink")
                         )
                         {
@@ -209,13 +148,24 @@ namespace DotaAllCombo.Heroes
                         {
                             abyssal.UseAbility(e);
                             Utils.Sleep(250, "abyssal");
-                        } // Abyssal Item end
-                        if ( // Mjollnir
+				} // Abyssal Item end  
+				if (diff != null
+						&& diff.CanBeCasted()
+						&& diff.CurrentCharges > 0
+						&& me.Distance2D(e) <= 400
+						&& !e.HasModifier("modifier_item_diffusal_blade_slow")
+						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(diff.Name) &&
+						Utils.SleepCheck("diff"))
+                    {
+					diff.UseAbility(e);
+					Utils.Sleep(4000, "diff");
+				}
+				if ( // Mjollnir
                            mjollnir != null
                            && mjollnir.CanBeCasted()
                            && me.CanCast()
                            && !e.IsMagicImmune()
-                           && menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(mjollnir.Name)
+                           && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(mjollnir.Name)
                            && Utils.SleepCheck("mjollnir")
                            && me.Distance2D(e) <= 900
                            )
@@ -227,7 +177,7 @@ namespace DotaAllCombo.Heroes
                             medall != null
                             && medall.CanBeCasted()
                             && Utils.SleepCheck("Medall")
-                            && menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(medall.Name)
+                            && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(medall.Name)
                             && me.Distance2D(e) <= 700
                             )
                         {
@@ -239,7 +189,7 @@ namespace DotaAllCombo.Heroes
                             mom != null
                             && mom.CanBeCasted()
                             && me.CanCast()
-                            && menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(mom.Name)
+                            && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(mom.Name)
                             && Utils.SleepCheck("mom")
                             && me.Distance2D(e) <= 700
                             )
@@ -247,15 +197,15 @@ namespace DotaAllCombo.Heroes
                             mom.UseAbility();
                             Utils.Sleep(250, "mom");
                         }
-                        if (orchid != null && orchid.CanBeCasted() && me.Distance2D(e) <= 900 &&
-                            menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(orchid.Name) && Utils.SleepCheck("orchid"))
+                        if (orchid != null && orchid.CanBeCasted() && me.Distance2D(e) <= 300 &&
+                            Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(orchid.Name) && Utils.SleepCheck("orchid"))
                         {
                             orchid.UseAbility(e);
                             Utils.Sleep(100, "orchid");
                         }
 
                         if (Shiva != null && Shiva.CanBeCasted() && me.Distance2D(e) <= 600
-                            && menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(Shiva.Name)
+                            && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(Shiva.Name)
                             && !e.IsMagicImmune() && Utils.SleepCheck("Shiva"))
                         {
                             Shiva.UseAbility();
@@ -278,7 +228,7 @@ namespace DotaAllCombo.Heroes
 
 
                         if (urn != null && urn.CanBeCasted() && urn.CurrentCharges > 0 && me.Distance2D(e) <= 400
-                            && menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(urn.Name) && Utils.SleepCheck("urn"))
+                            && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(urn.Name) && Utils.SleepCheck("urn"))
                         {
                             urn.UseAbility(e);
                             Utils.Sleep(240, "urn");
@@ -288,7 +238,7 @@ namespace DotaAllCombo.Heroes
                             me.Health <= (me.MaximumHealth * 0.3) &&
                             satanic.CanBeCasted() &&
                             me.Distance2D(e) <= me.AttackRange + 50
-                            && menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(satanic.Name)
+                            && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(satanic.Name)
                             && Utils.SleepCheck("satanic")
                             )
                         {
@@ -296,77 +246,39 @@ namespace DotaAllCombo.Heroes
                             Utils.Sleep(240, "satanic");
                         } // Satanic Item end
                         if (mail != null && mail.CanBeCasted() 
-                        && ((v.Count(x => x.Distance2D(me) <= 650) >= (menu.Item("Heelm").GetValue<Slider>().Value)) 
+                        && ((v.Count(x => x.Distance2D(me) <= 650) >= (Menu.Item("Heelm").GetValue<Slider>().Value)) 
                         || me.HasModifier("modifier_skywrath_mystic_flare_aura_effect")) &&
-                            menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(mail.Name) && Utils.SleepCheck("mail"))
+                            Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(mail.Name) && Utils.SleepCheck("mail"))
                         {
                             mail.UseAbility();
                             Utils.Sleep(100, "mail");
                         }
                         if (bkb != null && bkb.CanBeCasted() && ((v.Count(x => x.Distance2D(me) <= 650) >=
-                                                                 (menu.Item("Heel").GetValue<Slider>().Value))
+                                                                 (Menu.Item("Heel").GetValue<Slider>().Value))
                         || me.HasModifier("modifier_skywrath_mystic_flare_aura_effect")) &&
-                            menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(bkb.Name) && Utils.SleepCheck("bkb"))
+                            Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(bkb.Name) && Utils.SleepCheck("bkb"))
                         {
                             bkb.UseAbility();
                             Utils.Sleep(100, "bkb");
                         }
                     if (R != null && R.CanBeCasted()
                         && (v.Count(x => x.Distance2D(me) <= 500)
-                        >= (menu.Item("Ult").GetValue<Slider>().Value))
-                        && menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name)
+                        >= (Menu.Item("Ult").GetValue<Slider>().Value))
+                        && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name)
                         && Utils.SleepCheck("R"))
                     {
                         R.UseAbility();
                         Utils.Sleep(100, "R");
                     }
                 }
-			}
+			
 		}
 
         public void OnCloseEvent()
         {
-            AppDomain.CurrentDomain.DomainUnload -= CurrentDomain_DomainUnload;
-            Drawing.OnPreReset -= Drawing_OnPreReset;
-            Drawing.OnPostReset -= Drawing_OnPostReset;
-            Drawing.OnEndScene -= Drawing_OnEndScene;
 
         }
-
-
-        static void CurrentDomain_DomainUnload(object sender, EventArgs e)
-		{
-			txt.Dispose();
-			not.Dispose();
-		}
-
-		static void Drawing_OnEndScene(EventArgs args)
-		{
-			if (Drawing.Direct3DDevice9 == null || Drawing.Direct3DDevice9.IsDisposed || !Game.IsInGame)
-				return;
-
-			var player = ObjectManager.LocalPlayer;
-			var me = ObjectManager.LocalHero;
-			if (player == null || player.Team == Team.Observer || me.ClassID != ClassID.CDOTA_Unit_Hero_Riki)
-				return;
-
-			if (Active)
-			{
-				txt.DrawText(null, "Riki: Comboing!", 4, 150, Color.Coral);
-			}
-		}
-
-		static void Drawing_OnPostReset(EventArgs args)
-		{
-			txt.OnResetDevice();
-			not.OnResetDevice();
-		}
-
-		static void Drawing_OnPreReset(EventArgs args)
-		{
-			txt.OnLostDevice();
-			not.OnLostDevice();
-		}
+		
 	}
 }
 
