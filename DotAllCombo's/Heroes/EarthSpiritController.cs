@@ -48,7 +48,7 @@
             bkb = me.FindItem("item_black_king_bar");
             blink = me.FindItem("item_blink");
             medall = me.FindItem("item_medallion_of_courage") ?? me.FindItem("item_solar_crest");
-            sheep = e.ClassID == ClassID.CDOTA_Unit_Hero_Tidehunter ? null : me.FindItem("item_sheepstick");
+            sheep = e.Name == "npc_dota_hero_tidehunter" ? null : me.FindItem("item_sheepstick");
             vail = me.FindItem("item_veil_of_discord");
             cheese = me.FindItem("item_cheese");
             ghost = me.FindItem("item_ghost");
@@ -60,7 +60,7 @@
             var stoneModif = e.Modifiers.Any(y => y.Name == "modifier_medusa_stone_gaze_stone");
             var charge = me.Modifiers.FirstOrDefault(y => y.Name == "modifier_earth_spirit_stone_caller_charge_counter");
 
-            var remnant = ObjectManager.GetEntities<Unit>().Where(x => x.ClassID == ClassID.CDOTA_Unit_Earth_Spirit_Stone && x.Team == me.Team && x.IsValid).ToList();
+            var remnant = ObjectManager.GetEntities<Unit>().Where(x => x.Name == "npc_dota_earth_spirit_stone" && x.Team == me.Team && x.IsValid).ToList();
             var remnantCount = remnant.Count;
 
 
@@ -492,7 +492,7 @@
                 D.UseAbility(e.Position);
                 Utils.Sleep(1000, "Rem");
             }
-            var remnant = ObjectManager.GetEntities<Unit>().Where(x => x.ClassID == ClassID.CDOTA_Unit_Earth_Spirit_Stone && x.Team == me.Team
+            var remnant = ObjectManager.GetEntities<Unit>().Where(x => x.Name == "npc_dota_earth_spirit_stone" && x.Team == me.Team
                                        && x.Distance2D(me) <= 1700 && x.IsAlive && x.IsValid).ToList();
             var remnantCount = remnant.Count;
             

@@ -24,7 +24,7 @@
 
 			if (Menu.Item("keyW").GetValue<KeyBind>().Active)
 			{
-				var HealingWard = ObjectManager.GetEntities<Unit>().Where(x => (x.ClassID == ClassID.CDOTA_BaseNPC_Additive)
+				var HealingWard = ObjectManager.GetEntities<Unit>().Where(x => (x.Name == "npc_dota_juggernaut_healing_ward")
 					&& x.IsAlive && x.IsControllable && x.Team == me.Team).ToList();
 				if (HealingWard.Count >= 1)
 				{

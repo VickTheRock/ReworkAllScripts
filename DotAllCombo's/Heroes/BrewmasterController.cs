@@ -178,7 +178,7 @@
 
 
 					var Necronomicons =
-						ObjectManager.GetEntities<Creep>().Where(x => (x.ClassID == ClassID.CDOTA_BaseNPC_Creep)
+						ObjectManager.GetEntities<Creep>().Where(x => (x.Name == "npc_dota_creep")
 																  && x.IsAlive && x.IsControllable);
 					if (Necronomicons == null)
 					{
@@ -212,7 +212,7 @@
 
 					//Necronomicon Warrior
 					var Necrowarrior =
-						ObjectManager.GetEntities<Creep>().Where(x => (x.ClassID == ClassID.CDOTA_BaseNPC_Creep)
+						ObjectManager.GetEntities<Creep>().Where(x => (x.Name == "npc_dota_creep")
 																  && x.IsAlive && x.IsControllable);
 					if (Necrowarrior == null)
 					{
@@ -253,13 +253,13 @@
 
 					var primalstorm =
 						ObjectManager.GetEntities<Unit>()
-							.Where(x => x.ClassID == ClassID.CDOTA_Unit_Brewmaster_PrimalStorm && x.IsAlive);
+							.Where(x => x.Name == "npc_dota_brewmaster_storm" && x.IsAlive);
 					var primalearth =
 						ObjectManager.GetEntities<Unit>()
-							.Where(x => (x.ClassID == ClassID.CDOTA_Unit_Brewmaster_PrimalEarth && x.IsAlive));
+							.Where(x => (x.Name == "npc_dota_brewmaster_earth" && x.IsAlive));
 					var primalfire =
 						ObjectManager.GetEntities<Unit>()
-							.Where(x => (x.ClassID == ClassID.CDOTA_Unit_Brewmaster_PrimalFire && x.IsAlive));
+							.Where(x => (x.Name == "npc_dota_brewmaster_fire" && x.IsAlive));
 					if (primalearth == null)
 					{
 						return;

@@ -40,13 +40,13 @@ namespace DotaAllCombo.Service
 
 
 
-			if (me.ClassID == ClassID.CDOTA_Unit_Hero_TrollWarlord && me.HasModifier("modifier_troll_warlord_berserkers_rage"))
+			if (me.HasModifier("modifier_troll_warlord_berserkers_rage"))
 				AttackRange = 150 + me.HullRadius + 24;
-			else if (me.ClassID == ClassID.CDOTA_Unit_Hero_TrollWarlord && !me.HasModifier("modifier_troll_warlord_berserkers_rage"))
+			else if (!me.HasModifier("modifier_troll_warlord_berserkers_rage"))
 				AttackRange = me.GetAttackRange() + me.HullRadius + 24;
-			else if (me.ClassID == ClassID.CDOTA_Unit_Hero_TemplarAssassin)
+			else if (me.Name == "npc_dota_hero_templar_assassin")
 				AttackRange = me.GetAttackRange() + me.HullRadius;
-			else if (me.ClassID == ClassID.CDOTA_Unit_Hero_DragonKnight && me.HasModifier("modifier_dragon_knight_dragon_form"))
+			else if (me.Name == "npc_dota_hero_dragon_knight" && me.HasModifier("modifier_dragon_knight_dragon_form"))
 				AttackRange = me.GetAttackRange() + me.HullRadius + 24;
 			else if (item == null && me.IsRanged)
 				AttackRange = me.GetAttackRange() + me.HullRadius + 24;
@@ -101,8 +101,8 @@ namespace DotaAllCombo.Service
 			{
 				var closestCreepUnAgr = GetClosestToUnit(z, v);
 
-				if (projectiles[i].Source.ClassID == ClassID.CDOTA_BaseNPC_Tower
-				    || projectiles[i].Source.ClassID == ClassID.CDOTA_Unit_Fountain)
+				if (projectiles[i].Source.Name == "ent_dota_fountain"
+					|| projectiles[i].Source.Name == "npc_dota_tower")
 				{
 					if (closestCreepUnAgr == null) return;
 					if (closestCreepUnAgr.Distance2D(v) <= 500 & Utils.SleepCheck("UnAgr"))
@@ -130,20 +130,20 @@ namespace DotaAllCombo.Service
 		{
 			if (v == null) return;
 			var creepsA = ObjectManager.GetEntities<Unit>().Where(creep =>
-				(creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
-				 || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral
-				 || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep) &&
+				(creep.Name == "npc_dota_creep_lane"
+				 || creep.Name == "npc_dota_creep_neutral"
+				 || creep.Name == "npc_dota_creep") &&
 				creep.IsAlive && creep.Team == me.Team && creep.IsVisible && creep.IsSpawned).ToList();
 
 			if (creepsA.Count(x => x.Distance2D(v) <= 500) == 0)
 			{
-				if (v.ClassID == ClassID.CDOTA_Unit_SpiritBear)
+				if (v.Name == "npc_dota_lone_druid_bear")
 				{
 					creepsA = ObjectManager.GetEntities<Unit>().Where(creep => (
 						creep.HasInventory && creep.Handle != v.Handle)
 					                    && creep.IsAlive && creep.Team == me.Team
-					                    && creep.ClassID != ClassID.CDOTA_Unit_Hero_LoneDruid
-					                    && creep.IsVisible &&
+					                    && creep.Name != "npc_dota_hero_lone_druid"
+										&& creep.IsVisible &&
 					                    creep.Health >= (creep.MaximumHealth*0.5)).ToList();
 				}
 				else

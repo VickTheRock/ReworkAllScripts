@@ -33,7 +33,6 @@
 
 		public void Combo()
 		{
-			if (me == null || me.ClassID != ClassID.CDOTA_Unit_Hero_Meepo || !Game.IsInGame) return;
             if(!me.IsAlive) return;
 
             activated = Game.IsKeyDown(Menu.Item("keyBind").GetValue<KeyBind>().Key);
@@ -41,19 +40,19 @@
             PoofAutoMode = Menu.Item("poofAutoMod").GetValue<KeyBind>().Active;
             SafePoof = Menu.Item("poofSafe").IsActive();
             dodge = Menu.Item("Dodge").GetValue<KeyBind>().Active;
-            var checkObj = ObjectManager.GetEntities<Unit>().Where(x => (x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
-                        || x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege
-                        || x.ClassID == ClassID.CDOTA_BaseNPC_Creep
-                        || x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral
+            var checkObj = ObjectManager.GetEntities<Unit>().Where(x => (x.Name == "npc_dota_creep_lane"
+                        || x.Name == "npc_dota_creep_siege"
+                        || x.Name == "npc_dota_creep"
+                        || x.Name == "npc_dota_creep_neutral"
                         || x.HasInventory
-                        || x.ClassID == ClassID.CDOTA_Unit_SpiritBear) && x.IsAlive && x.Team != me.Team && x.IsValid).ToList();
-            var meepos = ObjectManager.GetEntities<Hero>().Where(x => x.IsControllable && x.IsAlive && x.ClassID == ClassID.CDOTA_Unit_Hero_Meepo).ToList();
+                        || x.Name == "npc_dota_lone_druid_bear") && x.IsAlive && x.Team != me.Team && x.IsValid).ToList();
+            var meepos = ObjectManager.GetEntities<Hero>().Where(x => x.IsControllable && x.IsAlive && x.Name == "npc_dota_hero_meepo").ToList();
 
 
 
 
 
-            List<Unit> fount = ObjectManager.GetEntities<Unit>().Where(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Fountain).ToList();
+            List<Unit> fount = ObjectManager.GetEntities<Unit>().Where(x => x.Team == me.Team && x.Name == "ent_dota_fountain").ToList();
             //blink = me.FindItem("item_blink");
 
 
@@ -67,7 +66,7 @@
             /**************************************************DODGE*************************************************************/
 
             var f = ObjectManager.GetEntities<Hero>()
-                        .Where(x => x.IsAlive && x.Team == me.Team && !x.IsIllusion && x.IsControllable && x.ClassID == ClassID.CDOTA_Unit_Hero_Meepo)
+                        .Where(x => x.IsAlive && x.Team == me.Team && !x.IsIllusion && x.IsControllable && x.Name == "npc_dota_hero_meepo")
                         .OrderBy(x => GetDistance2D(x.Position, fount.OrderBy(y => GetDistance2D(x.Position, y.Position)).FirstOrDefault().Position))
                         .FirstOrDefault();
 		    var meeposCount = meepos.Count();
@@ -91,11 +90,6 @@
                             {
                                 meepos[i].Move(pos);
                                 Utils.Sleep(120, meepos[i].Handle + "MoveDodge");
-                                //	Console.WriteLine("Name: " + baseDota[t].Name);
-                                //	Console.WriteLine("Speed: " + baseDota[t].Speed);
-                                //	Console.WriteLine("ClassID: " + baseDota[t].ClassID);
-                                //	Console.WriteLine("Handle: " + baseDota[t].Handle);
-                                //	Console.WriteLine("UnitState: " + baseDota[t].UnitState);
                             }
                         }
                     }
@@ -317,10 +311,10 @@
             {
                 for (int i = 0; i < meeposCount; i++)
                 {
-                    var nCreeps = ObjectManager.GetEntities<Unit>().Where(x => (x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
-                        || x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege
-                        || x.ClassID == ClassID.CDOTA_BaseNPC_Creep
-                        || x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral) && x.Team != me.Team && x.IsSpawned && x.IsAlive).Where(x => x.Distance2D(meepos[i]) <= 345).ToList().Count();
+                    var nCreeps = ObjectManager.GetEntities<Unit>().Where(x => (x.Name == "npc_dota_creep_lane"
+                        || x.Name == "npc_dota_creep_siege"
+                        || x.Name == "npc_dota_creep"
+                        || x.Name == "npc_dota_creep_neutral") && x.Team != me.Team && x.IsSpawned && x.IsAlive).Where(x => x.Distance2D(meepos[i]) <= 345).ToList().Count();
 
                     SliderCountUnit = nCreeps >= (skills.Item("poofCount").GetValue<Slider>().Value);
 
@@ -394,7 +388,7 @@
 
                     orchid = me.FindItem("item_orchid") ?? me.FindItem("item_bloodthorn");
                     blink = meepos[i].FindItem("item_blink");
-                    sheep = e.ClassID == ClassID.CDOTA_Unit_Hero_Tidehunter ? null : me.FindItem("item_sheepstick");
+                    sheep = e.Name == "npc_dota_hero_tidehunter" ? null : me.FindItem("item_sheepstick");
 
 
                     if ( // sheep

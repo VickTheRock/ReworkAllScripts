@@ -55,16 +55,16 @@ namespace DotaAllCombo.Heroes
 
 				var enemies = ObjectManager.GetEntities<Hero>().Where(hero => hero.IsAlive && !hero.IsIllusion && hero.IsVisible && hero.Team != me.Team).ToList();
 
-				var creeps = ObjectManager.GetEntities<Creep>().Where(creep => (creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral ||
-				(creep.ClassID == ClassID.CDOTA_Unit_VisageFamiliar && creep.Team != me.Team) || (creep.ClassID == ClassID.CDOTA_Unit_SpiritBear && creep.Team != me.Team) || (creep.ClassID == ClassID.CDOTA_BaseNPC_Invoker_Forged_Spirit &&
-				creep.Team != me.Team) || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep &&
+				var creeps = ObjectManager.GetEntities<Creep>().Where(creep => (creep.Name == "npc_dota_creep_lane" || creep.Name == "npc_dota_creep_siege" || creep.Name == "npc_dota_creep_neutral" ||
+				(creep.Name == "npc_dota_visage_familiar" && creep.Team != me.Team) || (creep.Name == "npc_dota_lone_druid_bear" && creep.Team != me.Team) || (creep.Name == "npc_dota_invoker_forged_spirit" &&
+				creep.Team != me.Team) || creep.Name == "npc_dota_creep" &&
 				creep.IsAlive && creep.IsVisible && creep.IsSpawned) && creep.Health <= 259).ToList();
 
-				var creepQ = ObjectManager.GetEntities<Creep>().Where(creep => (creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral ||
-				creep.ClassID == ClassID.CDOTA_Unit_SpiritBear || creep.ClassID == ClassID.CDOTA_BaseNPC_Invoker_Forged_Spirit || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep &&
+				var creepQ = ObjectManager.GetEntities<Creep>().Where(creep => (creep.Name == "npc_dota_creep_lane" || creep.Name == "npc_dota_creep_siege" || creep.Name == "npc_dota_creep_neutral" ||
+				creep.Name == "npc_dota_lone_druid_bear" || creep.Name == "npc_dota_invoker_forged_spirit" || creep.Name == "npc_dota_creep" &&
 				creep.IsAlive && creep.IsVisible && creep.IsSpawned)).ToList();
 
-				var Spiderlings = ObjectManager.GetEntities<Unit>().Where(spiderlings => spiderlings.ClassID == ClassID.CDOTA_Unit_Broodmother_Spiderling).ToList();
+				var Spiderlings = ObjectManager.GetEntities<Unit>().Where(spiderlings => spiderlings.Name == "npc_dota_broodmother_spiderling").ToList();
 
 
 				// Creep Q lasthit
@@ -109,7 +109,6 @@ namespace DotaAllCombo.Heroes
 					}
 				}
 
-				//var Spiderling = ObjectManager.GetEntities<Unit>().Where(x => x.ClassID == ClassID.CDOTA_Unit_Broodmother_Spiderling && x.IsAlive && x.IsControllable && x.Team == me.Team).ToList();
 				var count = Spiderlings.Count();
 				if (count <= 0)
 					return;
@@ -259,7 +258,7 @@ namespace DotaAllCombo.Heroes
 			me = ObjectManager.LocalHero;
 			if (Chasekey)
 			{
-				var Spiderlings = ObjectManager.GetEntities<Unit>().Where(spiderlings => spiderlings.ClassID == ClassID.CDOTA_Unit_Broodmother_Spiderling).ToList();
+				var Spiderlings = ObjectManager.GetEntities<Unit>().Where(spiderlings => spiderlings.Name == "npc_dota_broodmother_spiderling").ToList();
 				{
 					var count = Spiderlings.Count();
 					if (e != null && e.IsAlive && !e.IsIllusion)
@@ -306,7 +305,7 @@ namespace DotaAllCombo.Heroes
 			if (Combokey && e.IsAlive && me.IsVisibleToEnemies)
 			{
 
-				var Spiderlings = ObjectManager.GetEntities<Unit>().Where(spiderlings => spiderlings.ClassID == ClassID.CDOTA_Unit_Broodmother_Spiderling).ToList();
+				var Spiderlings = ObjectManager.GetEntities<Unit>().Where(spiderlings => spiderlings.Name == "npc_dota_broodmother_spiderling").ToList();
 				var count = Spiderlings.Count();
 				for (int s = 0; s < count; ++s)
 				{
@@ -338,7 +337,7 @@ namespace DotaAllCombo.Heroes
 
 					// Item
 
-					sheep = e.ClassID == ClassID.CDOTA_Unit_Hero_Tidehunter ? null : me.FindItem("item_sheepstick");
+					sheep = e.Name == "npc_dota_hero_tidehunter" ? null : me.FindItem("item_sheepstick");
 
 					cheese = me.FindItem("item_cheese");
 

@@ -58,12 +58,12 @@
 
 			var modifInv = Toolset.invUnit(me);
 			var Units = ObjectManager.GetEntities<Unit>().Where(creep =>
-				 (creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral
-				 || creep.ClassID == ClassID.CDOTA_BaseNPC_Invoker_Forged_Spirit
-				 || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep
-				 || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
-				 || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege
-				 || creep.ClassID == ClassID.CDOTA_Unit_Hero_Beastmaster_Boar
+				 (creep.Name == "npc_dota_creep_neutral"
+				 || creep.Name == "npc_dota_invoker_forged_spirit"
+				 || creep.Name == "npc_dota_creep"
+				 || creep.Name == "npc_dota_creep_lane"
+				 || creep.Name == "npc_dota_creep_siege"
+				 || creep.Name == "npc_dota_beastmaster_boar"
 				 )
 				 && creep.Health >= (creep.MaximumHealth * 0.7) 
 				 && creep.IsAlive

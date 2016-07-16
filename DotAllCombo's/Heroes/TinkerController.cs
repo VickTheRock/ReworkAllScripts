@@ -44,12 +44,12 @@
             Active = Game.IsKeyDown(Menu.Item("keyBind").GetValue<KeyBind>().Key);
             CastW = Game.IsKeyDown(Menu.Item("keySpamW").GetValue<KeyBind>().Key);
             CastE = Game.IsKeyDown(Menu.Item("keySpamE").GetValue<KeyBind>().Key);
-            List<Unit> fount = ObjectManager.GetEntities<Unit>().Where(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Fountain).ToList();
+            List<Unit> fount = ObjectManager.GetEntities<Unit>().Where(x => x.Team == me.Team && x.Name == "ent_dota_fountain").ToList();
             var creeps = ObjectManager.GetEntities<Creep>().Where(creep =>
-                   (creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
-                   || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege
-                   || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral
-                   || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep) &&
+                   (creep.Name == "npc_dota_creep_lane"
+                   || creep.Name == "npc_dota_creep_siege"
+                   || creep.Name == "npc_dota_creep_neutral"
+                   || creep.Name == "npc_dota_creep") &&
                   creep.IsAlive && creep.Team != me.Team && creep.IsVisible && creep.IsSpawned).ToList();
             Vector3 panic = GetClosestToVector(TinkerCords.PanicPos, me);
             Vector3 safe = GetClosestToVector(TinkerCords.SafePos, me);

@@ -39,7 +39,7 @@
 			// Item
 			ethereal = me.FindItem("item_ethereal_blade");
 
-			sheep = e.ClassID == ClassID.CDOTA_Unit_Hero_Tidehunter ? null : me.FindItem("item_sheepstick");
+			sheep = e.Name == "npc_dota_hero_tidehunter" ? null : me.FindItem("item_sheepstick");
 
 			vail = me.FindItem("item_veil_of_discord");
 

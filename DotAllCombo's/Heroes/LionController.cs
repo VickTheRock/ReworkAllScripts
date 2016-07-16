@@ -41,7 +41,7 @@
 			// Item
 			ethereal = me.FindItem("item_ethereal_blade");
 
-			sheep = e.ClassID == ClassID.CDOTA_Unit_Hero_Tidehunter ? null : me.FindItem("item_sheepstick");
+			sheep = e.Name == "npc_dota_hero_tidehunter" ? null : me.FindItem("item_sheepstick");
 
 			vail = me.FindItem("item_veil_of_discord");
 
@@ -485,22 +485,22 @@
 							|| v.HasModifier("modifier_axe_berserkers_call")
 							|| v.HasModifier("modifier_bane_fiends_grip")
 							||
-							v.ClassID == ClassID.CDOTA_Unit_Hero_Magnataur &&
+							v.Name == "npc_dota_hero_magnataur" &&
 							v.FindSpell("magnataur_reverse_polarity").IsInAbilityPhase
 							||
-							v.ClassID == ClassID.CDOTA_Unit_Hero_Magnataur &&
+							v.Name == "npc_dota_hero_magnataur" &&
 							v.FindSpell("magnataur_skewer").IsInAbilityPhase
 							|| v.FindItem("item_blink").IsInAbilityPhase
 							||
-							v.ClassID == ClassID.CDOTA_Unit_Hero_QueenOfPain &&
+							v.Name == "npc_dota_hero_queenofpain" &&
 							v.FindSpell("queenofpain_blink").IsInAbilityPhase
 							||
-							v.ClassID == ClassID.CDOTA_Unit_Hero_AntiMage && v.FindSpell("antimage_blink").IsInAbilityPhase
+							v.Name == "npc_dota_hero_antimage" && v.FindSpell("antimage_blink").IsInAbilityPhase
 							||
-							v.ClassID == ClassID.CDOTA_Unit_Hero_AntiMage &&
+							v.Name == "npc_dota_hero_antimage" &&
 							v.FindSpell("antimage_mana_void").IsInAbilityPhase
 							||
-							v.ClassID == ClassID.CDOTA_Unit_Hero_DoomBringer &&
+							v.Name == "npc_dota_hero_doom_bringer" &&
 							v.FindSpell("doom_bringer_doom").IsInAbilityPhase
 							|| v.HasModifier("modifier_rubick_telekinesis")
 							|| v.HasModifier("modifier_item_blink_dagger")
@@ -509,16 +509,15 @@
 							|| v.HasModifier("modifier_winter_wyvern_winters_curse")
 							|| v.HasModifier("modifier_shadow_shaman_shackles")
 							||
-							v.HasModifier("modifier_faceless_void_chronosphere_freeze") &&
-							v.ClassID == ClassID.CDOTA_Unit_Hero_FacelessVoid
+							v.HasModifier("modifier_faceless_void_chronosphere_freeze")
 							||
-							v.ClassID == ClassID.CDOTA_Unit_Hero_WitchDoctor &&
+							v.Name == "npc_dota_hero_witch_doctor" &&
 							v.FindSpell("witch_doctor_death_ward").IsInAbilityPhase
 							||
-							v.ClassID == ClassID.CDOTA_Unit_Hero_Rattletrap &&
+							v.Name == "npc_dota_hero_rattletrap" &&
 							v.FindSpell("rattletrap_power_cogs").IsInAbilityPhase
 							||
-							v.ClassID == ClassID.CDOTA_Unit_Hero_Tidehunter &&
+							v.Name == "npc_dota_hero_tidehunter" &&
 							v.FindSpell("tidehunter_ravage").IsInAbilityPhase
 							&& !v.IsMagicImmune()
 							)

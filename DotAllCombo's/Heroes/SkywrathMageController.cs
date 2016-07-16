@@ -121,7 +121,7 @@ namespace DotaAllCombo.Heroes
 			// Item
 			ethereal = me.FindItem("item_ethereal_blade");
 
-			sheep = e.ClassID == ClassID.CDOTA_Unit_Hero_Tidehunter ? null : me.FindItem("item_sheepstick");
+			sheep = e.Name == "npc_dota_hero_tidehunter" ? null : me.FindItem("item_sheepstick");
 
 			vail = me.FindItem("item_veil_of_discord");
 
@@ -481,7 +481,7 @@ namespace DotaAllCombo.Heroes
 					{
 						if (Utils.SleepCheck(v[i].Handle.ToString()))
 						{
-							if (v[i].ClassID == ClassID.CDOTA_Unit_Hero_SpiritBreaker)
+							if (v[i].Name == "npc_dota_hero_spirit_breaker")
 							{
 								float angle = me.FindAngleBetween(v[i].Position, true);
 								Vector3 pos = new Vector3((float)(me.Position.X + 100 * Math.Cos(angle)),
@@ -582,8 +582,7 @@ namespace DotaAllCombo.Heroes
 							 v[i].FindSpell("rattletrap_power_cogs").IsInAbilityPhase)
 							 || v[i].HasModifier("modifier_axe_berserkers_call")
 							 || v[i].HasModifier("modifier_bane_fiends_grip")
-							 || (v[i].HasModifier("modifier_faceless_void_chronosphere_freeze")
-							 && v[i].ClassID != ClassID.CDOTA_Unit_Hero_FacelessVoid)
+							 || v[i].HasModifier("modifier_faceless_void_chronosphere_freeze")
 							 || v[i].HasModifier("modifier_storm_spirit_electric_vortex_pull")
 							 || (v[i].FindSpell("witch_doctor_death_ward") != null
 							 && v[i].FindSpell("witch_doctor_death_ward").IsInAbilityPhase)
@@ -735,8 +734,7 @@ namespace DotaAllCombo.Heroes
 							 && v[i].FindSpell("legion_commander_duel").Cooldown <= 0)
 							 || (v[i].FindSpell("doom_bringer_doom") != null
 							 && v[i].FindSpell("doom_bringer_doom").IsInAbilityPhase)
-							 || (v[i].HasModifier("modifier_faceless_void_chronosphere_freeze")
-							 && v[i].ClassID != ClassID.CDOTA_Unit_Hero_FacelessVoid)
+							 || v[i].HasModifier("modifier_faceless_void_chronosphere_freeze")
 							 || (v[i].FindSpell("witch_doctor_death_ward") != null &&
 							 v[i].FindSpell("witch_doctor_death_ward").IsInAbilityPhase)
 							 || (v[i].FindSpell("rattletrap_power_cogs") != null &&
