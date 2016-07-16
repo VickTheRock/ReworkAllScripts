@@ -1,4 +1,4 @@
-﻿namespace DotaAllCombo.Heroes
+namespace DotaAllCombo.Heroes
 {
     using SharpDX;
     using System;
@@ -33,9 +33,9 @@
             {
                 Q = me.Spellbook.SpellQ;
 
-                W = me.Spellbook.SpellW;
+                W = me.Spellbook.SpellW?? me.FindSpell("tusk_launch_snowball");
 
-                E = me.Spellbook.SpellE;
+				E = me.Spellbook.SpellE;
 
                 R = me.Spellbook.SpellR;
 
@@ -313,8 +313,7 @@
                     W.UseAbility();
                     Utils.Sleep(120, "W");
                 }
-
-                var Sigl = ObjectManager.GetEntities<Unit>().FirstOrDefault(x => (x.Name== "npc_dota_tusk_frozen_sigil")
+                var Sigl = ObjectManager.GetEntities<Unit>().FirstOrDefault(x => (x.NetworkName== "CDOTA_BaseNPC_Tusk_Sigil")
                                                                     && x.IsAlive && x.IsControllable);
 
                 if (Menu.Item("SiglControl").IsActive() && Sigl != null)
@@ -342,7 +341,7 @@
                     || x.Name == "npc_dota_lone_druid_bear"
                     || x.Name == "npc_dota_warlock_golem"
                     || x.Name == "npc_dota_broodmother_spiderling"
-                    || x.NetworkName == "CDOTA_BaseNPC_Creep")
+                    || x.Name == "npc_dota_creep")
                     && !x.IsAttackImmune() && !x.IsInvul() && x.IsVisible
                     && x.IsAlive && me.Distance2D(x) <= 395)
                     && x.IsAlive && x.IsControllable
@@ -394,8 +393,10 @@
             Menu.AddItem(
                 new MenuItem("Skills", "Skills").SetValue(new AbilityToggler(new Dictionary<string, bool>
                 {
-                    {"tusk_ice_shards", true},
-                    {"tusk_frozen_sigil", true},
+
+					{"tusk_ice_shards", true},
+					{"tusk_frozen_sigil", true},
+					{"tusk_launch_snowball", true},
                     {"tusk_snowball", true},
                     {"tusk_walrus_punch", true}
                 })));
