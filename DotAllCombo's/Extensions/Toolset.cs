@@ -100,9 +100,8 @@ namespace DotaAllCombo.Service
 			for (int i = 0; i < projectiles.Count; ++i)
 			{
 				var closestCreepUnAgr = GetClosestToUnit(z, v);
-
-				if (projectiles[i].Source.Name == "ent_dota_fountain"
-					|| projectiles[i].Source.Name == "npc_dota_tower")
+				if (projectiles[i].Source.NetworkName == "CDOTA_BaseNPC_Tower"
+					|| projectiles[i].Source.NetworkName == "CDOTA_Unit_Fountain")
 				{
 					if (closestCreepUnAgr == null) return;
 					if (closestCreepUnAgr.Distance2D(v) <= 500 & Utils.SleepCheck("UnAgr"))
