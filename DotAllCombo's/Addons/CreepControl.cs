@@ -67,12 +67,12 @@ namespace DotaAllCombo.Addons
 			e = me.ClosestToMouseTarget(10000);
 
 			var Units = ObjectManager.GetEntities<Unit>().Where(creep =>
-				(creep.Name == "npc_dota_creep_neutral"
+				(creep.NetworkName == "CDOTA_BaseNPC_Creep_Neutral"
 				|| creep.Name == "npc_dota_base_additive"
 				|| creep.Name == "npc_dota_tusk_frozen_sigil"
 				|| creep.Name == "npc_dota_invoker_forged_spirit"
 				|| creep.Name == "npc_dota_warlock_golem"
-				|| creep.Name == "npc_dota_creep"
+				|| creep.NetworkName == "CDOTA_BaseNPC_Creep"
 				|| creep.Name == "npc_dota_visage_familiar"
 				|| creep.Name == "npc_dota_brewmaster_earth"
 				|| creep.Name == "npc_dota_brewmaster_storm"
@@ -428,7 +428,7 @@ namespace DotaAllCombo.Addons
 										}
 										if (midas != null)
 										{
-											var neutrals = ObjectManager.GetEntities<Creep>().Where(creep => (creep.Name == "npc_dota_creep_lane" || creep.Name == "npc_dota_creep_siege" || creep.Name == "npc_dota_creep_neutral" || creep.Name == "npc_dota_invoker_forged_spirit" || creep.Name == "npc_dota_creep" &&
+											var neutrals = ObjectManager.GetEntities<Creep>().Where(creep => (creep.NetworkName == "CDOTA_BaseNPC_Creep_Lane" || creep.NetworkName == "CDOTA_BaseNPC_Creep_Siege" || creep.NetworkName == "CDOTA_BaseNPC_Creep_Neutral" || creep.Name == "npc_dota_invoker_forged_spirit" || creep.NetworkName == "CDOTA_BaseNPC_Creep" &&
 												creep.IsAlive && creep.IsVisible && creep.IsSpawned) && creep.Team != me.Team).ToList();
 
 											foreach (var f in neutrals)

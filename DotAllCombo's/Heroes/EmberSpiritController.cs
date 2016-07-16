@@ -36,7 +36,7 @@ namespace DotaAllCombo.Heroes
 			e = me.ClosestToMouseTarget(1800);
 			if (Push)
 			{
-				Unit fount = ObjectManager.GetEntities<Unit>().FirstOrDefault(x => x.Team == me.Team && x.Name == "ent_dota_fountain");
+				Unit fount = ObjectManager.GetEntities<Unit>().FirstOrDefault(x => x.Team == me.Team && x.NetworkName == "CDOTA_Unit_Fountain");
 				var remnant = ObjectManager.GetEntities<Unit>().Where(unit => unit.IsValid && unit.IsAlive && unit.Team == me.Team && unit.Name == "npc_dota_ember_spirit_remnant").ToList();
 
 				if (fount != null)

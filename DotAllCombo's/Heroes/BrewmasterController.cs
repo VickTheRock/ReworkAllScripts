@@ -178,7 +178,7 @@
 
 
 					var Necronomicons =
-						ObjectManager.GetEntities<Creep>().Where(x => (x.Name == "npc_dota_creep")
+						ObjectManager.GetEntities<Creep>().Where(x => (x.NetworkName == "CDOTA_BaseNPC_Creep")
 																  && x.IsAlive && x.IsControllable);
 					if (Necronomicons == null)
 					{
@@ -212,7 +212,7 @@
 
 					//Necronomicon Warrior
 					var Necrowarrior =
-						ObjectManager.GetEntities<Creep>().Where(x => (x.Name == "npc_dota_creep")
+						ObjectManager.GetEntities<Creep>().Where(x => (x.NetworkName == "CDOTA_BaseNPC_Creep")
 																  && x.IsAlive && x.IsControllable);
 					if (Necrowarrior == null)
 					{

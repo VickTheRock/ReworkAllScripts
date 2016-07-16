@@ -26,7 +26,6 @@
 		public void Combo()
 		{
             e = me.ClosestToMouseTarget(2000);
-            if (e == null) return;
 
 
             //spell
@@ -39,7 +38,6 @@
             // Item
             ethereal = me.FindItem("item_ethereal_blade");
 
-            sheep = e.Name == "npc_dota_hero_tidehunter" ? null : me.FindItem("item_sheepstick");
 
             vail = me.FindItem("item_veil_of_discord");
 
@@ -63,28 +61,49 @@
 
             Active = Game.IsKeyDown(Menu.Item("keyBind").GetValue<KeyBind>().Key) && !Game.IsChatOpen;
 
-            
-            var modifEther = e.HasModifier("modifier_item_ethereal_blade_slow");
-            var stoneModif = e.HasModifier("modifier_medusa_stone_gaze_stone");
+			Push = Game.IsKeyDown(Menu.Item("keyQ").GetValue<KeyBind>().Key) && !Game.IsChatOpen;
 
-            if (Game.IsKeyDown(70) && Q.CanBeCasted() && e != null)
-            {
-                if (
-                    Q != null
-                    && Q.CanBeCasted()
-                    && (e.IsLinkensProtected()
-                        || !e.IsLinkensProtected())
-                    && me.CanCast()
-                    && me.Distance2D(e) < 900
-                    && !stoneModif
-                    && Utils.SleepCheck("Q")
-                    )
-                {
-                    Q.UseAbility(e);
-                    Utils.Sleep(200, "Q");
-                }
-            }
-            if (Active && me.IsAlive && e.IsAlive && Utils.SleepCheck("activated"))
+			var modifEther = e.HasModifier("modifier_item_ethereal_blade_slow");
+            var stoneModif = e.HasModifier("modifier_medusa_stone_gaze_stone");
+			if (Push)
+			{
+				if (Q == null) return;
+				var Units = ObjectManager.GetEntities<Unit>().Where(creep =>
+					(creep.NetworkName == "CDOTA_BaseNPC_Creep_Neutral"
+					|| creep.Name == "npc_dota_invoker_forged_spirit"
+					|| creep.Name == "npc_dota_warlock_golem"
+					|| creep.NetworkName == "CDOTA_BaseNPC_Creep"
+					|| creep.NetworkName == "CDOTA_BaseNPC_Creep_Lane"
+					|| creep.Name == "npc_dota_beastmaster_boar"
+					|| creep.Name == "npc_dota_lone_druid_bear"
+					|| creep.Name == "npc_dota_broodmother_spiderling"
+					)
+					&& creep.IsAlive
+					&& creep.Distance2D(me) <= Q.GetCastRange() + me.HullRadius
+					&& creep.Team != me.Team
+					).ToList();
+				var lens = me.HasModifier("modifier_item_aether_lens");
+				var spellamplymult = 1 + (me.TotalIntelligence / 16 / 100);
+				qDmg = new[] { 85, 100, 115, 145 };
+				foreach (var v in Units)
+				{
+					var damageQ = Math.Floor(qDmg[Q.Level - 1] * (1 - v.MagicDamageResist));
+					if (me.Distance2D(v) < 1150)
+						damageQ = damageQ + eDmg[me.Spellbook.Spell3.Level] * 0.01 * v.Health * (1 - v.MagicDamageResist);
+
+					if (lens) damageQ = damageQ * 1.08;
+					damageQ = damageQ * spellamplymult;
+					if (Q != null && Q.CanBeCasted() && v.Health <= damageQ && Utils.SleepCheck("qq"))
+					{
+						Q.UseAbility(v);
+						Utils.Sleep(250, "qq");
+					}
+				}
+			}
+			if (e == null) return;
+
+			sheep = e.Name == "npc_dota_hero_tidehunter" ? null : me.FindItem("item_sheepstick");
+			if (Active && me.IsAlive && e.IsAlive && Utils.SleepCheck("activated"))
             {
                 var noBlade = e.HasModifier("modifier_item_blade_mail_reflect");
                 if (e.IsVisible && me.Distance2D(e) <= 2300 && !noBlade)
@@ -383,7 +402,9 @@
 			var enemies =
 				ObjectManager.GetEntities<Hero>()
 					.Where(x => x.IsVisible && x.IsAlive && x.Team != me.Team && !x.IsIllusion).ToList();
-            if(enemies.Count<=0)return;
+			
+			
+			if (enemies.Count<=0)return;
 			if (Menu.Item("autoUlt").GetValue<bool>() && me.IsAlive)
 			{
 				foreach (var v in enemies)

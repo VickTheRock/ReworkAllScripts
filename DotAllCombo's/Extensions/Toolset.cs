@@ -129,9 +129,9 @@ namespace DotaAllCombo.Service
 		{
 			if (v == null) return;
 			var creepsA = ObjectManager.GetEntities<Unit>().Where(creep =>
-				(creep.Name == "npc_dota_creep_lane"
-				 || creep.Name == "npc_dota_creep_neutral"
-				 || creep.Name == "npc_dota_creep") &&
+				(creep.NetworkName == "CDOTA_BaseNPC_Creep_Lane"
+				 || creep.NetworkName == "CDOTA_BaseNPC_Creep_Neutral"
+				 || creep.NetworkName == "CDOTA_BaseNPC_Creep") &&
 				creep.IsAlive && creep.Team == me.Team && creep.IsVisible && creep.IsSpawned).ToList();
 
 			if (creepsA.Count(x => x.Distance2D(v) <= 500) == 0)

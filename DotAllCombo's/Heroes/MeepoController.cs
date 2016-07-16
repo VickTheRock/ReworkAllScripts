@@ -40,10 +40,10 @@
             PoofAutoMode = Menu.Item("poofAutoMod").GetValue<KeyBind>().Active;
             SafePoof = Menu.Item("poofSafe").IsActive();
             dodge = Menu.Item("Dodge").GetValue<KeyBind>().Active;
-            var checkObj = ObjectManager.GetEntities<Unit>().Where(x => (x.Name == "npc_dota_creep_lane"
-                        || x.Name == "npc_dota_creep_siege"
-                        || x.Name == "npc_dota_creep"
-                        || x.Name == "npc_dota_creep_neutral"
+            var checkObj = ObjectManager.GetEntities<Unit>().Where(x => (x.NetworkName == "CDOTA_BaseNPC_Creep_Lane"
+                        || x.NetworkName == "CDOTA_BaseNPC_Creep_Siege"
+                        || x.NetworkName == "CDOTA_BaseNPC_Creep"
+                        || x.NetworkName == "CDOTA_BaseNPC_Creep_Neutral"
                         || x.HasInventory
                         || x.Name == "npc_dota_lone_druid_bear") && x.IsAlive && x.Team != me.Team && x.IsValid).ToList();
             var meepos = ObjectManager.GetEntities<Hero>().Where(x => x.IsControllable && x.IsAlive && x.Name == "npc_dota_hero_meepo").ToList();
@@ -52,7 +52,7 @@
 
 
 
-            List<Unit> fount = ObjectManager.GetEntities<Unit>().Where(x => x.Team == me.Team && x.Name == "ent_dota_fountain").ToList();
+            List<Unit> fount = ObjectManager.GetEntities<Unit>().Where(x => x.Team == me.Team && x.NetworkName == "CDOTA_Unit_Fountain").ToList();
             //blink = me.FindItem("item_blink");
 
 
@@ -311,10 +311,10 @@
             {
                 for (int i = 0; i < meeposCount; i++)
                 {
-                    var nCreeps = ObjectManager.GetEntities<Unit>().Where(x => (x.Name == "npc_dota_creep_lane"
-                        || x.Name == "npc_dota_creep_siege"
-                        || x.Name == "npc_dota_creep"
-                        || x.Name == "npc_dota_creep_neutral") && x.Team != me.Team && x.IsSpawned && x.IsAlive).Where(x => x.Distance2D(meepos[i]) <= 345).ToList().Count();
+                    var nCreeps = ObjectManager.GetEntities<Unit>().Where(x => (x.NetworkName == "CDOTA_BaseNPC_Creep_Lane"
+                        || x.NetworkName == "CDOTA_BaseNPC_Creep_Siege"
+                        || x.NetworkName == "CDOTA_BaseNPC_Creep"
+                        || x.NetworkName == "CDOTA_BaseNPC_Creep_Neutral") && x.Team != me.Team && x.IsSpawned && x.IsAlive).Where(x => x.Distance2D(meepos[i]) <= 345).ToList().Count();
 
                     SliderCountUnit = nCreeps >= (skills.Item("poofCount").GetValue<Slider>().Value);
 

@@ -342,7 +342,7 @@
                     || x.Name == "npc_dota_lone_druid_bear"
                     || x.Name == "npc_dota_warlock_golem"
                     || x.Name == "npc_dota_broodmother_spiderling"
-                    || x.Name == "npc_dota_creep")
+                    || x.NetworkName == "CDOTA_BaseNPC_Creep")
                     && !x.IsAttackImmune() && !x.IsInvul() && x.IsVisible
                     && x.IsAlive && me.Distance2D(x) <= 395)
                     && x.IsAlive && x.IsControllable

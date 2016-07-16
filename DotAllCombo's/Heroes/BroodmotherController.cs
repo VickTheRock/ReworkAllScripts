@@ -55,13 +55,13 @@ namespace DotaAllCombo.Heroes
 
 				var enemies = ObjectManager.GetEntities<Hero>().Where(hero => hero.IsAlive && !hero.IsIllusion && hero.IsVisible && hero.Team != me.Team).ToList();
 
-				var creeps = ObjectManager.GetEntities<Creep>().Where(creep => (creep.Name == "npc_dota_creep_lane" || creep.Name == "npc_dota_creep_siege" || creep.Name == "npc_dota_creep_neutral" ||
+				var creeps = ObjectManager.GetEntities<Creep>().Where(creep => (creep.NetworkName == "CDOTA_BaseNPC_Creep_Lane" || creep.NetworkName == "CDOTA_BaseNPC_Creep_Siege" || creep.NetworkName == "CDOTA_BaseNPC_Creep_Neutral" ||
 				(creep.Name == "npc_dota_visage_familiar" && creep.Team != me.Team) || (creep.Name == "npc_dota_lone_druid_bear" && creep.Team != me.Team) || (creep.Name == "npc_dota_invoker_forged_spirit" &&
-				creep.Team != me.Team) || creep.Name == "npc_dota_creep" &&
+				creep.Team != me.Team) || creep.NetworkName == "CDOTA_BaseNPC_Creep" &&
 				creep.IsAlive && creep.IsVisible && creep.IsSpawned) && creep.Health <= 259).ToList();
 
-				var creepQ = ObjectManager.GetEntities<Creep>().Where(creep => (creep.Name == "npc_dota_creep_lane" || creep.Name == "npc_dota_creep_siege" || creep.Name == "npc_dota_creep_neutral" ||
-				creep.Name == "npc_dota_lone_druid_bear" || creep.Name == "npc_dota_invoker_forged_spirit" || creep.Name == "npc_dota_creep" &&
+				var creepQ = ObjectManager.GetEntities<Creep>().Where(creep => (creep.NetworkName == "CDOTA_BaseNPC_Creep_Lane" || creep.NetworkName == "CDOTA_BaseNPC_Creep_Siege" || creep.NetworkName == "CDOTA_BaseNPC_Creep_Neutral" ||
+				creep.Name == "npc_dota_lone_druid_bear" || creep.Name == "npc_dota_invoker_forged_spirit" || creep.NetworkName == "CDOTA_BaseNPC_Creep" &&
 				creep.IsAlive && creep.IsVisible && creep.IsSpawned)).ToList();
 
 				var Spiderlings = ObjectManager.GetEntities<Unit>().Where(spiderlings => spiderlings.Name == "npc_dota_broodmother_spiderling").ToList();

@@ -35,14 +35,14 @@
 			foreach (var v in units.Where(x => !x.IsMagicImmune()))
 			{
 				creepsECount = ObjectManager.GetEntities<Unit>().Where(creep =>
-					(creep.Name == "npc_dota_creep_lane"
-					 || creep.Name == "npc_dota_creep_siege"
-					 || creep.Name == "npc_dota_creep_neutral"
+					(creep.NetworkName == "CDOTA_BaseNPC_Creep_Lane"
+					 || creep.NetworkName == "CDOTA_BaseNPC_Creep_Siege"
+					 || creep.NetworkName == "CDOTA_BaseNPC_Creep_Neutral"
 					 || creep.Name == "npc_dota_broodmother_spiderling"
 					 || creep.Name == "npc_dota_lone_druid_bear"
 					 || creep.Name == "npc_dota_invoker_forged_spirit"
 					 || creep.Name == "npc_dota_warlock_golem"
-					 || creep.Name == "npc_dota_creep") &&
+					 || creep.NetworkName == "CDOTA_BaseNPC_Creep") &&
 					creep.IsAlive && creep.Team != me.Team && creep.IsVisible && v.Distance2D(creep) <= 330 &&
 					creep.IsSpawned).ToList().Count();
 				enemiesCount = ObjectManager.GetEntities<Hero>().Where(x =>
@@ -498,10 +498,10 @@
 				foreach (var v in units.Where(x => !x.IsMagicImmune()))
 				{
 					creepsECount = ObjectManager.GetEntities<Unit>().Where(creep =>
-						(creep.Name == "npc_dota_creep_lane"
-						 || creep.Name == "npc_dota_creep_siege"
-						 || creep.Name == "npc_dota_creep_neutral"
-						 || creep.Name == "npc_dota_creep") &&
+						(creep.NetworkName == "CDOTA_BaseNPC_Creep_Lane"
+						 || creep.NetworkName == "CDOTA_BaseNPC_Creep_Siege"
+						 || creep.NetworkName == "CDOTA_BaseNPC_Creep_Neutral"
+						 || creep.NetworkName == "CDOTA_BaseNPC_Creep") &&
 						creep.IsAlive && creep.Team != me.Team && creep.IsVisible && v.Distance2D(creep) <= 330 &&
 						creep.IsSpawned).ToList().Count();
 					enemiesCount = ObjectManager.GetEntities<Hero>().Where(x =>
