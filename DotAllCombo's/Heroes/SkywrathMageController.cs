@@ -1,5 +1,3 @@
-﻿using Ensage.Common.Objects.UtilityObjects;
-
 namespace DotaAllCombo.Heroes
 {
 	using System;
@@ -521,13 +519,13 @@ namespace DotaAllCombo.Heroes
 					{
 						if (cyclone != null && reflect && cyclone.CanBeCasted() &&
 							v[i].HasModifier("modifier_skywrath_mystic_flare_aura_effect") &&
-							me.Distance2D(v[i]) < cyclone.CastRange
+							me.Distance2D(v[i]) < cyclone.GetCastRange()
 							)
 							cyclone.UseAbility(me);
 
-						if (R != null && R.CanBeCasted() && me.Distance2D(v[i]) <= R.CastRange + 100
+						if (R != null && R.CanBeCasted() && me.Distance2D(v[i]) <= R.GetCastRange() + 100
 							&& !me.HasModifier("modifier_pugna_nether_ward_aura")
-							&& (v[i].MovementSpeed <= 200 && !E.CanBeCasted())
+							&& (v[i].MovementSpeed <= 220 && !E.CanBeCasted())
 							&& !v[i].HasModifier("modifier_zuus_lightningbolt_vision_thinker")
 							&& !v[i].HasModifier("modifier_item_blade_mail_reflect")
 							&& !v[i].HasModifier("modifier_sniper_headshot")
@@ -561,7 +559,7 @@ namespace DotaAllCombo.Heroes
 							)
 							R.UseAbility(Prediction.InFront(v[i], 90));
 
-						if (R != null && R.CanBeCasted() && me.Distance2D(v[i]) <= R.CastRange + 100
+						if (R != null && R.CanBeCasted() && me.Distance2D(v[i]) <= R.GetCastRange() + 100
 							&& !me.HasModifier("modifier_pugna_nether_ward_aura")
 							&&
 							(v[i].HasModifier("modifier_meepo_earthbind")
@@ -626,9 +624,9 @@ namespace DotaAllCombo.Heroes
 							)
 							R.UseAbility(Prediction.InFront(v[i], 70));
 
-						if (R != null && R.CanBeCasted() && me.Distance2D(v[i]) <= R.CastRange + 100
+						if (R != null && R.CanBeCasted() && me.Distance2D(v[i]) <= R.GetCastRange() + 100
 							&& !me.HasModifier("modifier_pugna_nether_ward_aura")
-							&& (v[i].MovementSpeed <= 200 && !E.CanBeCasted())
+							&& (v[i].MovementSpeed <= 220 && !E.CanBeCasted())
 							&& v[i].MagicDamageResist <= 0.06
 							&& v[i].Health >= (v[i].MaximumHealth / 100 * (Menu.Item("Healh").GetValue<Slider>().Value))
 							&& !v[i].HasModifier("modifier_item_blade_mail_reflect")
@@ -702,7 +700,7 @@ namespace DotaAllCombo.Heroes
 							)
 							ethereal.UseAbility(v[i]);
 
-						if (E != null && E.CanBeCasted() && me.Distance2D(v[i]) <= E.CastRange
+						if (E != null && E.CanBeCasted() && me.Distance2D(v[i]) <= E.GetCastRange()+me.HullRadius
 							&& !v[i].IsLinkensProtected()
 							&&
 							(v[i].HasModifier("modifier_meepo_earthbind")
@@ -783,19 +781,19 @@ namespace DotaAllCombo.Heroes
 
 					if (v[i].IsLinkensProtected() && (me.IsVisibleToEnemies || Active) && Utils.SleepCheck(v[i].Handle.ToString()))
 					{
-						if (force != null && force.CanBeCasted() && me.Distance2D(v[i]) < force.CastRange &&
+						if (force != null && force.CanBeCasted() && me.Distance2D(v[i]) < force.GetCastRange() &&
 							Menu.Item("Link").GetValue<AbilityToggler>().IsEnabled(force.Name))
 							force.UseAbility(v[i]);
-						else if (cyclone != null && cyclone.CanBeCasted() && me.Distance2D(v[i]) < cyclone.CastRange &&
+						else if (cyclone != null && cyclone.CanBeCasted() && me.Distance2D(v[i]) < cyclone.GetCastRange() &&
 							  Menu.Item("Link").GetValue<AbilityToggler>().IsEnabled(cyclone.Name))
 							cyclone.UseAbility(v[i]);
-						else if (atos != null && atos.CanBeCasted() && me.Distance2D(v[i]) < atos.CastRange - 400 &&
+						else if (atos != null && atos.CanBeCasted() && me.Distance2D(v[i]) < atos.GetCastRange() - 400 &&
 							  Menu.Item("Link").GetValue<AbilityToggler>().IsEnabled(atos.Name))
 							atos.UseAbility(v[i]);
-						else if (dagon != null && dagon.CanBeCasted() && me.Distance2D(v[i]) < dagon.CastRange &&
+						else if (dagon != null && dagon.CanBeCasted() && me.Distance2D(v[i]) < dagon.GetCastRange() &&
 							  Menu.Item("Link").GetValue<AbilityToggler>().IsEnabled("item_dagon"))
 							dagon.UseAbility(v[i]);
-						else if (orchid != null && orchid.CanBeCasted() && me.Distance2D(v[i]) < orchid.CastRange &&
+						else if (orchid != null && orchid.CanBeCasted() && me.Distance2D(v[i]) < orchid.GetCastRange() &&
 							  Menu.Item("Link").GetValue<AbilityToggler>().IsEnabled(orchid.Name))
 							orchid.UseAbility(v[i]);
 						Utils.Sleep(350, v[i].Handle.ToString());
