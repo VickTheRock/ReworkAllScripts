@@ -522,10 +522,127 @@ namespace DotaAllCombo.Heroes
 							me.Distance2D(v[i]) < cyclone.GetCastRange()
 							)
 							cyclone.UseAbility(me);
+						if (W != null && W.CanBeCasted() && me.Distance2D(v[i]) <= 1400
+							&& ((v[i].MovementSpeed <= 255
+							 && !v[i].HasModifier("modifier_phantom_assassin_stiflingdagger"))
+							 || (v[i].Distance2D(me) <= me.HullRadius + 10
+							 && v[i].NetworkActivity == NetworkActivity.Attack)
+							 || v[i].MagicDamageResist <= 0.07)
+							&& !v[i].IsMagicImmune()
+							)
+							W.UseAbility();
+
+						if (atos != null && R != null && R.CanBeCasted() && atos.CanBeCasted()
+							&& !v[i].IsLinkensProtected()
+							&& me.Distance2D(v[i]) <= 1200
+							&& v[i].MagicDamageResist <= 0.07
+							&& !v[i].IsMagicImmune()
+							)
+							atos.UseAbility(v[i]);
+
+						if (vail != null && v[i].HasModifier("modifier_skywrath_mystic_flare_aura_effect")
+							&& vail.CanBeCasted()
+							&& !v[i].IsMagicImmune()
+							&& me.Distance2D(v[i]) <= 1200
+							)
+							vail.UseAbility(v[i].Position);
+
+						if (E != null && v[i].HasModifier("modifier_skywrath_mystic_flare_aura_effect")
+							&& E.CanBeCasted()
+							&& (v[i].FindItem("item_manta") != null && v[i].FindItem("item_manta").Cooldown > 0
+							|| (v[i].FindItem("item_manta") == null || v[i].IsStunned() || v[i].IsHexed() || v[i].IsRooted()))
+							&& me.Distance2D(v[i]) <= 900
+							)
+							E.UseAbility(v[i]);
+
+						if (ethereal != null &&
+							v[i].HasModifier("modifier_skywrath_mystic_flare_aura_effect")
+							&& !v[i].HasModifier("modifier_legion_commander_duel")
+							&& ethereal.CanBeCasted()
+							&& E.CanBeCasted()
+							&& me.Distance2D(v[i]) <= 1000
+							)
+							ethereal.UseAbility(v[i]);
+
+						if (E != null && E.CanBeCasted() && me.Distance2D(v[i]) <= E.GetCastRange() + me.HullRadius
+							&& !v[i].IsLinkensProtected()
+							&&
+							(v[i].HasModifier("modifier_meepo_earthbind")
+							 || v[i].HasModifier("modifier_pudge_dismember")
+							 || v[i].HasModifier("modifier_naga_siren_ensnare")
+							 || v[i].HasModifier("modifier_lone_druid_spirit_bear_entangle_effect")
+							 || v[i].HasModifier("modifier_legion_commander_duel")
+							 || v[i].HasModifier("modifier_kunkka_torrent")
+							 || v[i].HasModifier("modifier_ice_blast")
+							 || v[i].HasModifier("modifier_enigma_black_hole_pull")
+							 || v[i].HasModifier("modifier_ember_spirit_searing_chains")
+							 || v[i].HasModifier("modifier_dark_troll_warlord_ensnare")
+							 || v[i].HasModifier("modifier_crystal_maiden_crystal_nova")
+							 || v[i].HasModifier("modifier_axe_berserkers_call")
+							 || v[i].HasModifier("modifier_bane_fiends_grip")
+							 || v[i].HasModifier("modifier_rubick_telekinesis")
+							 || v[i].HasModifier("modifier_storm_spirit_electric_vortex_pull")
+							 || v[i].HasModifier("modifier_winter_wyvern_cold_embrace")
+							 || v[i].HasModifier("modifier_shadow_shaman_shackles")
+							 || (v[i].FindSpell("magnataur_reverse_polarity") != null
+							 && v[i].FindSpell("magnataur_reverse_polarity").IsInAbilityPhase)
+							 || (v[i].FindItem("item_blink") != null && v[i].FindItem("item_blink").Cooldown > 11)
+							 || (v[i].FindSpell("queenofpain_blink") != null
+							 && v[i].FindSpell("queenofpain_blink").IsInAbilityPhase)
+							 || (v[i].FindSpell("antimage_blink") != null && v[i].FindSpell("antimage_blink").IsInAbilityPhase)
+							 || (v[i].FindSpell("antimage_mana_void") != null
+							 && v[i].FindSpell("antimage_mana_void").IsInAbilityPhase)
+							 || (v[i].FindSpell("legion_commander_duel") != null
+							 && v[i].FindSpell("legion_commander_duel").Cooldown <= 0)
+							 || (v[i].FindSpell("doom_bringer_doom") != null
+							 && v[i].FindSpell("doom_bringer_doom").IsInAbilityPhase)
+							 || v[i].HasModifier("modifier_faceless_void_chronosphere_freeze")
+							 || (v[i].FindSpell("witch_doctor_death_ward") != null &&
+							 v[i].FindSpell("witch_doctor_death_ward").IsInAbilityPhase)
+							 || (v[i].FindSpell("rattletrap_power_cogs") != null &&
+							 v[i].FindSpell("rattletrap_power_cogs").IsInAbilityPhase)
+							 || (v[i].FindSpell("tidehunter_ravage") != null &&
+							 v[i].FindSpell("tidehunter_ravage").IsInAbilityPhase)
+							 || (v[i].FindSpell("axe_berserkers_call") != null &&
+							 v[i].FindSpell("axe_berserkers_call").IsInAbilityPhase)
+							 || (v[i].FindSpell("brewmaster_primal_split") != null &&
+							 v[i].FindSpell("brewmaster_primal_split").IsInAbilityPhase)
+							 || (v[i].FindSpell("omniknight_guardian_angel") != null &&
+							 v[i].FindSpell("omniknight_guardian_angel").IsInAbilityPhase)
+							 || (v[i].FindSpell("queenofpain_sonic_wave") != null &&
+							 v[i].FindSpell("queenofpain_sonic_wave").IsInAbilityPhase)
+							 || (v[i].FindSpell("sandking_epicenter") != null &&
+							 v[i].FindSpell("sandking_epicenter").IsInAbilityPhase)
+							 || (v[i].FindSpell("slardar_slithereen_crush") != null &&
+							 v[i].FindSpell("slardar_slithereen_crush").IsInAbilityPhase)
+							 || (v[i].FindSpell("tiny_toss") != null && v[i].FindSpell("tiny_toss").IsInAbilityPhase)
+							 || (v[i].FindSpell("tusk_walrus_punch") != null &&
+							 v[i].FindSpell("tusk_walrus_punch").IsInAbilityPhase)
+							 || (v[i].FindSpell("faceless_void_time_walk") != null &&
+							 v[i].FindSpell("faceless_void_time_walk").IsInAbilityPhase)
+							 || (v[i].FindSpell("faceless_void_chronosphere") != null &&
+							 v[i].FindSpell("faceless_void_chronosphere").IsInAbilityPhase)
+							 || (v[i].FindSpell("disruptor_static_storm") != null &&
+							 v[i].FindSpell("disruptor_static_storm").Cooldown <= 0)
+							 || (v[i].FindSpell("lion_finger_of_death") != null &&
+								 v[i].FindSpell("lion_finger_of_death").Cooldown <= 0)
+							 || (v[i].FindSpell("luna_eclipse") != null && v[i].FindSpell("luna_eclipse").Cooldown <= 0)
+							 || (v[i].FindSpell("lina_laguna_blade") != null && v[i].FindSpell("lina_laguna_blade").Cooldown <= 0)
+							 || (v[i].FindSpell("doom_bringer_doom") != null && v[i].FindSpell("doom_bringer_doom").Cooldown <= 0)
+							 || (v[i].FindSpell("life_stealer_rage") != null && v[i].FindSpell("life_stealer_rage").Cooldown <= 0
+							 && me.Level >= 7)
+							 || v[i].IsStunned()
+							 )
+							 && (v[i].FindItem("item_manta") != null && v[i].FindItem("item_manta").Cooldown > 0
+							 || (v[i].FindItem("item_manta") == null || v[i].IsStunned() || v[i].IsHexed() || v[i].IsRooted()))
+							 && !v[i].IsMagicImmune()
+							 && !v[i].HasModifier("modifier_medusa_stone_gaze_stone")
+							 )
+							E.UseAbility(v[i]);
 
 						if (R != null && R.CanBeCasted() && me.Distance2D(v[i]) <= R.GetCastRange() + 100
 							&& !me.HasModifier("modifier_pugna_nether_ward_aura")
-							&& (v[i].MovementSpeed <= 220 && !E.CanBeCasted())
+							&& (v[i].MovementSpeed <= 220 && ((Active && !E.CanBeCasted() || !E.CanBeCasted()) || v[i].MagicDamageResist <= 0.07))
 							&& !v[i].HasModifier("modifier_zuus_lightningbolt_vision_thinker")
 							&& !v[i].HasModifier("modifier_item_blade_mail_reflect")
 							&& !v[i].HasModifier("modifier_sniper_headshot")
@@ -626,8 +743,8 @@ namespace DotaAllCombo.Heroes
 
 						if (R != null && R.CanBeCasted() && me.Distance2D(v[i]) <= R.GetCastRange() + 100
 							&& !me.HasModifier("modifier_pugna_nether_ward_aura")
-							&& (v[i].MovementSpeed <= 220 && !E.CanBeCasted())
-							&& v[i].MagicDamageResist <= 0.06
+							&& (v[i].MovementSpeed <= 220 && ((Active && !E.CanBeCasted() || !E.CanBeCasted()) || v[i].MagicDamageResist <= 0.07))
+							&& v[i].MagicDamageResist <= 0.07
 							&& v[i].Health >= (v[i].MaximumHealth / 100 * (Menu.Item("Healh").GetValue<Slider>().Value))
 							&& !v[i].HasModifier("modifier_item_blade_mail_reflect")
 							&& !v[i].HasModifier("modifier_skywrath_mystic_flare_aura_effect")
@@ -657,124 +774,6 @@ namespace DotaAllCombo.Heroes
 							&& Menu.Item("AutoUlt").GetValue<AbilityToggler>().IsEnabled(R.Name)
 							)
 							R.UseAbility(Prediction.InFront(v[i], 90));
-
-						if (W != null && W.CanBeCasted() && me.Distance2D(v[i]) <= 1400
-							&& ((v[i].MovementSpeed <= 255
-							 && !v[i].HasModifier("modifier_phantom_assassin_stiflingdagger"))
-							 || (v[i].Distance2D(me) <= me.HullRadius + 10
-							 && v[i].NetworkActivity == NetworkActivity.Attack)
-							 || v[i].MagicDamageResist <= 0.07)
-							&& !v[i].IsMagicImmune()
-							)
-							W.UseAbility();
-
-						if (atos != null && R != null && R.CanBeCasted() && atos.CanBeCasted()
-							&& !v[i].IsLinkensProtected()
-							&& me.Distance2D(v[i]) <= 1200
-							&& v[i].MagicDamageResist <= 0.07
-							&& !v[i].IsMagicImmune()
-							)
-							atos.UseAbility(v[i]);
-
-						if (vail != null && v[i].HasModifier("modifier_skywrath_mystic_flare_aura_effect")
-							&& vail.CanBeCasted()
-							&& !v[i].IsMagicImmune()
-							&& me.Distance2D(v[i]) <= 1200
-							)
-							vail.UseAbility(v[i].Position);
-
-						if (E != null && v[i].HasModifier("modifier_skywrath_mystic_flare_aura_effect")
-							&& E.CanBeCasted()
-							&& (v[i].FindItem("item_manta") != null && v[i].FindItem("item_manta").Cooldown > 0
-							|| (v[i].FindItem("item_manta") == null || v[i].IsStunned() || v[i].IsHexed() || v[i].IsRooted()))
-							&& me.Distance2D(v[i]) <= 900
-							)
-							E.UseAbility(v[i]);
-
-						if (ethereal != null &&
-							v[i].HasModifier("modifier_skywrath_mystic_flare_aura_effect")
-							&& !v[i].HasModifier("modifier_legion_commander_duel")
-							&& ethereal.CanBeCasted()
-							&& E.CanBeCasted()
-							&& me.Distance2D(v[i]) <= 1000
-							)
-							ethereal.UseAbility(v[i]);
-
-						if (E != null && E.CanBeCasted() && me.Distance2D(v[i]) <= E.GetCastRange()+me.HullRadius
-							&& !v[i].IsLinkensProtected()
-							&&
-							(v[i].HasModifier("modifier_meepo_earthbind")
-							 || v[i].HasModifier("modifier_pudge_dismember")
-							 || v[i].HasModifier("modifier_naga_siren_ensnare")
-							 || v[i].HasModifier("modifier_lone_druid_spirit_bear_entangle_effect")
-							 || v[i].HasModifier("modifier_legion_commander_duel")
-							 || v[i].HasModifier("modifier_kunkka_torrent")
-							 || v[i].HasModifier("modifier_ice_blast")
-							 || v[i].HasModifier("modifier_enigma_black_hole_pull")
-							 || v[i].HasModifier("modifier_ember_spirit_searing_chains")
-							 || v[i].HasModifier("modifier_dark_troll_warlord_ensnare")
-							 || v[i].HasModifier("modifier_crystal_maiden_crystal_nova")
-							 || v[i].HasModifier("modifier_axe_berserkers_call")
-							 || v[i].HasModifier("modifier_bane_fiends_grip")
-							 || v[i].HasModifier("modifier_rubick_telekinesis")
-							 || v[i].HasModifier("modifier_storm_spirit_electric_vortex_pull")
-							 || v[i].HasModifier("modifier_winter_wyvern_cold_embrace")
-							 || v[i].HasModifier("modifier_shadow_shaman_shackles")
-							 || (v[i].FindSpell("magnataur_reverse_polarity") != null
-							 && v[i].FindSpell("magnataur_reverse_polarity").IsInAbilityPhase)
-							 || (v[i].FindItem("item_blink") != null && v[i].FindItem("item_blink").Cooldown > 11)
-							 || (v[i].FindSpell("queenofpain_blink") != null
-							 && v[i].FindSpell("queenofpain_blink").IsInAbilityPhase)
-							 || (v[i].FindSpell("antimage_blink") != null && v[i].FindSpell("antimage_blink").IsInAbilityPhase)
-							 || (v[i].FindSpell("antimage_mana_void") != null
-							 && v[i].FindSpell("antimage_mana_void").IsInAbilityPhase)
-							 || (v[i].FindSpell("legion_commander_duel") != null
-							 && v[i].FindSpell("legion_commander_duel").Cooldown <= 0)
-							 || (v[i].FindSpell("doom_bringer_doom") != null
-							 && v[i].FindSpell("doom_bringer_doom").IsInAbilityPhase)
-							 || v[i].HasModifier("modifier_faceless_void_chronosphere_freeze")
-							 || (v[i].FindSpell("witch_doctor_death_ward") != null &&
-							 v[i].FindSpell("witch_doctor_death_ward").IsInAbilityPhase)
-							 || (v[i].FindSpell("rattletrap_power_cogs") != null &&
-							 v[i].FindSpell("rattletrap_power_cogs").IsInAbilityPhase)
-							 || (v[i].FindSpell("tidehunter_ravage") != null &&
-							 v[i].FindSpell("tidehunter_ravage").IsInAbilityPhase)
-							 || (v[i].FindSpell("axe_berserkers_call") != null &&
-							 v[i].FindSpell("axe_berserkers_call").IsInAbilityPhase)
-							 || (v[i].FindSpell("brewmaster_primal_split") != null &&
-							 v[i].FindSpell("brewmaster_primal_split").IsInAbilityPhase)
-							 || (v[i].FindSpell("omniknight_guardian_angel") != null &&
-							 v[i].FindSpell("omniknight_guardian_angel").IsInAbilityPhase)
-							 || (v[i].FindSpell("queenofpain_sonic_wave") != null &&
-							 v[i].FindSpell("queenofpain_sonic_wave").IsInAbilityPhase)
-							 || (v[i].FindSpell("sandking_epicenter") != null &&
-							 v[i].FindSpell("sandking_epicenter").IsInAbilityPhase)
-							 || (v[i].FindSpell("slardar_slithereen_crush") != null &&
-							 v[i].FindSpell("slardar_slithereen_crush").IsInAbilityPhase)
-							 || (v[i].FindSpell("tiny_toss") != null && v[i].FindSpell("tiny_toss").IsInAbilityPhase)
-							 || (v[i].FindSpell("tusk_walrus_punch") != null &&
-							 v[i].FindSpell("tusk_walrus_punch").IsInAbilityPhase)
-							 || (v[i].FindSpell("faceless_void_time_walk") != null &&
-							 v[i].FindSpell("faceless_void_time_walk").IsInAbilityPhase)
-							 || (v[i].FindSpell("faceless_void_chronosphere") != null &&
-							 v[i].FindSpell("faceless_void_chronosphere").IsInAbilityPhase)
-							 || (v[i].FindSpell("disruptor_static_storm") != null &&
-							 v[i].FindSpell("disruptor_static_storm").Cooldown <= 0)
-							 || (v[i].FindSpell("lion_finger_of_death") != null &&
-								 v[i].FindSpell("lion_finger_of_death").Cooldown <= 0)
-							 || (v[i].FindSpell("luna_eclipse") != null && v[i].FindSpell("luna_eclipse").Cooldown <= 0)
-							 || (v[i].FindSpell("lina_laguna_blade") != null && v[i].FindSpell("lina_laguna_blade").Cooldown <= 0)
-							 || (v[i].FindSpell("doom_bringer_doom") != null && v[i].FindSpell("doom_bringer_doom").Cooldown <= 0)
-							 || (v[i].FindSpell("life_stealer_rage") != null && v[i].FindSpell("life_stealer_rage").Cooldown <= 0
-							 && me.Level >= 7)
-							 || v[i].IsStunned()
-							 )
-							 && (v[i].FindItem("item_manta") != null && v[i].FindItem("item_manta").Cooldown > 0
-							 || (v[i].FindItem("item_manta") == null || v[i].IsStunned() || v[i].IsHexed() || v[i].IsRooted()))
-							 && !v[i].IsMagicImmune()
-							 && !v[i].HasModifier("modifier_medusa_stone_gaze_stone")
-							 )
-							 E.UseAbility(v[i]);
 
 						Utils.Sleep(250, v[i].Handle.ToString());
 					}
