@@ -120,12 +120,13 @@
 
 					if (
 						R != null && R.CanBeCasted() && me.Distance2D(e) <= 900
+						&& !e.HasModifier("modifier_bloodseeker_rupture")
 						&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name)
 						&& Utils.SleepCheck("R")
 						)
 					{
 						R.UseAbility(e);
-						Utils.Sleep(200, "R");
+						Utils.Sleep(500, "R");
 					}
 					if ( // MOM
 						mom != null
