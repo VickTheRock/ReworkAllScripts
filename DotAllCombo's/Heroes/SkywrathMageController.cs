@@ -538,7 +538,7 @@ namespace DotaAllCombo.Heroes
 
 						if (R != null && R.CanBeCasted() && me.Distance2D(v[i]) <= R.GetCastRange() + 100
 							&& !me.HasModifier("modifier_pugna_nether_ward_aura")
-							&& (v[i].MovementSpeed <= 220 && ((Active && !E.CanBeCasted() || !Active && E.CanBeCasted()) || v[i].MagicDamageResist <= 0.07))
+							&& (v[i].MovementSpeed <= 220 && ((Active && !E.CanBeCasted() || !Active) || v[i].MagicDamageResist <= 0.07))
 							&& !v[i].HasModifier("modifier_zuus_lightningbolt_vision_thinker")
 							&& !v[i].HasModifier("modifier_item_blade_mail_reflect")
 							&& !v[i].HasModifier("modifier_sniper_headshot")
@@ -640,7 +640,7 @@ namespace DotaAllCombo.Heroes
 
 						if (R != null && R.CanBeCasted() && me.Distance2D(v[i]) <= R.GetCastRange() + 100
 							&& !me.HasModifier("modifier_pugna_nether_ward_aura")
-							&& (v[i].MovementSpeed <= 220 && ((Active && !E.CanBeCasted() || !E.CanBeCasted()) || v[i].MagicDamageResist <= 0.07))
+							&& (v[i].MovementSpeed <= 220 && ((Active && !E.CanBeCasted() || !Active) || v[i].MagicDamageResist <= 0.07))
 							&& v[i].MagicDamageResist <= 0.07
 							&& v[i].Health >= (v[i].MaximumHealth / 100 * (Menu.Item("Healh").GetValue<Slider>().Value))
 							&& !v[i].HasModifier("modifier_item_blade_mail_reflect")
