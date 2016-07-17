@@ -15,7 +15,7 @@
     {
         private static Ability Q, W, R;
 
-        private static Item urn, dagon, halberd, mjollnir, orchid, abyssal, mom, Shiva, mail, bkb, satanic, medall, blink;
+        private static Item urn, dagon, mjollnir, orchid, abyssal, mom, Shiva, mail, bkb, satanic, medall, blink;
 		
 		public void Combo()
 		{
@@ -30,7 +30,6 @@
 			mom = me.FindItem("item_mask_of_madness");
 			urn = me.FindItem("item_urn_of_shadows");
 			dagon = me.Inventory.Items.FirstOrDefault(item => item.Name.Contains("item_dagon"));
-			halberd = me.FindItem("item_heavens_halberd");
 			mjollnir = me.FindItem("item_mjollnir");
 			orchid = me.FindItem("item_orchid") ?? me.FindItem("item_bloodthorn");
 			abyssal = me.FindItem("item_abyssal_blade");

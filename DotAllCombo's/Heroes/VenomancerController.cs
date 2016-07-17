@@ -88,7 +88,7 @@
 					Utils.Sleep(250, "vail");
 				} // orchid Item end
 				if (
-					Q != null && Q.CanBeCasted() && me.Distance2D(e) <= Q.CastRange
+					Q != null && Q.CanBeCasted() && me.Distance2D(e) <= Q.GetCastRange()
 					&& me.CanAttack()
 					&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name)
 					&& Utils.SleepCheck("Q")

@@ -58,12 +58,12 @@
 
 			var modifInv = Toolset.invUnit(me);
 			var Units = ObjectManager.GetEntities<Unit>().Where(creep =>
-				 (creep.NetworkName == "CDOTA_BaseNPC_Creep_Neutral"
-				 || creep.Name == "npc_dota_invoker_forged_spirit"
-				 || creep.NetworkName == "CDOTA_BaseNPC_Creep"
-				 || creep.NetworkName == "CDOTA_BaseNPC_Creep_Lane"
-				 || creep.NetworkName == "CDOTA_BaseNPC_Creep_Siege"
-				 || creep.Name == "npc_dota_beastmaster_boar"
+				 (creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral
+				 || creep.ClassID == ClassID.CDOTA_BaseNPC_Invoker_Forged_Spirit
+				 || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep
+				 || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
+				 || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege
+				 || creep.ClassID == ClassID.CDOTA_Unit_Hero_Beastmaster_Boar
 				 )
 				 && creep.Health >= (creep.MaximumHealth * 0.7) 
 				 && creep.IsAlive
@@ -127,7 +127,7 @@
 				for (int i = 0; i < creep.Count(); i++)
 				{
 					if (
-					R != null && R.CanBeCasted() && me.Distance2D(creep[i]) <= R.CastRange + 10
+					R != null && R.CanBeCasted() && me.Distance2D(creep[i]) <= R.GetCastRange() + 10
 					&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name)
 					&& me.Mana >= 190
 					&& Utils.SleepCheck("R")

@@ -48,7 +48,7 @@
             bkb = me.FindItem("item_black_king_bar");
             blink = me.FindItem("item_blink");
             medall = me.FindItem("item_medallion_of_courage") ?? me.FindItem("item_solar_crest");
-            sheep = e.Name == "npc_dota_hero_tidehunter" ? null : me.FindItem("item_sheepstick");
+            sheep = e.ClassID == ClassID.CDOTA_Unit_Hero_Tidehunter ? null : me.FindItem("item_sheepstick");
             vail = me.FindItem("item_veil_of_discord");
             cheese = me.FindItem("item_cheese");
             ghost = me.FindItem("item_ghost");
@@ -60,7 +60,7 @@
             var stoneModif = e.Modifiers.Any(y => y.Name == "modifier_medusa_stone_gaze_stone");
             var charge = me.Modifiers.FirstOrDefault(y => y.Name == "modifier_earth_spirit_stone_caller_charge_counter");
 
-            var remnant = ObjectManager.GetEntities<Unit>().Where(x => x.Name == "npc_dota_earth_spirit_stone" && x.Team == me.Team && x.IsValid).ToList();
+            var remnant = ObjectManager.GetEntities<Unit>().Where(x => x.ClassID == ClassID.CDOTA_Unit_Earth_Spirit_Stone && x.Team == me.Team && x.IsValid).ToList();
             var remnantCount = remnant.Count;
 
 
@@ -93,7 +93,7 @@
                     || !blink.CanBeCasted()
                     || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name))
                     || (blink != null && blink.CanBeCasted() && me.Distance2D(e) <= 450))
-                    && me.Distance2D(e) <= E.CastRange - 50
+                    && me.Distance2D(e) <= E.GetCastRange() - 50
                     && Utils.SleepCheck("Rem")
                     )
                         {
@@ -105,7 +105,7 @@
                     && Q != null
                     && !Q.CanBeCasted()
                     && E.CanBeCasted()
-                    && me.Distance2D(e)<=E.CastRange
+                    && me.Distance2D(e)<=E.GetCastRange()
                     && !Wmod
                     && ((blink == null
                     || !blink.CanBeCasted()
@@ -137,7 +137,7 @@
                             || (blink != null && me.Distance2D(e) <= 350 && blink.CanBeCasted()))
                             )
                         {
-                            if (me.Distance2D(e) <= E.CastRange - 50
+                            if (me.Distance2D(e) <= E.GetCastRange() - 50
                                 && Utils.SleepCheck("Rem"))
                             {
                                 D.UseAbility(Prediction.InFront(me, 50));
@@ -159,7 +159,7 @@
                             || Q == null)
                             && !E.CanBeCasted()
                             && W.CanBeCasted()
-                            && me.Distance2D(e) <= E.CastRange - 50
+                            && me.Distance2D(e) <= E.GetCastRange() - 50
                             && me.CanCast()
                             && Utils.SleepCheck(me.Handle + "remnantW")
                             )
@@ -171,7 +171,7 @@
                            Q != null
                            && Q.CanBeCasted()
                            && me.CanCast()
-                           && me.Distance2D(e) <= E.CastRange - 50
+                           && me.Distance2D(e) <= E.GetCastRange() - 50
                            && me.Distance2D(r) <= 210
                            && Utils.SleepCheck(r.Handle + "remnantQ")
                            )
@@ -184,7 +184,7 @@
                            W != null
                            && W.CanBeCasted()
                            && !Q.CanBeCasted()
-                           && me.Distance2D(e) <= E.CastRange
+                           && me.Distance2D(e) <= E.GetCastRange()
                            && Utils.SleepCheck(me.Handle + "remnantW")
                            )
                         {
@@ -195,8 +195,8 @@
                            && E != null
                            && E.CanBeCasted()
                            && me.CanCast()
-                           && me.Distance2D(r) < E.CastRange
-                           && me.Distance2D(e) <= E.CastRange
+                           && me.Distance2D(r) < E.GetCastRange()
+                           && me.Distance2D(e) <= E.GetCastRange()
                            )
                         {
                             if (//E Skill
@@ -487,12 +487,12 @@
 
             var magnetizemod = e.Modifiers.Where(y => y.Name == "modifier_earth_spirit_magnetize").DefaultIfEmpty(null).FirstOrDefault();
 
-            if (AutoUlt && magnetizemod != null && magnetizemod.RemainingTime <= 0.2 + Game.Ping && me.Distance2D(e) <= D.CastRange && Utils.SleepCheck("Rem"))
+            if (AutoUlt && magnetizemod != null && magnetizemod.RemainingTime <= 0.2 + Game.Ping && me.Distance2D(e) <= D.GetCastRange() && Utils.SleepCheck("Rem"))
             {
                 D.UseAbility(e.Position);
                 Utils.Sleep(1000, "Rem");
             }
-            var remnant = ObjectManager.GetEntities<Unit>().Where(x => x.Name == "npc_dota_earth_spirit_stone" && x.Team == me.Team
+            var remnant = ObjectManager.GetEntities<Unit>().Where(x => x.ClassID == ClassID.CDOTA_Unit_Earth_Spirit_Stone && x.Team == me.Team
                                        && x.Distance2D(me) <= 1700 && x.IsAlive && x.IsValid).ToList();
             var remnantCount = remnant.Count;
             
@@ -511,7 +511,7 @@
                     || (blink != null && me.Distance2D(e) <= 450 && blink.CanBeCasted()))
                     )
                     {
-                        if (me.Distance2D(e) <= E.CastRange - 50
+                        if (me.Distance2D(e) <= E.GetCastRange() - 50
                             && Utils.SleepCheck("Rem"))
                         {
                             
@@ -537,7 +537,7 @@
                             || (blink != null && me.Distance2D(e) <= 450 && blink.CanBeCasted()))
                             )
                         {
-                            if (me.Distance2D(e) <= E.CastRange - 50
+                            if (me.Distance2D(e) <= E.GetCastRange() - 50
                                 && Utils.SleepCheck("Rem"))
                             {
                                 D.UseAbility(Prediction.InFront(me, 50));
@@ -558,7 +558,7 @@
                           && Q != null
                           && Q.CanBeCasted()
                           && me.CanCast()
-                          && me.Distance2D(e) <= E.CastRange - 50
+                          && me.Distance2D(e) <= E.GetCastRange() - 50
                           && r.Distance2D(me) <= 210
                           && Utils.SleepCheck(r.Handle + "remnantQ")
                           )
@@ -597,7 +597,7 @@
                             W != null
                             && W.CanBeCasted()
                             && Game.MousePosition.Distance2D(e) <= 500
-                            && me.Distance2D(e) <= W.CastRange - 200
+                            && me.Distance2D(e) <= W.GetCastRange() - 200
                             && Utils.SleepCheck(me.Handle + "remnantW")
                             )
                         {
@@ -646,7 +646,7 @@
                     && E.CanBeCasted()
                     )
                     {
-                        if (me.Distance2D(e) <= E.CastRange - 50
+                        if (me.Distance2D(e) <= E.GetCastRange() - 50
                             && Utils.SleepCheck("Rem"))
                         {
                             D.UseAbility(e.Position);
@@ -669,7 +669,7 @@
                                    && !r.HasModifier("modifier_earth_spirit_geomagnetic_grip")
                                    )
                             {
-                                if (me.Distance2D(e) <= E.CastRange - 50
+                                if (me.Distance2D(e) <= E.GetCastRange() - 50
                                     && Utils.SleepCheck("Rem"))
                                 {
                                     D.UseAbility(e.Position);
@@ -681,8 +681,8 @@
                            && E != null
                            && E.CanBeCasted()
                            && me.CanCast()
-                           && me.Distance2D(r) < E.CastRange
-                           && me.Distance2D(e) <= E.CastRange
+                           && me.Distance2D(r) < E.GetCastRange()
+                           && me.Distance2D(e) <= E.GetCastRange()
                            )
                         {
                             if (//E Skill

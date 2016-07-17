@@ -114,7 +114,7 @@ namespace DotaAllCombo.Heroes
 					}
 				if (
                         W != null && W.CanBeCasted()
-                        && me.Distance2D(e) <= W.CastRange
+                        && me.Distance2D(e) <= W.GetCastRange()
                         && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name)
                         && Utils.SleepCheck("W")
                         )

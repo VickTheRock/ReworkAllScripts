@@ -72,7 +72,7 @@
 					Utils.Sleep(250, "blink");
 				}
 				if (
-					Q != null && Q.CanBeCasted() && me.Distance2D(e) <= Q.CastRange + 150
+					Q != null && Q.CanBeCasted() && me.Distance2D(e) <= Q.GetCastRange() + 150
 					&& me.CanAttack()
 					&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name)
 					&& Utils.SleepCheck("Q")

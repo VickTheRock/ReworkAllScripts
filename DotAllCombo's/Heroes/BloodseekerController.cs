@@ -47,7 +47,7 @@
 			medall = me.FindItem("item_medallion_of_courage") ?? me.FindItem("item_solar_crest");
 			cyclone = me.FindItem("item_cyclone");
 			force = me.FindItem("item_force_staff");
-			sheep = e.Name == "npc_dota_hero_tidehunter" ? null : me.FindItem("item_sheepstick");
+			sheep = e.ClassID == ClassID.CDOTA_Unit_Hero_Tidehunter ? null : me.FindItem("item_sheepstick");
 			cheese = me.FindItem("item_cheese");
 			soul = me.FindItem("item_soul_ring");
 			arcane = me.FindItem("item_arcane_boots");
@@ -71,7 +71,7 @@
 			if (Active && me.Distance2D(e) <= 1400 && e != null && e.IsAlive && !me.IsInvisible())
 			{
 				if (cyclone != null && cyclone.CanBeCasted() && W.CanBeCasted()
-					   && me.Distance2D(e) <= cyclone.CastRange + 300
+					   && me.Distance2D(e) <= cyclone.GetCastRange() + 300
 					   && Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(cyclone.Name)
 					   && W.CanBeCasted()
 					   && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name)

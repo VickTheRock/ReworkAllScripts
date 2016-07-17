@@ -36,7 +36,7 @@
 				R = me.Spellbook.SpellR;
 
 				// item 
-				sheep = e.Name == "npc_dota_hero_tidehunter" ? null : me.FindItem("item_sheepstick");
+				sheep = e.ClassID == ClassID.CDOTA_Unit_Hero_Tidehunter ? null : me.FindItem("item_sheepstick");
 
 				satanic = me.FindItem("item_satanic");
 

@@ -242,7 +242,7 @@
 
 						if (
 							Q != null && Q.CanBeCasted() 
-							&& me.Distance2D(Ally[i]) <= Q.CastRange + 50
+							&& me.Distance2D(Ally[i]) <= Q.GetCastRange() + 50
 							&& !Ally[i].IsMagicImmune()
 							&& Ally[i].Health <= (Ally[i].MaximumHealth * 0.6)
 							&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name)
@@ -256,7 +256,7 @@
 						if (
 							W != null && W.CanBeCasted() 
 							&& !Q.CanBeCasted()
-							&& me.Distance2D(Ally[i]) <= W.CastRange + 50
+							&& me.Distance2D(Ally[i]) <= W.GetCastRange() + 50
 							&& Ally[i].Health <= (Ally[i].MaximumHealth * 0.6) 
 							&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name)
 							&& Utils.SleepCheck("Wq")
@@ -268,7 +268,7 @@
 						if (
 							W != null 
 							&& W.CanBeCasted() 
-							&& me.Distance2D(Ally[i]) <= W.CastRange + 50
+							&& me.Distance2D(Ally[i]) <= W.GetCastRange() + 50
 							&& !Ally[i].IsMagicImmune()
 							&& ((Ally[i].Distance2D(v[z]) <= Ally[i].AttackRange + Ally[i].HullRadius + 10)
 							|| (Ally[i].Distance2D(v[z]) <= v[i].AttackRange + Ally[i].HullRadius + 10))
@@ -280,7 +280,7 @@
 							Utils.Sleep(200, "Ww");
 						}
 						if (
-							Q != null && Q.CanBeCasted() && me.Distance2D(Ally[i]) <= Q.CastRange + 50
+							Q != null && Q.CanBeCasted() && me.Distance2D(Ally[i]) <= Q.GetCastRange() + 50
 							&& !Ally[i].IsMagicImmune()
 							&& Ally[i].Distance2D(v[z]) <= 250 + Ally[i].HullRadius - 10
 							&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name)
@@ -292,9 +292,9 @@
 						}
 						if (
 							R != null && R.CanBeCasted()
-							&& me.Distance2D(Ally[i]) <= R.CastRange + 50
-							&& (v.Count(x => x.Distance2D(me) <= R.CastRange) >= (Menu.Item("UltCountTarget").GetValue<Slider>().Value))
-							&& (Ally.Count(x => x.Distance2D(me) <= R.CastRange) >= (Menu.Item("UltCountAlly").GetValue<Slider>().Value))
+							&& me.Distance2D(Ally[i]) <= R.GetCastRange() + 50
+							&& (v.Count(x => x.Distance2D(me) <= R.GetCastRange()) >= (Menu.Item("UltCountTarget").GetValue<Slider>().Value))
+							&& (Ally.Count(x => x.Distance2D(me) <= R.GetCastRange()) >= (Menu.Item("UltCountAlly").GetValue<Slider>().Value))
 							&& Ally[i].Health <= (Ally[i].MaximumHealth / 100 * (Menu.Item("HealhUlt").GetValue<Slider>().Value))
 							&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name)
 							&& Utils.SleepCheck("R")
@@ -305,9 +305,9 @@
 						}
 						if (
 							guardian != null && guardian.CanBeCasted()
-							&& me.Distance2D(Ally[i]) <= guardian.CastRange
-							&& (v.Count(x => x.Distance2D(me) <= guardian.CastRange) >= (Menu.Item("healsetTarget").GetValue<Slider>().Value))
-							&& (Ally.Count(x => x.Distance2D(me) <= guardian.CastRange) >= (Menu.Item("healsetAlly").GetValue<Slider>().Value))
+							&& me.Distance2D(Ally[i]) <= guardian.GetCastRange()
+							&& (v.Count(x => x.Distance2D(me) <= guardian.GetCastRange()) >= (Menu.Item("healsetTarget").GetValue<Slider>().Value))
+							&& (Ally.Count(x => x.Distance2D(me) <= guardian.GetCastRange()) >= (Menu.Item("healsetAlly").GetValue<Slider>().Value))
 							&& Ally[i].Health <= (Ally[i].MaximumHealth / 100 * (Menu.Item("HealhHeal").GetValue<Slider>().Value))
 							&& Menu.Item("ItemsS").GetValue<AbilityToggler>().IsEnabled(guardian.Name)
 							&& Utils.SleepCheck("guardian")
@@ -318,9 +318,9 @@
 						}
 						if (
 							pipe != null && pipe.CanBeCasted()
-							&& me.Distance2D(Ally[i]) <= pipe.CastRange
-							&& (v.Count(x => x.Distance2D(me) <= pipe.CastRange) >= (Menu.Item("pipesetTarget").GetValue<Slider>().Value))
-							&& (Ally.Count(x => x.Distance2D(me) <= pipe.CastRange) >= (Menu.Item("pipesetAlly").GetValue<Slider>().Value))
+							&& me.Distance2D(Ally[i]) <= pipe.GetCastRange()
+							&& (v.Count(x => x.Distance2D(me) <= pipe.GetCastRange()) >= (Menu.Item("pipesetTarget").GetValue<Slider>().Value))
+							&& (Ally.Count(x => x.Distance2D(me) <= pipe.GetCastRange()) >= (Menu.Item("pipesetAlly").GetValue<Slider>().Value))
 							&& Menu.Item("ItemsS").GetValue<AbilityToggler>().IsEnabled(pipe.Name)
 							&& Utils.SleepCheck("pipe")
 							)
@@ -330,7 +330,7 @@
 						}
 
 						if (
-							sphere != null && sphere.CanBeCasted() && me.Distance2D(Ally[i]) <= sphere.CastRange + 50
+							sphere != null && sphere.CanBeCasted() && me.Distance2D(Ally[i]) <= sphere.GetCastRange() + 50
 							&& !Ally[i].IsMagicImmune()
 							&& ((Ally[i].Distance2D(v[z]) <= Ally[i].AttackRange + Ally[i].HullRadius + 10)
 							|| (Ally[i].Distance2D(v[z]) <= v[i].AttackRange + Ally[i].HullRadius + 10)
@@ -343,7 +343,7 @@
 							Utils.Sleep(200, "sphere");
 						}
 						if (
-							glimmer != null && glimmer.CanBeCasted() && me.Distance2D(Ally[i]) <= glimmer.CastRange + 50
+							glimmer != null && glimmer.CanBeCasted() && me.Distance2D(Ally[i]) <= glimmer.GetCastRange() + 50
 							&& Ally[i].Health <= (me.MaximumHealth * 0.5)
 							&& Menu.Item("ItemsS").GetValue<AbilityToggler>().IsEnabled(glimmer.Name)
 							&& Utils.SleepCheck("glimmer")

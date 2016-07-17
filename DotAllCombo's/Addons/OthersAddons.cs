@@ -53,6 +53,27 @@ namespace DotaAllCombo.Addons
 		}
 		private float _lastRange, AttackRange;
 		private ParticleEffect rangeDisplay;
+		/*
+		public static readonly List<TrackingProjectile> Projectiles = ObjectManager.TrackingProjectiles.Where(x=>
+						x.Source.ClassID == ClassID.CDOTA_Unit_Hero_ArcWarden
+						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_Terrorblade
+						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_TemplarAssassin
+						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_DrowRanger
+						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_Weaver
+						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_Windrunner
+						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_Enchantress
+						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_Nevermore
+						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_Obsidian_Destroyer
+						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_Clinkz
+						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_Silencer
+						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_Huskar
+						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_Viper
+						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_Sniper
+						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_Razor
+						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_StormSpirit
+						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_TrollWarlord
+						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_Morphling
+						|| x.Source.ClassID == ClassID.CDOTA_Unit_Hero_DragonKnight).ToList(); */
 		public void RunScript()
 		{
 			if (!MainMenu.OthersMenu.Item("others").IsActive() || !Game.IsInGame || me == null || Game.IsPaused || Game.IsWatchingGame) return;
@@ -65,7 +86,41 @@ namespace DotaAllCombo.Addons
 				Toolset.UnAggro(me);
 			}
 			//TODO:ESCAPE
-			
+			/*
+	        if (MainMenu.OthersMenu.Item("EscapeAttack").GetValue<bool>() && me.Level>= Menu.Item("minLVL").GetValue<Slider>().Value)
+			{
+				
+				var meed = Toolset.IfITarget(me, Projectiles);
+				var v =
+					 ObjectManager.GetEntities<Hero>()
+						 .Where(x => x.Team != me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && x.ClassID == meed.Source.ClassID)
+						 .ToList();
+				foreach (var victim in v)
+				{
+					if (victim.Distance2D(me) <= 1000 && me.IsVisibleToEnemies && (victim.Handle!=e.Handle || me.Health <= (me.MaximumHealth * 0.4)))
+					{
+						AutoDodge.qqNyx();
+						AutoDodge.qqTemplarRefraction();
+						AutoDodge.qqallHex(victim);
+						AutoDodge.qquseShiva();
+						AutoDodge.qquseManta();
+						AutoDodge.qquseHelbard(victim);
+						AutoDodge.qquseGhost();
+						AutoDodge.qquseEulEnem(victim);
+						AutoDodge.qquseSDisription(victim);
+						AutoDodge.qquseSheep(victim);
+						AutoDodge.qquseColba(victim);
+						AutoDodge.qqsilencerLastWord(victim);
+						AutoDodge.qquseSDisription(victim);
+						AutoDodge.qquseSheep(victim);
+						AutoDodge.qquseColba(victim);
+						AutoDodge.qqsilencerLastWord(victim);
+						AutoDodge.qqabadonWme();
+						AutoDodge.qqodImprisomentMe(victim);
+						AutoDodge.qqallStun(victim);
+					}
+				}
+	        }*/
 		}
 		void Drawing_OnDraw(EventArgs args)
 		{
@@ -79,15 +134,15 @@ namespace DotaAllCombo.Addons
 			{
                 Item item = me.Inventory.Items.FirstOrDefault(x => x != null && x.IsValid && (x.Name.Contains("item_dragon_lance") || x.Name.Contains("item_hurricane_pike")));
                 
-                if (me.HasModifier("modifier_troll_warlord_berserkers_rage"))
+                if (me.ClassID == ClassID.CDOTA_Unit_Hero_TrollWarlord && me.HasModifier("modifier_troll_warlord_berserkers_rage"))
 			        AttackRange = 150 + me.HullRadius+24;
-                   else if (!me.HasModifier("modifier_troll_warlord_berserkers_rage"))
+                   else if (me.ClassID == ClassID.CDOTA_Unit_Hero_TrollWarlord && !me.HasModifier("modifier_troll_warlord_berserkers_rage"))
                     AttackRange = me.GetAttackRange() + me.HullRadius + 24;
                 else
-                if (me.Name == "npc_dota_hero_templar_assassin")
+                if (me.ClassID == ClassID.CDOTA_Unit_Hero_TemplarAssassin)
                     AttackRange = me.GetAttackRange() + me.HullRadius;
                 else 
-                if (me.Name == "npc_dota_hero_dragon_knight" && me.HasModifier("modifier_dragon_knight_dragon_form"))
+                if (me.ClassID == ClassID.CDOTA_Unit_Hero_DragonKnight && me.HasModifier("modifier_dragon_knight_dragon_form"))
                     AttackRange = me.GetAttackRange() + me.HullRadius+24;
                 else
                 if(item == null && me.IsRanged)

@@ -36,7 +36,7 @@ namespace DotaAllCombo.Heroes
 			e = me.ClosestToMouseTarget(1800);
 			if (Push)
 			{
-				Unit fount = ObjectManager.GetEntities<Unit>().FirstOrDefault(x => x.Team == me.Team && x.NetworkName == "CDOTA_Unit_Fountain");
+				Unit fount = ObjectManager.GetEntities<Unit>().FirstOrDefault(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Fountain);
 				var remnant = ObjectManager.GetEntities<Unit>().Where(unit => unit.IsValid && unit.IsAlive && unit.Team == me.Team && unit.Name == "npc_dota_ember_spirit_remnant").ToList();
 
 				if (fount != null)
@@ -106,7 +106,7 @@ namespace DotaAllCombo.Heroes
 			blink = me.FindItem("item_blink");
 			medall = me.FindItem("item_medallion_of_courage") ?? me.FindItem("item_solar_crest");
 			if (e == null) return;
-			sheep = e.Name == "npc_dota_hero_tidehunter" ? null : me.FindItem("item_sheepstick");
+			sheep = e.ClassID == ClassID.CDOTA_Unit_Hero_Tidehunter ? null : me.FindItem("item_sheepstick");
 			vail = me.FindItem("item_veil_of_discord");
 			cheese = me.FindItem("item_cheese");
 			ghost = me.FindItem("item_ghost");
@@ -437,7 +437,7 @@ namespace DotaAllCombo.Heroes
 				  /*	if (
 					  force != null
 					  && force.CanBeCasted()
-					  && me.Distance2D(e) < force.CastRange
+					  && me.Distance2D(e) < force.GetCastRange()
 					  && Utils.SleepCheck(e.Handle.ToString()))
 				  {
 					  force.UseAbility(e);

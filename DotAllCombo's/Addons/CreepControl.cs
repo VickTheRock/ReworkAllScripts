@@ -67,22 +67,22 @@ namespace DotaAllCombo.Addons
 			e = me.ClosestToMouseTarget(10000);
 
 			var Units = ObjectManager.GetEntities<Unit>().Where(creep =>
-				(creep.NetworkName == "CDOTA_BaseNPC_Creep_Neutral"
-				|| creep.Name == "npc_dota_base_additive"
-				|| creep.Name == "npc_dota_tusk_frozen_sigil"
-				|| creep.Name == "npc_dota_invoker_forged_spirit"
-				|| creep.Name == "npc_dota_warlock_golem"
-				|| creep.NetworkName == "CDOTA_BaseNPC_Creep"
-				|| creep.Name == "npc_dota_visage_familiar"
-				|| creep.Name == "npc_dota_brewmaster_earth"
-				|| creep.Name == "npc_dota_brewmaster_storm"
-				|| creep.Name == "npc_dota_brewmaster_fire"
-				|| creep.Name == "npc_dota_witch_doctor_death_ward"
-				|| creep.Name == "npc_dota_beastmaster_boar"
-				|| creep.Name == "npc_dota_lone_druid_bear"
-				|| creep.Name == "npc_dota_venomancer_plagueward"
-				|| creep.Name == "npc_dota_shadowshaman_serpentward"
-				|| creep.Name == "npc_dota_broodmother_spiderling"
+				(creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral
+				|| creep.ClassID == ClassID.CDOTA_BaseNPC_Additive
+				|| creep.ClassID == ClassID.CDOTA_BaseNPC_Tusk_Sigil
+				|| creep.ClassID == ClassID.CDOTA_BaseNPC_Invoker_Forged_Spirit
+				|| creep.ClassID == ClassID.CDOTA_BaseNPC_Warlock_Golem
+				|| creep.ClassID == ClassID.CDOTA_BaseNPC_Creep
+				|| creep.ClassID == ClassID.CDOTA_Unit_VisageFamiliar
+				|| creep.ClassID == ClassID.CDOTA_Unit_Brewmaster_PrimalEarth
+				|| creep.ClassID == ClassID.CDOTA_Unit_Brewmaster_PrimalStorm
+				|| creep.ClassID == ClassID.CDOTA_Unit_Brewmaster_PrimalFire
+				|| creep.ClassID == ClassID.CDOTA_NPC_WitchDoctor_Ward
+				|| creep.ClassID == ClassID.CDOTA_Unit_Hero_Beastmaster_Boar
+				|| creep.ClassID == ClassID.CDOTA_Unit_SpiritBear
+				|| creep.ClassID == ClassID.CDOTA_BaseNPC_Venomancer_PlagueWard
+				|| creep.ClassID == ClassID.CDOTA_BaseNPC_ShadowShaman_SerpentWard
+				|| creep.ClassID == ClassID.CDOTA_Unit_Broodmother_Spiderling
 				)
 				&& creep.IsAlive
 				&& creep.Team == me.Team
@@ -98,7 +98,7 @@ namespace DotaAllCombo.Addons
 					{
 						var v = ObjectManager.GetEntities<Hero>()
 										  .Where(x => x.Team == me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion).ToList();
-						if (me.Name == "npc_dota_hero_juggernaut")
+						if (me.ClassID == ClassID.CDOTA_Unit_Hero_Juggernaut)
 						{
 							if (Units[i].Name == "npc_dota_juggernaut_healing_ward")
 
@@ -285,9 +285,9 @@ namespace DotaAllCombo.Addons
 								}
 							}
 							else
-							if (me.Name == "npc_dota_hero_tusk")
+							if (me.ClassID == ClassID.CDOTA_Unit_Hero_Tusk)
 							{
-								if (Units[i].Name == "npc_dota_tusk_frozen_sigil")
+								if (Units[i].ClassID == ClassID.CDOTA_BaseNPC_Tusk_Sigil)
 								{
 									if (e.Position.Distance2D(Units[i].Position) < 1550 &&
 											Utils.SleepCheck(Units[i].Handle.ToString()))
@@ -298,7 +298,9 @@ namespace DotaAllCombo.Addons
 								}
 							}
 							else
-							if (Units[i].Name == "npc_dota_necronomicon_archer")
+							if (Units[i].ClassID == ClassID.CDOTA_BaseNPC_Creep)
+							{
+								if (Units[i].Name == "npc_dota_necronomicon_archer")
 								{
 									if (e.Position.Distance2D(Units[i].Position) <= 700 && Units[i].Spellbook.SpellQ.CanBeCasted() &&
 										Utils.SleepCheck(Units[i].Handle.ToString()))
@@ -307,11 +309,12 @@ namespace DotaAllCombo.Addons
 										Units[i].Spellbook.SpellQ.UseAbility(e);
 										Utils.Sleep(300, Units[i].Handle.ToString());
 									}
+								}
 							}
 							else
-							if (me.Name == "npc_dota_hero_visage")
+							if (me.ClassID == ClassID.CDOTA_Unit_Hero_Visage)
 							{
-								if (Units[i].Name == "npc_dota_visage_familiar")
+								if (Units[i].ClassID == ClassID.CDOTA_Unit_VisageFamiliar)
 								{
 									var damageModif = Units[i].Modifiers.FirstOrDefault(x => x.Name == "modifier_visage_summon_familiars_damage_charge");
 
@@ -332,9 +335,9 @@ namespace DotaAllCombo.Addons
 								}
 							}
 							else
-							if (me.Name == "npc_dota_hero_brewmaster")
+							if (me.ClassID == ClassID.CDOTA_Unit_Hero_Brewmaster)
 							{
-								if (Units[i].Name == "npc_dota_brewmaster_earth")
+								if (Units[i].ClassID == ClassID.CDOTA_Unit_Brewmaster_PrimalEarth)
 								{
 									if (e.Position.Distance2D(Units[i].Position) < 1300 && Units[i].Spellbook.SpellQ.CanBeCasted() &&
 										Utils.SleepCheck(Units[i].Handle.ToString()))
@@ -350,7 +353,7 @@ namespace DotaAllCombo.Addons
 									}
 								}
 								else
-								if (Units[i].Name == "npc_dota_brewmaster_storm")
+								if (Units[i].ClassID == ClassID.CDOTA_Unit_Brewmaster_PrimalStorm)
 								{
 									if (Units != null)
 									{
@@ -376,9 +379,9 @@ namespace DotaAllCombo.Addons
 								}
 							}
 							else
-							if (me.Name == "npc_dota_hero_lone_druid")
+							if (me.ClassID == ClassID.CDOTA_Unit_Hero_LoneDruid)
 							{
-								if (Units[i].Name == "npc_dota_lone_druid_bear")
+								if (Units[i].ClassID == ClassID.CDOTA_Unit_SpiritBear)
 								{
 									if ((!me.AghanimState() && me.Position.Distance2D(Units[i]) <= 1200) || me.AghanimState())
 									{
@@ -428,7 +431,7 @@ namespace DotaAllCombo.Addons
 										}
 										if (midas != null)
 										{
-											var neutrals = ObjectManager.GetEntities<Creep>().Where(creep => (creep.NetworkName == "CDOTA_BaseNPC_Creep_Lane" || creep.NetworkName == "CDOTA_BaseNPC_Creep_Siege" || creep.NetworkName == "CDOTA_BaseNPC_Creep_Neutral" || creep.Name == "npc_dota_invoker_forged_spirit" || creep.NetworkName == "CDOTA_BaseNPC_Creep" &&
+											var neutrals = ObjectManager.GetEntities<Creep>().Where(creep => (creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral || creep.ClassID == ClassID.CDOTA_BaseNPC_Invoker_Forged_Spirit || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep &&
 												creep.IsAlive && creep.IsVisible && creep.IsSpawned) && creep.Team != me.Team).ToList();
 
 											foreach (var f in neutrals)
@@ -445,9 +448,11 @@ namespace DotaAllCombo.Addons
 								}
 							}
 							else
-							if (me.Name == "npc_dota_hero_templar_assassin")
+							if (me.ClassID == ClassID.CDOTA_Unit_Hero_TemplarAssassin)
 							{
-								if (Units[i].Name == "npc_dota_templar_assassin_psionic_trap")
+								if (Units[i].ClassID == ClassID.CDOTA_BaseNPC_Additive)
+								{
+									if (Units[i].Name == "npc_dota_templar_assassin_psionic_trap")
 									{
 
 										if (e.Position.Distance2D(Units[i].Position) < 250
@@ -459,6 +464,7 @@ namespace DotaAllCombo.Addons
 											Utils.Sleep(250, Units[i].Handle.ToString());
 										}
 									}
+								}
 							}
 							
 							if (Units[i].Distance2D(e) <= Units[i].AttackRange + 100 && (!Units[i].IsAttackImmune() || !e.IsAttackImmune())

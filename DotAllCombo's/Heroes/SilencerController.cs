@@ -39,7 +39,7 @@
 			// Item
 			ethereal = me.FindItem("item_ethereal_blade");
 
-			sheep = e.Name == "npc_dota_hero_tidehunter" ? null : me.FindItem("item_sheepstick");
+			sheep = e.ClassID == ClassID.CDOTA_Unit_Hero_Tidehunter ? null : me.FindItem("item_sheepstick");
 
 			vail = me.FindItem("item_veil_of_discord");
 
@@ -401,28 +401,28 @@
 			{
 				if (e.IsLinkensProtected() && (me.IsVisibleToEnemies || Active))
 				{
-					if (force != null && force.CanBeCasted() && me.Distance2D(e) < force.CastRange &&
+					if (force != null && force.CanBeCasted() && me.Distance2D(e) < force.GetCastRange() &&
 						Menu.Item("Link").GetValue<AbilityToggler>().IsEnabled(force.Name) &&
 						Utils.SleepCheck(e.Handle.ToString()))
 					{
 						force.UseAbility(e);
 						Utils.Sleep(500, e.Handle.ToString());
 					}
-					else if (cyclone != null && cyclone.CanBeCasted() && me.Distance2D(e) < cyclone.CastRange &&
+					else if (cyclone != null && cyclone.CanBeCasted() && me.Distance2D(e) < cyclone.GetCastRange() &&
 							 Menu.Item("Link").GetValue<AbilityToggler>().IsEnabled(cyclone.Name) &&
 							 Utils.SleepCheck(e.Handle.ToString()))
 					{
 						cyclone.UseAbility(e);
 						Utils.Sleep(500, e.Handle.ToString());
 					}
-					else if (orchid != null && orchid.CanBeCasted() && me.Distance2D(e) < orchid.CastRange &&
+					else if (orchid != null && orchid.CanBeCasted() && me.Distance2D(e) < orchid.GetCastRange() &&
 							 Menu.Item("Link").GetValue<AbilityToggler>().IsEnabled(orchid.Name) &&
 							 Utils.SleepCheck(e.Handle.ToString()))
 					{
 						orchid.UseAbility(e);
 						Utils.Sleep(500, e.Handle.ToString());
 					}
-					else if (dagon != null && dagon.CanBeCasted() && me.Distance2D(e) < dagon.CastRange &&
+					else if (dagon != null && dagon.CanBeCasted() && me.Distance2D(e) < dagon.GetCastRange() &&
 							 Menu.Item("Link").GetValue<AbilityToggler>().IsEnabled("item_dagon") &&
 							 Utils.SleepCheck(e.Handle.ToString()))
 					{

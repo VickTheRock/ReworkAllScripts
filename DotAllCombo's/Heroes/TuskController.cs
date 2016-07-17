@@ -33,9 +33,9 @@
             {
                 Q = me.Spellbook.SpellQ;
 
-                W = me.Spellbook.SpellW;
+				W = me.Spellbook.SpellW ?? me.FindSpell("tusk_launch_snowball");
 
-                E = me.Spellbook.SpellE;
+				E = me.Spellbook.SpellE;
 
                 R = me.Spellbook.SpellR;
 
@@ -314,7 +314,7 @@
                     Utils.Sleep(120, "W");
                 }
 
-                var Sigl = ObjectManager.GetEntities<Unit>().FirstOrDefault(x => (x.Name== "npc_dota_tusk_frozen_sigil")
+                var Sigl = ObjectManager.GetEntities<Unit>().FirstOrDefault(x => (x.ClassID == ClassID.CDOTA_BaseNPC_Tusk_Sigil)
                                                                     && x.IsAlive && x.IsControllable);
 
                 if (Menu.Item("SiglControl").IsActive() && Sigl != null)
@@ -322,7 +322,7 @@
                     if (e.Position.Distance2D(Sigl.Position) < 1550 &&
                                 Utils.SleepCheck(Sigl.Handle.ToString()))
                     {
-                        Sigl.Move(Prediction.InFront(e, 300));
+                        Sigl.Move(Prediction.InFront(e, 350));
                         Utils.Sleep(350, Sigl.Handle.ToString());
                     }
                 }
@@ -338,11 +338,11 @@
 
                 var unitToSnow =
                     ObjectManager.GetEntities<Unit>().Where(x =>
-                    ((x.Name == "npc_dota_invoker_forged_spirit"
-                    || x.Name == "npc_dota_lone_druid_bear"
-                    || x.Name == "npc_dota_warlock_golem"
-                    || x.Name == "npc_dota_broodmother_spiderling"
-                    || x.NetworkName == "CDOTA_BaseNPC_Creep")
+                    ((x.ClassID == ClassID.CDOTA_BaseNPC_Invoker_Forged_Spirit
+                    || x.ClassID == ClassID.CDOTA_Unit_SpiritBear
+                    || x.ClassID == ClassID.CDOTA_BaseNPC_Warlock_Golem
+                    || x.ClassID == ClassID.CDOTA_Unit_Broodmother_Spiderling
+                    || x.ClassID == ClassID.CDOTA_BaseNPC_Creep)
                     && !x.IsAttackImmune() && !x.IsInvul() && x.IsVisible
                     && x.IsAlive && me.Distance2D(x) <= 395)
                     && x.IsAlive && x.IsControllable

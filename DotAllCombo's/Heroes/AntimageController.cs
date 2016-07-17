@@ -45,7 +45,7 @@
             satanic = me.FindItem("item_satanic");
             blink = me.FindItem("item_blink");
             medall = me.FindItem("item_medallion_of_courage") ?? me.FindItem("item_solar_crest");
-            sheep = e.Name == "npc_dota_hero_tidehunter" ? null : me.FindItem("item_sheepstick");
+            sheep = e.ClassID == ClassID.CDOTA_Unit_Hero_Tidehunter ? null : me.FindItem("item_sheepstick");
             cheese = me.FindItem("item_cheese");
             soul = me.FindItem("item_soul_ring");
             stick = me.FindItem("item_magic_stick") ?? me.FindItem("item_magic_wand");

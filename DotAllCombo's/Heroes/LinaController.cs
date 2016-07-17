@@ -89,7 +89,7 @@
 			// Item
 			ethereal = me.FindItem("item_ethereal_blade");
 
-			sheep = e.Name == "npc_dota_hero_tidehunter" ? null : me.FindItem("item_sheepstick");
+			sheep = e.ClassID == ClassID.CDOTA_Unit_Hero_Tidehunter ? null : me.FindItem("item_sheepstick");
 
 			vail = me.FindItem("item_veil_of_discord");
 
@@ -540,28 +540,28 @@
 					if (v.IsLinkensProtected() &&
 						(me.IsVisibleToEnemies || Game.IsKeyDown(Menu.Item("Combo Key").GetValue<KeyBind>().Key)))
 					{
-						if (force != null && force.CanBeCasted() && me.Distance2D(v) < force.CastRange &&
+						if (force != null && force.CanBeCasted() && me.Distance2D(v) < force.GetCastRange() &&
 							Menu.Item("Link").GetValue<AbilityToggler>().IsEnabled(force.Name) &&
 							Utils.SleepCheck(v.Handle.ToString()))
 						{
 							force.UseAbility(v);
 							Utils.Sleep(500, v.Handle.ToString());
 						}
-						else if (orchid != null && orchid.CanBeCasted() && me.Distance2D(v) < orchid.CastRange &&
+						else if (orchid != null && orchid.CanBeCasted() && me.Distance2D(v) < orchid.GetCastRange() &&
 								 Menu.Item("Link").GetValue<AbilityToggler>().IsEnabled(orchid.Name) &&
 								 Utils.SleepCheck(v.Handle.ToString()))
 						{
 							orchid.UseAbility(v);
 							Utils.Sleep(500, v.Handle.ToString());
 						}
-						else if (atos != null && atos.CanBeCasted() && me.Distance2D(v) < atos.CastRange - 400 &&
+						else if (atos != null && atos.CanBeCasted() && me.Distance2D(v) < atos.GetCastRange() - 400 &&
 								 Menu.Item("Link").GetValue<AbilityToggler>().IsEnabled(atos.Name) &&
 								 Utils.SleepCheck(v.Handle.ToString()))
 						{
 							atos.UseAbility(v);
 							Utils.Sleep(500, v.Handle.ToString());
 						}
-						else if (dagon != null && dagon.CanBeCasted() && me.Distance2D(v) < dagon.CastRange &&
+						else if (dagon != null && dagon.CanBeCasted() && me.Distance2D(v) < dagon.GetCastRange() &&
 								 Menu.Item("Link").GetValue<AbilityToggler>().IsEnabled("item_dagon") &&
 								 Utils.SleepCheck(v.Handle.ToString()))
 						{
@@ -569,7 +569,7 @@
 							Utils.Sleep(500, v.Handle.ToString());
 						}
 						else if (cyclone != null && cyclone.CanBeCasted() &&
-								 me.Distance2D(v) < cyclone.CastRange &&
+								 me.Distance2D(v) < cyclone.GetCastRange() &&
 								 Menu.Item("Link").GetValue<AbilityToggler>().IsEnabled(cyclone.Name) &&
 								 Utils.SleepCheck(v.Handle.ToString()))
 						{

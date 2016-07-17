@@ -41,7 +41,7 @@
 			// Item
 			ethereal = me.FindItem("item_ethereal_blade");
 
-			sheep = e.Name == "npc_dota_hero_tidehunter" ? null : me.FindItem("item_sheepstick");
+			sheep = e.ClassID == ClassID.CDOTA_Unit_Hero_Tidehunter ? null : me.FindItem("item_sheepstick");
 
 			vail = me.FindItem("item_veil_of_discord");
 
@@ -459,7 +459,7 @@
 						!v.HasModifier("modifier_abaddon_borrowed_time_damage_redirect")
 						&& !v.IsMagicImmune()
 						&& v.Health <= (damage - 40)
-						&& me.Distance2D(v) <= R.CastRange + 50
+						&& me.Distance2D(v) <= R.GetCastRange() + 50
 						&& Utils.SleepCheck(v.Handle.ToString())
 						)
 					{
@@ -467,7 +467,7 @@
 						Utils.Sleep(150, v.Handle.ToString());
 						return;
 					}
-					if (W != null && v != null && W.CanBeCasted() && me.Distance2D(v) <= W.CastRange + 30
+					if (W != null && v != null && W.CanBeCasted() && me.Distance2D(v) <= W.GetCastRange() + 30
 						&& !v.IsLinkensProtected()
 						&&
 						(
@@ -485,22 +485,22 @@
 							|| v.HasModifier("modifier_axe_berserkers_call")
 							|| v.HasModifier("modifier_bane_fiends_grip")
 							||
-							v.Name == "npc_dota_hero_magnataur" &&
+							v.ClassID == ClassID.CDOTA_Unit_Hero_Magnataur &&
 							v.FindSpell("magnataur_reverse_polarity").IsInAbilityPhase
 							||
-							v.Name == "npc_dota_hero_magnataur" &&
+							v.ClassID == ClassID.CDOTA_Unit_Hero_Magnataur &&
 							v.FindSpell("magnataur_skewer").IsInAbilityPhase
 							|| v.FindItem("item_blink").IsInAbilityPhase
 							||
-							v.Name == "npc_dota_hero_queenofpain" &&
+							v.ClassID == ClassID.CDOTA_Unit_Hero_QueenOfPain &&
 							v.FindSpell("queenofpain_blink").IsInAbilityPhase
 							||
-							v.Name == "npc_dota_hero_antimage" && v.FindSpell("antimage_blink").IsInAbilityPhase
+							v.ClassID == ClassID.CDOTA_Unit_Hero_AntiMage && v.FindSpell("antimage_blink").IsInAbilityPhase
 							||
-							v.Name == "npc_dota_hero_antimage" &&
+							v.ClassID == ClassID.CDOTA_Unit_Hero_AntiMage &&
 							v.FindSpell("antimage_mana_void").IsInAbilityPhase
 							||
-							v.Name == "npc_dota_hero_doom_bringer" &&
+							v.ClassID == ClassID.CDOTA_Unit_Hero_DoomBringer &&
 							v.FindSpell("doom_bringer_doom").IsInAbilityPhase
 							|| v.HasModifier("modifier_rubick_telekinesis")
 							|| v.HasModifier("modifier_item_blink_dagger")
@@ -509,15 +509,16 @@
 							|| v.HasModifier("modifier_winter_wyvern_winters_curse")
 							|| v.HasModifier("modifier_shadow_shaman_shackles")
 							||
-							v.HasModifier("modifier_faceless_void_chronosphere_freeze")
+							v.HasModifier("modifier_faceless_void_chronosphere_freeze") &&
+							v.ClassID == ClassID.CDOTA_Unit_Hero_FacelessVoid
 							||
-							v.Name == "npc_dota_hero_witch_doctor" &&
+							v.ClassID == ClassID.CDOTA_Unit_Hero_WitchDoctor &&
 							v.FindSpell("witch_doctor_death_ward").IsInAbilityPhase
 							||
-							v.Name == "npc_dota_hero_rattletrap" &&
+							v.ClassID == ClassID.CDOTA_Unit_Hero_Rattletrap &&
 							v.FindSpell("rattletrap_power_cogs").IsInAbilityPhase
 							||
-							v.Name == "npc_dota_hero_tidehunter" &&
+							v.ClassID == ClassID.CDOTA_Unit_Hero_Tidehunter &&
 							v.FindSpell("tidehunter_ravage").IsInAbilityPhase
 							&& !v.IsMagicImmune()
 							)
@@ -530,7 +531,7 @@
 					if (v.IsLinkensProtected() &&
 						(me.IsVisibleToEnemies || Active))
 					{
-						if (E != null && E.CanBeCasted() && me.Distance2D(v) < E.CastRange &&
+						if (E != null && E.CanBeCasted() && me.Distance2D(v) < E.GetCastRange() &&
 							Menu.Item("Link").GetValue<AbilityToggler>().IsEnabled(E.Name) &&
 							Utils.SleepCheck(v.Handle.ToString()))
 						{

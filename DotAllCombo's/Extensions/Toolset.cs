@@ -40,13 +40,13 @@ namespace DotaAllCombo.Service
 
 
 
-			if (me.HasModifier("modifier_troll_warlord_berserkers_rage"))
+			if (me.ClassID == ClassID.CDOTA_Unit_Hero_TrollWarlord && me.HasModifier("modifier_troll_warlord_berserkers_rage"))
 				AttackRange = 150 + me.HullRadius + 24;
-			else if (!me.HasModifier("modifier_troll_warlord_berserkers_rage"))
+			else if (me.ClassID == ClassID.CDOTA_Unit_Hero_TrollWarlord && !me.HasModifier("modifier_troll_warlord_berserkers_rage"))
 				AttackRange = me.GetAttackRange() + me.HullRadius + 24;
-			else if (me.Name == "npc_dota_hero_templar_assassin")
+			else if (me.ClassID == ClassID.CDOTA_Unit_Hero_TemplarAssassin)
 				AttackRange = me.GetAttackRange() + me.HullRadius;
-			else if (me.Name == "npc_dota_hero_dragon_knight" && me.HasModifier("modifier_dragon_knight_dragon_form"))
+			else if (me.ClassID == ClassID.CDOTA_Unit_Hero_DragonKnight && me.HasModifier("modifier_dragon_knight_dragon_form"))
 				AttackRange = me.GetAttackRange() + me.HullRadius + 24;
 			else if (item == null && me.IsRanged)
 				AttackRange = me.GetAttackRange() + me.HullRadius + 24;
@@ -59,7 +59,7 @@ namespace DotaAllCombo.Service
 		public static bool checkFace(Ability z, Hero v)
 		{
 			ObjectManager.GetEntities<Hero>()
-				.Where(x => x.Distance2D(v) < z.CastRange)
+				.Where(x => x.Distance2D(v) < z.GetCastRange())
 				.OrderBy(x => RadiansToFace(x, v))
 				.FirstOrDefault();
 
@@ -100,8 +100,9 @@ namespace DotaAllCombo.Service
 			for (int i = 0; i < projectiles.Count; ++i)
 			{
 				var closestCreepUnAgr = GetClosestToUnit(z, v);
-				if (projectiles[i].Source.NetworkName == "CDOTA_BaseNPC_Tower"
-					|| projectiles[i].Source.NetworkName == "CDOTA_Unit_Fountain")
+
+				if (projectiles[i].Source.ClassID == ClassID.CDOTA_BaseNPC_Tower
+				    || projectiles[i].Source.ClassID == ClassID.CDOTA_Unit_Fountain)
 				{
 					if (closestCreepUnAgr == null) return;
 					if (closestCreepUnAgr.Distance2D(v) <= 500 & Utils.SleepCheck("UnAgr"))
@@ -129,20 +130,20 @@ namespace DotaAllCombo.Service
 		{
 			if (v == null) return;
 			var creepsA = ObjectManager.GetEntities<Unit>().Where(creep =>
-				(creep.NetworkName == "CDOTA_BaseNPC_Creep_Lane"
-				 || creep.NetworkName == "CDOTA_BaseNPC_Creep_Neutral"
-				 || creep.NetworkName == "CDOTA_BaseNPC_Creep") &&
+				(creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
+				 || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral
+				 || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep) &&
 				creep.IsAlive && creep.Team == me.Team && creep.IsVisible && creep.IsSpawned).ToList();
 
 			if (creepsA.Count(x => x.Distance2D(v) <= 500) == 0)
 			{
-				if (v.Name == "npc_dota_lone_druid_bear")
+				if (v.ClassID == ClassID.CDOTA_Unit_SpiritBear)
 				{
 					creepsA = ObjectManager.GetEntities<Unit>().Where(creep => (
 						creep.HasInventory && creep.Handle != v.Handle)
 					                    && creep.IsAlive && creep.Team == me.Team
-					                    && creep.Name != "npc_dota_hero_lone_druid"
-										&& creep.IsVisible &&
+					                    && creep.ClassID != ClassID.CDOTA_Unit_Hero_LoneDruid
+					                    && creep.IsVisible &&
 					                    creep.Health >= (creep.MaximumHealth*0.5)).ToList();
 				}
 				else
@@ -162,55 +163,55 @@ namespace DotaAllCombo.Service
 		{
 			if (x.FindSpell("dragon_knight_dragon_tail") != null &&
 			    x.FindSpell("dragon_knight_dragon_tail").Cooldown <= 0 &&
-			    me.Distance2D(x) <= x.FindSpell("dragon_knight_dragon_tail").CastRange
+			    me.Distance2D(x) <= x.FindSpell("dragon_knight_dragon_tail").GetCastRange()
 			    ||
 			    x.FindSpell("earthshaker_echo_slam") != null && x.FindSpell("earthshaker_echo_slam").Cooldown <= 0 &&
-			    me.Distance2D(x) <= x.FindSpell("earthshaker_echo_slam").CastRange
+			    me.Distance2D(x) <= x.FindSpell("earthshaker_echo_slam").GetCastRange()
 			    ||
 			    x.FindSpell("legion_commander_duel") != null && x.FindSpell("legion_commander_duel").Cooldown <= 0 &&
-			    me.Distance2D(x) <= x.FindSpell("legion_commander_duel").CastRange
+			    me.Distance2D(x) <= x.FindSpell("legion_commander_duel").GetCastRange()
 			    ||
 			    x.FindSpell("leshrac_split_earth") != null && x.FindSpell("leshrac_split_earth").Cooldown <= 0 &&
-			    me.Distance2D(x) <= x.FindSpell("leshrac_split_earth").CastRange
+			    me.Distance2D(x) <= x.FindSpell("leshrac_split_earth").GetCastRange()
 			    ||
 			    x.FindSpell("leoric_hellfire_blast") != null && x.FindSpell("leoric_hellfire_blast").Cooldown <= 0 &&
-			    me.Distance2D(x) <= x.FindSpell("leoric_hellfire_blast").CastRange
+			    me.Distance2D(x) <= x.FindSpell("leoric_hellfire_blast").GetCastRange()
 			    ||
 			    x.FindSpell("lina_light_strike_array") != null && x.FindSpell("lina_light_strike_array").Cooldown <= 0 &&
-			    me.Distance2D(x) <= x.FindSpell("lina_light_strike_array").CastRange
+			    me.Distance2D(x) <= x.FindSpell("lina_light_strike_array").GetCastRange()
 			    ||
 			    x.FindSpell("lion_impale") != null && x.FindSpell("lion_impale").Cooldown <= 0 &&
-			    me.Distance2D(x) <= x.FindSpell("lion_impale").CastRange
+			    me.Distance2D(x) <= x.FindSpell("lion_impale").GetCastRange()
 			    ||
 			    x.FindSpell("magnataur_reverse_polarity") != null &&
 			    x.FindSpell("magnataur_reverse_polarity").Cooldown <= 0 &&
-			    me.Distance2D(x) <= x.FindSpell("magnataur_reverse_polarity").CastRange
+			    me.Distance2D(x) <= x.FindSpell("magnataur_reverse_polarity").GetCastRange()
 			    ||
 			    x.FindSpell("nyx_assassin_impale") != null && x.FindSpell("nyx_assassin_impale").Cooldown <= 0 &&
-			    me.Distance2D(x) <= x.FindSpell("nyx_assassin_impale").CastRange
+			    me.Distance2D(x) <= x.FindSpell("nyx_assassin_impale").GetCastRange()
 			    ||
 			    x.FindSpell("ogre_magi_fireblast") != null && x.FindSpell("ogre_magi_fireblast").Cooldown <= 0 &&
-			    me.Distance2D(x) <= x.FindSpell("ogre_magi_fireblast").CastRange
+			    me.Distance2D(x) <= x.FindSpell("ogre_magi_fireblast").GetCastRange()
 			    ||
 			    x.FindSpell("skeleton_king_hellfire_blast") != null &&
 			    x.FindSpell("skeleton_king_hellfire_blast").Cooldown <= 0 &&
-			    me.Distance2D(x) <= x.FindSpell("skeleton_king_hellfire_blast").CastRange
+			    me.Distance2D(x) <= x.FindSpell("skeleton_king_hellfire_blast").GetCastRange()
 			    ||
 			    x.FindSpell("sven_storm_bolt") != null && x.FindSpell("sven_storm_bolt").Cooldown <= 0 &&
-			    me.Distance2D(x) <= x.FindSpell("sven_storm_bolt").CastRange
+			    me.Distance2D(x) <= x.FindSpell("sven_storm_bolt").GetCastRange()
 			    ||
 			    x.FindSpell("tiny_avalanche") != null && x.FindSpell("tiny_avalanche").Cooldown <= 0 &&
-			    me.Distance2D(x) <= x.FindSpell("tiny_avalanche").CastRange
+			    me.Distance2D(x) <= x.FindSpell("tiny_avalanche").GetCastRange()
 			    ||
 			    x.FindSpell("tusk_walrus_punch") != null && x.FindSpell("tusk_walrus_punch").Cooldown <= 0 &&
-			    me.Distance2D(x) <= x.FindSpell("tusk_walrus_punch").CastRange
+			    me.Distance2D(x) <= x.FindSpell("tusk_walrus_punch").GetCastRange()
 			    ||
 			    x.FindSpell("vengefulspirit_magic_missile") != null &&
 			    x.FindSpell("vengefulspirit_magic_missile").Cooldown <= 0 &&
-			    me.Distance2D(x) <= x.FindSpell("vengefulspirit_magic_missile").CastRange
+			    me.Distance2D(x) <= x.FindSpell("vengefulspirit_magic_missile").GetCastRange()
 			    ||
 			    x.FindSpell("windrunner_shackleshot") != null && x.FindSpell("windrunner_shackleshot").Cooldown <= 0 &&
-			    me.Distance2D(x) <= x.FindSpell("windrunner_shackleshot").CastRange
+			    me.Distance2D(x) <= x.FindSpell("windrunner_shackleshot").GetCastRange()
 				)
 				return true;
 			return false;
@@ -393,7 +394,7 @@ namespace DotaAllCombo.Service
 				   Spell.R != null
 				&& Spell.R.CanBeCasted() && source.CanCast()
 				&& Utils.SleepCheck(Spell.R.Name + source.Handle)
-				&& source.Distance2D(e) < (Item.blink != null && Item.blink.CanBeCasted() ? 1200 : Spell.Q.CastRange)
+				&& source.Distance2D(e) < (Item.blink != null && Item.blink.CanBeCasted() ? 1200 : Spell.Q.GetCastRange())
 				)
 				{
 					Spell.R.UseAbility();
@@ -463,7 +464,7 @@ namespace DotaAllCombo.Service
 				Item.arcane != null &&
 				// source.Mana <= Spell.R.ManaCost &&
 				Item.arcane.CanBeCasted() &&
-				source.Distance2D(me) >= Item.arcane.CastRange)
+				source.Distance2D(me) >= Item.arcane.GetCastRange())
 				{
 					Item.arcane.UseAbility();
 					return true;
@@ -568,7 +569,7 @@ namespace DotaAllCombo.Service
 				Item.dagon.CanBeCasted() &&
 				source.CanCast() &&
 				!e.IsMagicImmune() &&
-				source.Distance2D(e) <= Item.dagon.CastRange
+				source.Distance2D(e) <= Item.dagon.GetCastRange()
 				&& Utils.SleepCheck(Item.dagon.Name + source.Handle)
 			   )
 				{
@@ -590,7 +591,7 @@ namespace DotaAllCombo.Service
 				)
 				{
 					Item.medall.UseAbility(
-						(me.Distance2D(source) < Item.medall.CastRange ? me : e));
+						(me.Distance2D(source) < Item.medall.GetCastRange() ? me : e));
 					Utils.Sleep(250, Item.medall.Name);
 					return true;
 				}
@@ -639,7 +640,7 @@ namespace DotaAllCombo.Service
 				Item.diffusal != null &&
 				Item.diffusal.CanBeCasted() &&
 				Utils.SleepCheck(Item.diffusal.Name + source.Handle) &&
-				source.Distance2D(e) <= Item.diffusal.CastRange
+				source.Distance2D(e) <= Item.diffusal.GetCastRange()
 				)
 				{
 					Item.diffusal.UseAbility(attackMode ? e : me);
@@ -657,7 +658,7 @@ namespace DotaAllCombo.Service
 				Item.vail != null &&
 				Item.vail.CanBeCasted() &&
 				Utils.SleepCheck(Item.vail.Name) &&
-				source.Distance2D(e) <= Item.vail.CastRange)
+				source.Distance2D(e) <= Item.vail.GetCastRange())
 				{
 					Item.vail.UseAbility(e.Position);
 					Utils.Sleep(250, Item.vail.Name);
@@ -674,7 +675,7 @@ namespace DotaAllCombo.Service
 				Item.sheepstick != null &&
 				Item.sheepstick.CanBeCasted() &&
 				Utils.SleepCheck(Item.sheepstick.Name + source.Handle) &&
-				source.Distance2D(e) <= Item.sheepstick.CastRange
+				source.Distance2D(e) <= Item.sheepstick.GetCastRange()
 				)
 				{
 					Item.sheepstick.UseAbility(e);
@@ -699,7 +700,7 @@ namespace DotaAllCombo.Service
 				Item.etheral != null &&
 				Item.etheral.CanBeCasted() &&
 				Utils.SleepCheck(Item.etheral.Name + source.Handle) &&
-				source.Distance2D(e) <= Item.etheral.CastRange
+				source.Distance2D(e) <= Item.etheral.GetCastRange()
 				)
 				{
 					Console.WriteLine("Ethereal casted!");
@@ -734,7 +735,7 @@ namespace DotaAllCombo.Service
 				Item.orchid != null &&
 				Item.orchid.CanBeCasted() &&
 				Utils.SleepCheck(Item.orchid.Name + source.Handle) &&
-				source.Distance2D(e) <= Item.orchid.CastRange
+				source.Distance2D(e) <= Item.orchid.GetCastRange()
 				)
 				{
 					Item.etheral.UseAbility(e);

@@ -131,7 +131,7 @@
                             && Q.CanBeCasted()
                             && (blink == null
                             || !blink.CanBeCasted())
-                            && me.Distance2D(e) < Q.CastRange
+                            && me.Distance2D(e) < Q.GetCastRange()
                             && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name))
                         {
                             Q.UseAbility(pos);
@@ -258,7 +258,7 @@
 							&& Q.CanBeCasted() 
 							&& ( blink == null 
 							|| !blink.CanBeCasted())
-							&& me.Distance2D(e) < Q.CastRange 
+							&& me.Distance2D(e) < Q.GetCastRange() 
 							&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name))
 						{
 							Q.UseAbility(pos);

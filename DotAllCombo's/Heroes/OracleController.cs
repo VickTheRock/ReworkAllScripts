@@ -85,7 +85,7 @@
 					&& me.CanCast()
 					&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name)
 					&& !e.HasModifier("oracle_fates_edict")
-					&& me.Distance2D(e) <= Q.CastRange + 400
+					&& me.Distance2D(e) <= Q.GetCastRange() + 400
 					&& Utils.SleepCheck("Q")
 					)
 				{
@@ -99,7 +99,7 @@
 					&& !e.HasModifier("oracle_fates_edict")
 					&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(E.Name)
 					&& Utils.SleepCheck("E")
-					&& me.Distance2D(e) <= E.CastRange + 400
+					&& me.Distance2D(e) <= E.GetCastRange() + 400
 					)
 				{
 					E.UseAbility(e);
@@ -258,7 +258,7 @@
 					if (!me.IsInvisible())
 					{
 						/*if (
-							W != null && W.CanBeCasted() && me.Distance2D(Ally[i]) <= W.CastRange+50
+							W != null && W.CanBeCasted() && me.Distance2D(Ally[i]) <= W.GetCastRange()+50
 							&& Ally[i].Health <= (me.MaximumHealth * 0.6) && !Q.CanBeCasted()
 							&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name)
 							&& Utils.SleepCheck("W")
@@ -283,7 +283,7 @@
 						}
 
 						if (E != null && E.CanBeCasted()
-						   && me.Distance2D(ally[i]) <= E.CastRange + 50
+						   && me.Distance2D(ally[i]) <= E.GetCastRange() + 50
 						   && !ally[i].IsMagicImmune()
 						   && ally[i].HasModifier("modifier_oracle_false_promise")
 						   && Menu.Item("SkillsAutoAlly").GetValue<AbilityToggler>().IsEnabled(E.Name)
@@ -296,9 +296,9 @@
 
 						if (
 							guardian != null && guardian.CanBeCasted()
-							&& me.Distance2D(ally[i]) <= guardian.CastRange
-							&& (v.Count(x => x.Distance2D(me) <= guardian.CastRange) >= (Menu.Item("healsetTarget").GetValue<Slider>().Value))
-							&& (ally.Count(x => x.Distance2D(me) <= guardian.CastRange) >= (Menu.Item("healsetAlly").GetValue<Slider>().Value))
+							&& me.Distance2D(ally[i]) <= guardian.GetCastRange()
+							&& (v.Count(x => x.Distance2D(me) <= guardian.GetCastRange()) >= (Menu.Item("healsetTarget").GetValue<Slider>().Value))
+							&& (ally.Count(x => x.Distance2D(me) <= guardian.GetCastRange()) >= (Menu.Item("healsetAlly").GetValue<Slider>().Value))
 							&& ally[i].Health <= (ally[i].MaximumHealth / 100 * (Menu.Item("HealhHeal").GetValue<Slider>().Value))
 							&& Menu.Item("ItemsS").GetValue<AbilityToggler>().IsEnabled(guardian.Name)
 							&& Utils.SleepCheck("guardian")
@@ -310,7 +310,7 @@
 
 						if (
 							R != null && R.CanBeCasted()
-							&& me.Distance2D(ally[i]) <= R.CastRange + 100
+							&& me.Distance2D(ally[i]) <= R.GetCastRange() + 100
 							&& ally[i].Health <= (ally[i].MaximumHealth / 100 * (Menu.Item("HealhHealUlt").GetValue<Slider>().Value))
 							&& ally[i].Distance2D(v[z]) <= 700
 							&& Menu.Item("SkillsAutoAlly").GetValue<AbilityToggler>().IsEnabled(R.Name)
@@ -359,7 +359,7 @@
 							&& !v[z].IsMagicImmune()
 							&& Menu.Item("SkillsAutoTarget").GetValue<AbilityToggler>().IsEnabled(E.Name)
 							&& v[z].Health <= damage - 5
-							&& me.Distance2D(v[z]) <= E.CastRange + 10
+							&& me.Distance2D(v[z]) <= E.GetCastRange() + 10
 							&& Utils.SleepCheck(e.Handle.ToString()))
 						{
 							E.UseAbility(v[z]);
@@ -368,7 +368,7 @@
 
 
 						if (W != null && W.CanBeCasted()
-							&& me.Distance2D(ally[i]) <= W.CastRange + 50
+							&& me.Distance2D(ally[i]) <= W.GetCastRange() + 50
 							&& !ally[i].IsMagicImmune()
 							&& ally[i].HasModifier("modifier_oracle_false_promise")
 							&& Menu.Item("SkillsAutoAlly").GetValue<AbilityToggler>().IsEnabled(W.Name)
@@ -381,7 +381,7 @@
 						var spray = ally[i].Modifiers.FirstOrDefault(y => y.Name == "modifier_bristleback_quill_spray_stack");
 						var napalm = ally[i].Modifiers.FirstOrDefault(y => y.Name == "modifier_batrider_sticky_napalm");
 
-						if (Q != null && Q.CanBeCasted() && me.Distance2D(ally[i]) <= Q.CastRange + 50
+						if (Q != null && Q.CanBeCasted() && me.Distance2D(ally[i]) <= Q.GetCastRange() + 50
 							&& (ally[i].IsSilenced()
 							|| ally[i].IsHexed()
 							|| ally[i].HasModifier("modifier_item_diffusal_blade")
@@ -411,7 +411,7 @@
 						}
 
 
-						if (Q != null && Q.CanBeCasted() && me.Distance2D(v[z]) <= Q.CastRange + 50 &&
+						if (Q != null && Q.CanBeCasted() && me.Distance2D(v[z]) <= Q.GetCastRange() + 50 &&
 							Menu.Item("SkillsAutoTarget").GetValue<AbilityToggler>().IsEnabled(Q.Name)
 							&& (v[z].HasModifier("modifier_rune_haste")
 							|| v[z].HasModifier("modifier_rune_regen")
@@ -429,7 +429,7 @@
 						}
 						var modi = ally[i].Modifiers.FirstOrDefault(x => x.Name == "modifier_stunned");
 						var mod = ally[i].Modifiers.FirstOrDefault(x => x.Name == "modifier_stun");
-						if (R != null && R.CanBeCasted() && me.Distance2D(ally[i]) <= R.CastRange + 50
+						if (R != null && R.CanBeCasted() && me.Distance2D(ally[i]) <= R.GetCastRange() + 50
 							&& ((mod != null && mod.RemainingTime >= 1.6 + Game.Ping)
 							|| (modi != null && mod.RemainingTime >= 1.6 + Game.Ping)
 							|| ally[i].HasModifier("modifier_batrider_flaming_lasso")
@@ -454,9 +454,9 @@
 						}
 						if (
 						 pipe != null && pipe.CanBeCasted()
-						 && me.Distance2D(ally[i]) <= pipe.CastRange
-						 && (v.Count(x => x.Distance2D(me) <= pipe.CastRange) >= (Menu.Item("pipesetTarget").GetValue<Slider>().Value))
-						 && (ally.Count(x => x.Distance2D(me) <= pipe.CastRange) >= (Menu.Item("pipesetAlly").GetValue<Slider>().Value))
+						 && me.Distance2D(ally[i]) <= pipe.GetCastRange()
+						 && (v.Count(x => x.Distance2D(me) <= pipe.GetCastRange()) >= (Menu.Item("pipesetTarget").GetValue<Slider>().Value))
+						 && (ally.Count(x => x.Distance2D(me) <= pipe.GetCastRange()) >= (Menu.Item("pipesetAlly").GetValue<Slider>().Value))
 						 && Menu.Item("ItemsS").GetValue<AbilityToggler>().IsEnabled(pipe.Name)
 						 && Utils.SleepCheck("pipe")
 						 )
@@ -466,7 +466,7 @@
 						}
 
 						if (
-							sphere != null && sphere.CanBeCasted() && me.Distance2D(ally[i]) <= sphere.CastRange + 50
+							sphere != null && sphere.CanBeCasted() && me.Distance2D(ally[i]) <= sphere.GetCastRange() + 50
 							&& !ally[i].IsMagicImmune()
 							&& ((ally[i].Distance2D(v[z]) <= ally[i].AttackRange + ally[i].HullRadius + 10)
 							|| (ally[i].Distance2D(v[z]) <= v[z].AttackRange + ally[i].HullRadius + 10)
@@ -480,7 +480,7 @@
 						}
 
 						if (
-							glimmer != null && glimmer.CanBeCasted() && me.Distance2D(ally[i]) <= glimmer.CastRange + 50
+							glimmer != null && glimmer.CanBeCasted() && me.Distance2D(ally[i]) <= glimmer.GetCastRange() + 50
 							&& ally[i].Health <= (me.MaximumHealth * 0.5)
 							&& Menu.Item("ItemsS").GetValue<AbilityToggler>().IsEnabled(glimmer.Name)
 							&& Utils.SleepCheck("glimmer")
@@ -489,15 +489,15 @@
 							glimmer.UseAbility(ally[i]);
 							Utils.Sleep(200, "glimmer");
 						}
-						if (W != null && W.CanBeCasted() && me.Distance2D(v[z]) <= W.CastRange + 50
+						if (W != null && W.CanBeCasted() && me.Distance2D(v[z]) <= W.GetCastRange() + 50
 						   && !v[z].IsMagicImmune() &&
 						   (v[z].HasModifier("modifier_sven_gods_strength")
 						   || v[z].HasModifier("modifier_rune_doubledamage")
-						   || ((v[z].Name == "npc_dota_hero_legion_commander" && v[z].FindSpell("legion_commander_duel").Cooldown <= 0 && ally[i].Distance2D(v[z]) <= 500)
-						   || (v[z].Name == "npc_dota_hero_sniper" && v[z].Level >= 8)
-						   || (v[z].Name == "npc_dota_hero_drow_ranger" && v[z].Level >= 8)
-						   || (v[z].Name == "npc_dota_hero_ursa" && v[z].Distance2D(ally[i]) <= 300 && v[z].NetworkActivity == NetworkActivity.Attack)
-						   || (v[z].Name == "npc_dota_hero_templar_assassin" && v[z].Distance2D(ally[i]) <= 300 && v[z].IsAttacking()))
+						   || ((v[z].ClassID == ClassID.CDOTA_Unit_Hero_Legion_Commander && v[z].FindSpell("legion_commander_duel").Cooldown <= 0 && ally[i].Distance2D(v[z]) <= 500)
+						   || (v[z].ClassID == ClassID.CDOTA_Unit_Hero_Sniper && v[z].Level >= 8)
+						   || (v[z].ClassID == ClassID.CDOTA_Unit_Hero_DrowRanger && v[z].Level >= 8)
+						   || (v[z].ClassID == ClassID.CDOTA_Unit_Hero_Ursa && v[z].Distance2D(ally[i]) <= 300 && v[z].NetworkActivity == NetworkActivity.Attack)
+						   || (v[z].ClassID == ClassID.CDOTA_Unit_Hero_TemplarAssassin && v[z].Distance2D(ally[i]) <= 300 && v[z].IsAttacking()))
 						   )
 						   && Menu.Item("SkillsAutoTarget").GetValue<AbilityToggler>().IsEnabled(W.Name)
 						   && Utils.SleepCheck("W")

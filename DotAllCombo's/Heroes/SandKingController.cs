@@ -67,7 +67,7 @@
 			var stoneModif = e.Modifiers.All(y => y.Name == "modifier_medusa_stone_gaze_stone");
 
 
-			if (me.IsChanneling() || R.IsChanneling || R.IsInAbilityPhase) return;
+			if (me.IsChanneling() || R.IsInAbilityPhase || R.IsChanneling) return;
 			var v =
 				ObjectManager.GetEntities<Hero>()
 					.Where(x => x.Team != me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && !x.IsMagicImmune())
@@ -83,10 +83,10 @@
 				if (me.HasModifier("modifier_sandking_sand_storm")) return;
 				float angle = me.FindAngleBetween(e.Position, true);
 
-				Vector3 pos = new Vector3((float)(e.Position.X - (Q.CastRange - 100) * Math.Cos(angle)),
-					(float)(e.Position.Y - (Q.CastRange - 100) * Math.Sin(angle)), 0);
+				Vector3 pos = new Vector3((float)(e.Position.X - (Q.GetCastRange() - 100) * Math.Cos(angle)),
+					(float)(e.Position.Y - (Q.GetCastRange() - 100) * Math.Sin(angle)), 0);
 				uint elsecount = 1;
-				if (elsecount == 1 && (blink != null && blink.CanBeCasted() && me.Distance2D(pos) <= 1100 || blink == null && me.Distance2D(e) <= Q.CastRange - 50))
+				if (elsecount == 1 && (blink != null && blink.CanBeCasted() && me.Distance2D(pos) <= 1100 || blink == null && me.Distance2D(e) <= Q.GetCastRange() - 50))
 				{
 					if (
 						R != null && R.CanBeCasted()
@@ -108,7 +108,7 @@
                     if (
                         blink != null
                         && blink.CanBeCasted()
-                        && me.Distance2D(e) >= (Q.CanBeCasted() ? Q.CastRange : 450)
+                        && me.Distance2D(e) >= (Q.CanBeCasted() ? Q.GetCastRange() : 450)
                         && me.Distance2D(pos) <= 1190
                         && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name)
                         && Utils.SleepCheck("blink")
@@ -121,7 +121,7 @@
 						blink != null
 						&& blink.CanBeCasted()
 						&& me.Distance2D(e) < 1180
-						&& me.Distance2D(e) > (Q.CanBeCasted() ? Q.CastRange : 450)
+						&& me.Distance2D(e) > (Q.CanBeCasted() ? Q.GetCastRange() : 450)
 						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name)
 						&& Utils.SleepCheck("blink")
 						)
@@ -131,7 +131,7 @@
 					}
 
 					if (
-					Q != null && Q.CanBeCasted() && me.Distance2D(e) <= Q.CastRange + 300
+					Q != null && Q.CanBeCasted() && me.Distance2D(e) <= Q.GetCastRange() + 300
 					&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name)
 					&& Utils.SleepCheck("Q")
 					)
@@ -296,10 +296,10 @@
 				}
 				if (me.IsChanneling() || R.IsChanneling || R.IsInAbilityPhase) return;
 				elsecount++;
-				if (elsecount == 2 && e != null && e.IsAlive && !me.IsChanneling())
+				if (elsecount == 2 && e != null && e.IsAlive)
 				{
 
-					if (Menu.Item("orbwalk").GetValue<bool>() && me.Distance2D(e) <= 1900)
+					if (Menu.Item("orbwalk").GetValue<bool>() && me.Distance2D(e) <= 1900 && !me.IsChanneling())
 					{
 						Orbwalking.Orbwalk(e, 0, 1600, true, true);
 					}

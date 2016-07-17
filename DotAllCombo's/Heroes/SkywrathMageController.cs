@@ -69,7 +69,8 @@ namespace DotaAllCombo.Heroes
 			{
 				{"item_force_staff", true},
 				{"item_cyclone", true},
-				{"item_orchid", true}, {"item_bloodthorn", true},
+				{"item_orchid", true},
+				{"item_bloodthorn", true},
 				{"item_rod_of_atos", true},
 				{"item_dagon", true}
 			})));
@@ -121,7 +122,7 @@ namespace DotaAllCombo.Heroes
 			// Item
 			ethereal = me.FindItem("item_ethereal_blade");
 
-			sheep = e.Name == "npc_dota_hero_tidehunter" ? null : me.FindItem("item_sheepstick");
+			sheep = e.ClassID == ClassID.CDOTA_Unit_Hero_Tidehunter ? null : me.FindItem("item_sheepstick");
 
 			vail = me.FindItem("item_veil_of_discord");
 
@@ -149,7 +150,7 @@ namespace DotaAllCombo.Heroes
 
 			var stoneModif = e.HasModifier("modifier_medusa_stone_gaze_stone");
 
-			if (Game.IsKeyDown(70) && Q.CanBeCasted() && e != null)
+			if (Game.IsKeyDown(70) && Q.CanBeCasted())
 			{
 				if (
 					Q != null
@@ -157,7 +158,7 @@ namespace DotaAllCombo.Heroes
 					&& (e.IsLinkensProtected()
 					|| !e.IsLinkensProtected())
 					&& me.CanCast()
-					&& me.Distance2D(e) < 900
+					&& me.Distance2D(e) < Q.GetCastRange()+me.HullRadius
 					&& Utils.SleepCheck("Q")
 					)
 				{
@@ -233,13 +234,14 @@ namespace DotaAllCombo.Heroes
 						&& E.CanBeCasted()
 						&& me.CanCast()
 						&& !e.IsLinkensProtected()
+						&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(E.Name)
 						&& me.Position.Distance2D(e) < 1400
 						&& Utils.SleepCheck("E"))
 					{
 						E.UseAbility(e);
 						Utils.Sleep(200, "E");
 					}
-					if (!E.CanBeCasted() || E == null || me.IsSilenced() )
+					if (E == null || !E.CanBeCasted() || me.IsSilenced() || !Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(E.Name))
 					{
 						if ( // orchid
 							orchid != null
@@ -270,7 +272,7 @@ namespace DotaAllCombo.Heroes
 								vail.UseAbility(e.Position);
 								Utils.Sleep(250, "vail");
 							} // orchid Item end
-							if (!vail.CanBeCasted() || vail == null || me.IsSilenced() || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(vail.Name))
+							if (vail == null || !vail.CanBeCasted() ||  me.IsSilenced() || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(vail.Name))
 							{
 								if (// ethereal
 									   ethereal != null
@@ -285,7 +287,7 @@ namespace DotaAllCombo.Heroes
 									ethereal.UseAbility(e);
 									Utils.Sleep(200, "ethereal");
 								} // ethereal Item end
-								if (!ethereal.CanBeCasted() || ethereal == null || me.IsSilenced() || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(ethereal.Name))
+								if (ethereal == null || !ethereal.CanBeCasted() ||  me.IsSilenced() || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(ethereal.Name))
 								{
 									if (
 										 Q != null
@@ -306,7 +308,7 @@ namespace DotaAllCombo.Heroes
 									   && R.CanBeCasted()
 									   && me.CanCast()
 									   && !e.HasModifier("modifier_skywrath_mystic_flare_aura_effect")
-									   && e.MovementSpeed <= 240
+									   && e.MovementSpeed <= 220
 									   && me.Position.Distance2D(e) < 1200
 									   && e.Health >= (e.MaximumHealth / 100 * Menu.Item("Healh").GetValue<Slider>().Value)
 										  && !me.HasModifier("modifier_pugna_nether_ward_aura")
@@ -481,7 +483,7 @@ namespace DotaAllCombo.Heroes
 					{
 						if (Utils.SleepCheck(v[i].Handle.ToString()))
 						{
-							if (v[i].Name == "npc_dota_hero_spirit_breaker")
+							if (v[i].ClassID == ClassID.CDOTA_Unit_Hero_SpiritBreaker)
 							{
 								float angle = me.FindAngleBetween(v[i].Position, true);
 								Vector3 pos = new Vector3((float)(me.Position.X + 100 * Math.Cos(angle)),
@@ -521,13 +523,13 @@ namespace DotaAllCombo.Heroes
 					{
 						if (cyclone != null && reflect && cyclone.CanBeCasted() &&
 							v[i].HasModifier("modifier_skywrath_mystic_flare_aura_effect") &&
-							me.Distance2D(v[i]) < cyclone.CastRange
+							me.Distance2D(v[i]) < cyclone.GetCastRange()
 							)
 							cyclone.UseAbility(me);
 
-						if (R != null && R.CanBeCasted() && me.Distance2D(v[i]) <= R.CastRange + 100
+						if (R != null && R.CanBeCasted() && me.Distance2D(v[i]) <= R.GetCastRange() + 100
 							&& !me.HasModifier("modifier_pugna_nether_ward_aura")
-							&& (v[i].MovementSpeed <= 200 && !E.CanBeCasted())
+							&& (v[i].MovementSpeed <= 220 && ((Active && !E.CanBeCasted() || !Active && E.CanBeCasted()) || v[i].MagicDamageResist <= 0.07))
 							&& !v[i].HasModifier("modifier_zuus_lightningbolt_vision_thinker")
 							&& !v[i].HasModifier("modifier_item_blade_mail_reflect")
 							&& !v[i].HasModifier("modifier_sniper_headshot")
@@ -561,7 +563,7 @@ namespace DotaAllCombo.Heroes
 							)
 							R.UseAbility(Prediction.InFront(v[i], 90));
 
-						if (R != null && R.CanBeCasted() && me.Distance2D(v[i]) <= R.CastRange + 100
+						if (R != null && R.CanBeCasted() && me.Distance2D(v[i]) <= R.GetCastRange() + 100
 							&& !me.HasModifier("modifier_pugna_nether_ward_aura")
 							&&
 							(v[i].HasModifier("modifier_meepo_earthbind")
@@ -582,7 +584,8 @@ namespace DotaAllCombo.Heroes
 							 v[i].FindSpell("rattletrap_power_cogs").IsInAbilityPhase)
 							 || v[i].HasModifier("modifier_axe_berserkers_call")
 							 || v[i].HasModifier("modifier_bane_fiends_grip")
-							 || v[i].HasModifier("modifier_faceless_void_chronosphere_freeze")
+							 || (v[i].HasModifier("modifier_faceless_void_chronosphere_freeze")
+							 && v[i].ClassID != ClassID.CDOTA_Unit_Hero_FacelessVoid)
 							 || v[i].HasModifier("modifier_storm_spirit_electric_vortex_pull")
 							 || (v[i].FindSpell("witch_doctor_death_ward") != null
 							 && v[i].FindSpell("witch_doctor_death_ward").IsInAbilityPhase)
@@ -626,10 +629,10 @@ namespace DotaAllCombo.Heroes
 							)
 							R.UseAbility(Prediction.InFront(v[i], 70));
 
-						if (R != null && R.CanBeCasted() && me.Distance2D(v[i]) <= R.CastRange + 100
+						if (R != null && R.CanBeCasted() && me.Distance2D(v[i]) <= R.GetCastRange() + 100
 							&& !me.HasModifier("modifier_pugna_nether_ward_aura")
-							&& (v[i].MovementSpeed <= 200 && !E.CanBeCasted())
-							&& v[i].MagicDamageResist <= 0.06
+							&& (v[i].MovementSpeed <= 220 && ((Active && !E.CanBeCasted() || !E.CanBeCasted()) || v[i].MagicDamageResist <= 0.07))
+							&& v[i].MagicDamageResist <= 0.07
 							&& v[i].Health >= (v[i].MaximumHealth / 100 * (Menu.Item("Healh").GetValue<Slider>().Value))
 							&& !v[i].HasModifier("modifier_item_blade_mail_reflect")
 							&& !v[i].HasModifier("modifier_skywrath_mystic_flare_aura_effect")
@@ -702,7 +705,7 @@ namespace DotaAllCombo.Heroes
 							)
 							ethereal.UseAbility(v[i]);
 
-						if (E != null && E.CanBeCasted() && me.Distance2D(v[i]) <= E.CastRange
+						if (E != null && E.CanBeCasted() && me.Distance2D(v[i]) <= E.GetCastRange()
 							&& !v[i].IsLinkensProtected()
 							&&
 							(v[i].HasModifier("modifier_meepo_earthbind")
@@ -734,7 +737,8 @@ namespace DotaAllCombo.Heroes
 							 && v[i].FindSpell("legion_commander_duel").Cooldown <= 0)
 							 || (v[i].FindSpell("doom_bringer_doom") != null
 							 && v[i].FindSpell("doom_bringer_doom").IsInAbilityPhase)
-							 || v[i].HasModifier("modifier_faceless_void_chronosphere_freeze")
+							 || (v[i].HasModifier("modifier_faceless_void_chronosphere_freeze")
+							 && v[i].ClassID != ClassID.CDOTA_Unit_Hero_FacelessVoid)
 							 || (v[i].FindSpell("witch_doctor_death_ward") != null &&
 							 v[i].FindSpell("witch_doctor_death_ward").IsInAbilityPhase)
 							 || (v[i].FindSpell("rattletrap_power_cogs") != null &&
@@ -783,19 +787,19 @@ namespace DotaAllCombo.Heroes
 
 					if (v[i].IsLinkensProtected() && (me.IsVisibleToEnemies || Active) && Utils.SleepCheck(v[i].Handle.ToString()))
 					{
-						if (force != null && force.CanBeCasted() && me.Distance2D(v[i]) < force.CastRange &&
+						if (force != null && force.CanBeCasted() && me.Distance2D(v[i]) < force.GetCastRange() &&
 							Menu.Item("Link").GetValue<AbilityToggler>().IsEnabled(force.Name))
 							force.UseAbility(v[i]);
-						else if (cyclone != null && cyclone.CanBeCasted() && me.Distance2D(v[i]) < cyclone.CastRange &&
+						else if (cyclone != null && cyclone.CanBeCasted() && me.Distance2D(v[i]) < cyclone.GetCastRange() &&
 							  Menu.Item("Link").GetValue<AbilityToggler>().IsEnabled(cyclone.Name))
 							cyclone.UseAbility(v[i]);
-						else if (atos != null && atos.CanBeCasted() && me.Distance2D(v[i]) < atos.CastRange - 400 &&
+						else if (atos != null && atos.CanBeCasted() && me.Distance2D(v[i]) < atos.GetCastRange() - 400 &&
 							  Menu.Item("Link").GetValue<AbilityToggler>().IsEnabled(atos.Name))
 							atos.UseAbility(v[i]);
-						else if (dagon != null && dagon.CanBeCasted() && me.Distance2D(v[i]) < dagon.CastRange &&
+						else if (dagon != null && dagon.CanBeCasted() && me.Distance2D(v[i]) < dagon.GetCastRange() &&
 							  Menu.Item("Link").GetValue<AbilityToggler>().IsEnabled("item_dagon"))
 							dagon.UseAbility(v[i]);
-						else if (orchid != null && orchid.CanBeCasted() && me.Distance2D(v[i]) < orchid.CastRange &&
+						else if (orchid != null && orchid.CanBeCasted() && me.Distance2D(v[i]) < orchid.GetCastRange() &&
 							  Menu.Item("Link").GetValue<AbilityToggler>().IsEnabled(orchid.Name))
 							orchid.UseAbility(v[i]);
 						Utils.Sleep(350, v[i].Handle.ToString());

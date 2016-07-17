@@ -72,7 +72,7 @@
 			if (Active && me.Distance2D(e) <= 1400 && e != null && e.IsAlive && !Toolset.invUnit(me))
 			{
 				if (
-					W != null && W.CanBeCasted() && me.Distance2D(e) <= 700
+					W != null && W.CanBeCasted() && me.Distance2D(e) <= W.GetCastRange()
 					&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name)
 					&& me.NetworkActivity != NetworkActivity.Attack
 					&& Utils.SleepCheck("W")
@@ -174,7 +174,7 @@
 					abyssal.UseAbility(e);
 					Utils.Sleep(250, "abyssal");
 				} // Abyssal Item end
-				if (urn != null && urn.CanBeCasted() && urn.CurrentCharges > 0 && me.Distance2D(e) <= 400
+				if (urn != null && urn.CanBeCasted() && urn.CurrentCharges > 0 && me.Distance2D(e) <= 700
 					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(urn.Name) && Utils.SleepCheck("urn"))
 				{
 					urn.UseAbility(e);
@@ -200,7 +200,7 @@
 					satanic != null &&
 					me.Health <= (me.MaximumHealth * 0.3) &&
 					satanic.CanBeCasted() &&
-					me.Distance2D(e) <= me.AttackRange + 50
+					me.Distance2D(e) <= me.AttackRange + 100
 					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(satanic.Name)
 					&& Utils.SleepCheck("satanic")
 					)

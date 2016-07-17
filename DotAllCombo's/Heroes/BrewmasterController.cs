@@ -20,8 +20,6 @@
         private Ability Q, W, R;
         private Item blink, bkb, orchid, necronomicon, urn, medal, shiva, manta;
         private Vector3 mousepos;
-        private Font txt;
-        private Font not;
 
 	    public void Combo()
 		{
@@ -178,7 +176,7 @@
 
 
 					var Necronomicons =
-						ObjectManager.GetEntities<Creep>().Where(x => (x.NetworkName == "CDOTA_BaseNPC_Creep")
+						ObjectManager.GetEntities<Creep>().Where(x => (x.ClassID == ClassID.CDOTA_BaseNPC_Creep)
 																  && x.IsAlive && x.IsControllable);
 					if (Necronomicons == null)
 					{
@@ -212,7 +210,7 @@
 
 					//Necronomicon Warrior
 					var Necrowarrior =
-						ObjectManager.GetEntities<Creep>().Where(x => (x.NetworkName == "CDOTA_BaseNPC_Creep")
+						ObjectManager.GetEntities<Creep>().Where(x => (x.ClassID == ClassID.CDOTA_BaseNPC_Creep)
 																  && x.IsAlive && x.IsControllable);
 					if (Necrowarrior == null)
 					{
@@ -253,13 +251,13 @@
 
 					var primalstorm =
 						ObjectManager.GetEntities<Unit>()
-							.Where(x => x.Name == "npc_dota_brewmaster_storm" && x.IsAlive);
+							.Where(x => x.ClassID == ClassID.CDOTA_Unit_Brewmaster_PrimalStorm && x.IsAlive);
 					var primalearth =
 						ObjectManager.GetEntities<Unit>()
-							.Where(x => (x.Name == "npc_dota_brewmaster_earth" && x.IsAlive));
+							.Where(x => (x.ClassID == ClassID.CDOTA_Unit_Brewmaster_PrimalEarth && x.IsAlive));
 					var primalfire =
 						ObjectManager.GetEntities<Unit>()
-							.Where(x => (x.Name == "npc_dota_brewmaster_fire" && x.IsAlive));
+							.Where(x => (x.ClassID == ClassID.CDOTA_Unit_Brewmaster_PrimalFire && x.IsAlive));
 					if (primalearth == null)
 					{
 						return;
@@ -412,27 +410,7 @@
 				new MenuItem("Save mana for Cyclone", "Save mana for Cyclone").SetValue(false)
 					.SetTooltip(
 						"Do not cast Dispel Magic, Drunken Haze or Invisability if after cast there will be no mana for Cyclone."));
-
-			//
-			txt = new Font(
-				Drawing.Direct3DDevice9,
-				new FontDescription
-				{
-					FaceName = "Calibri",
-					Height = 19,
-					OutputPrecision = FontPrecision.Default,
-					Quality = FontQuality.Default
-				});
-
-			not = new Font(
-				Drawing.Direct3DDevice9,
-				new FontDescription
-				{
-					FaceName = "Calibri",
-					Height = 19,
-					OutputPrecision = FontPrecision.Default,
-					Quality = FontQuality.Default
-				});
+			
 		}
 
 		public void OnCloseEvent()
