@@ -470,8 +470,6 @@ namespace DotaAllCombo.Heroes
 							ethereal.UseAbility(v);
 							Utils.Sleep(250, "ethereal");
 						}
-						Console.WriteLine(damage);
-						Console.WriteLine(v.Health);
 						if (R != null && v != null && R.CanBeCasted()
 							&& !v.HasModifier("modifier_tusk_snowball_movement")
 							&& !v.HasModifier("modifier_snowball_movement_friendly")
