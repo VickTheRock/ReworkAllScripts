@@ -1,7 +1,6 @@
-using SharpDX;
-
 namespace DotaAllCombo.Heroes
 {
+    using SharpDX;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -137,7 +136,7 @@ namespace DotaAllCombo.Heroes
 			{
 				if (Active && e.IsVisible && me.Distance2D(e) <= 2300 && !noBlade)
 				{
-					if (Menu.Item("orbwalk").GetValue<bool>() && me.Distance2D(e) <= 1900)
+					if (Menu.Item("orbwalk").GetValue<bool>() && me.Distance2D(e) <= 1900 && !eulModif)
 					{
 						Orbwalking.Orbwalk(e, 0, 1600, true, true);
 					}
@@ -471,6 +470,8 @@ namespace DotaAllCombo.Heroes
 							ethereal.UseAbility(v);
 							Utils.Sleep(250, "ethereal");
 						}
+						Console.WriteLine(damage);
+						Console.WriteLine(v.Health);
 						if (R != null && v != null && R.CanBeCasted()
 							&& !v.HasModifier("modifier_tusk_snowball_movement")
 							&& !v.HasModifier("modifier_snowball_movement_friendly")
