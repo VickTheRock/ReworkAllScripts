@@ -168,8 +168,8 @@ namespace DotaAllCombo.Heroes
 					Vector3 start = e.NetworkActivity == NetworkActivity.Move ? new Vector3((float)((W.GetCastDelay(me, e, true) + 0.6 + (Game.Ping / 500)) * Math.Cos(e.RotationRad) * e.MovementSpeed + e.Position.X),
 												(float)((W.GetCastDelay(me, e, true) + 0.6 + (Game.Ping / 500)) * Math.Sin(e.RotationRad) * e.MovementSpeed + e.NetworkPosition.Y), e.NetworkPosition.Z): e.Position;
 						if (W != null && W.CanBeCasted() && Utils.SleepCheck("w")
-						&& (eulModifier != null && eulModifier.RemainingTime <= W.GetCastDelay(me, e, true) + 0.6
-						|| modifHex != null && modifHex.RemainingTime <= W.GetCastDelay(me, e, true) + 0.6
+						&& (eulModifier != null && eulModifier.RemainingTime <= W.GetCastDelay(me, e, true) + 0.5
+						|| modifHex != null && modifHex.RemainingTime <= W.GetCastDelay(me, e, true) + 0.5
 						|| (sheep == null || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(sheep.Name) || sheep.Cooldown > 0)
 						&& (cyclone == null || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(cyclone.Name) || cyclone.Cooldown < 20 && cyclone.Cooldown > 0)))
 					{
