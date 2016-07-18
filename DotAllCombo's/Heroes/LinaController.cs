@@ -1,4 +1,6 @@
-﻿namespace DotaAllCombo.Heroes
+using SharpDX;
+
+namespace DotaAllCombo.Heroes
 {
     using System;
     using System.Collections.Generic;
@@ -162,16 +164,18 @@
 						cyclone.UseAbility(e);
 						Utils.Sleep(300, "cyclone");
 					}
-					if (W != null && W.CanBeCasted() && Utils.SleepCheck("w")
-						&& (eulModifier != null && eulModifier.RemainingTime <= W.GetCastDelay(me, e, true) + 0.5
-						|| modifHex != null && modifHex.RemainingTime <= W.GetCastDelay(me, e, true) + 0.5
+				
+					Vector3 start = e.NetworkActivity == NetworkActivity.Move ? new Vector3((float)((W.GetCastDelay(me, e, true) + 0.6 + (Game.Ping / 500)) * Math.Cos(e.RotationRad) * e.MovementSpeed + e.Position.X),
+												(float)((W.GetCastDelay(me, e, true) + 0.6 + (Game.Ping / 500)) * Math.Sin(e.RotationRad) * e.MovementSpeed + e.NetworkPosition.Y), e.NetworkPosition.Z): e.Position;
+						if (W != null && W.CanBeCasted() && Utils.SleepCheck("w")
+						&& (eulModifier != null && eulModifier.RemainingTime <= W.GetCastDelay(me, e, true) + 0.6
+						|| modifHex != null && modifHex.RemainingTime <= W.GetCastDelay(me, e, true) + 0.6
 						|| (sheep == null || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(sheep.Name) || sheep.Cooldown > 0)
 						&& (cyclone == null || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(cyclone.Name) || cyclone.Cooldown < 20 && cyclone.Cooldown > 0)))
 					{
-						W.UseAbility(W.GetPrediction(e, W.GetCastDelay(me, e)));
-						Utils.Sleep(150 + Game.Ping, "w");
+						W.UseAbility(start);
+						Utils.Sleep(150, "w");
 					}
-					
 					if (cyclone == null || !cyclone.CanBeCasted() || !W.CanBeCasted() ||
 						!Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(cyclone.Name))
 					{
@@ -397,19 +401,18 @@
 			{
 				var enemies =
 				 ObjectManager.GetEntities<Hero>()
-					 .Where(x => x.IsVisible && x.IsAlive && x.Team == me.GetEnemyTeam() && !x.IsIllusion);
+					.Where(x => x.IsVisible && x.IsAlive && x.Team != me.Team && !x.IsIllusion).ToList();
 				foreach (var v in enemies)
 				{
 					if (v == null)
 						return;
-
-					if (me.AghanimState())
-						rDmg = new [] { 450, 650, 850 };
+					
+					rDmg = new [] { 450, 650, 850 };
 
 
 					var leans = me.FindItem("item_aether_lens");
 					var agh = (rDmg[R.Level - 1]);
-					var damage = Math.Floor(rDmg[R.Level - 1] * (1 - v.MagicDamageResist));
+					double damage = (rDmg[R.Level - 1] * (1 - v.MagicDamageResist));
 					if (v.NetworkName == "CDOTA_Unit_Hero_Spectre" && v.Spellbook.Spell3.Level > 0)
 					{
 						damage =
@@ -419,17 +422,14 @@
 					if (v.NetworkName == "CDOTA_Unit_Hero_SkeletonKing" &&
 						v.Spellbook.SpellR.CanBeCasted())
 						damage = 0;
-					if (v.NetworkName == "CDOTA_Unit_Hero_Tusk" &&
-						v.Spellbook.SpellW.CooldownLength - 3 > v.Spellbook.SpellQ.Cooldown)
-						damage = 0;
 					if (leans != null) damage = damage * 1.08;
-					var rum = v.HasModifier("modifier_kunkka_ghost_ship_damage_absorb");
-					if (rum) damage = damage * 0.5;
-					var mom = v.HasModifier("modifier_item_mask_of_madness_berserk");
-					if (mom) damage = damage * 1.3;
 
 					if (!me.AghanimState() && !v.IsLinkensProtected())
 					{
+						var mom = v.HasModifier("modifier_item_mask_of_madness_berserk");
+						if (mom) damage = damage * 1.3;
+						var rum = v.HasModifier("modifier_kunkka_ghost_ship_damage_absorb");
+						if (rum) damage = damage * 0.5;
 
 						var spellamplymult = 1 + (me.TotalIntelligence / 16 / 100);
 						damage = damage * spellamplymult;
@@ -471,6 +471,8 @@
 							ethereal.UseAbility(v);
 							Utils.Sleep(250, "ethereal");
 						}
+						Console.WriteLine(damage);
+						Console.WriteLine(v.Health);
 						if (R != null && v != null && R.CanBeCasted()
 							&& !v.HasModifier("modifier_tusk_snowball_movement")
 							&& !v.HasModifier("modifier_snowball_movement_friendly")
@@ -493,7 +495,7 @@
 							&& !v.FindSpell("abaddon_borrowed_time").CanBeCasted() &&
 							!v.HasModifier("modifier_abaddon_borrowed_time_damage_redirect")
 							&& !v.IsMagicImmune()
-							&& v.Health <= (damage - v.HealthRegeneration * R.ChannelTime)
+							&& v.Health < damage
 							&& Utils.SleepCheck(v.Handle.ToString())
 							)
 						{
