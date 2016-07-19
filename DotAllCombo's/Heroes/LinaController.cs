@@ -1,32 +1,32 @@
 namespace DotaAllCombo.Heroes
 {
-    using SharpDX;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using Ensage;
-    using Ensage.Common;
-    using Ensage.Common.Extensions;
-    using Ensage.Common.Menu;
+	using SharpDX;
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using Ensage;
+	using Ensage.Common;
+	using Ensage.Common.Extensions;
+	using Ensage.Common.Menu;
 
 	using Service;
 	using Service.Debug;
 
-    internal class LinaController : Variables, IHeroController
-    {
-        private Ability Q, W, R;
-        private readonly Menu skills = new Menu("Skills", "Skills");
-        private readonly Menu items = new Menu("Items", "Items");
-        private readonly Menu ult = new Menu("AutoUlt", "AutoUlt");
-        
+	internal class LinaController : Variables, IHeroController
+	{
+		private Ability Q, W, R;
+		private readonly Menu skills = new Menu("Skills", "Skills");
+		private readonly Menu items = new Menu("Items", "Items");
+		private readonly Menu ult = new Menu("AutoUlt", "AutoUlt");
 
-        private Item orchid, sheep, vail, soul, arcane, blink, shiva, dagon, atos, ethereal, cheese, ghost, force, cyclone;
 
-        private int[] rDmg;
+		private Item orchid, sheep, vail, soul, arcane, blink, shiva, dagon, atos, ethereal, cheese, ghost, force, cyclone;
+
+		private int[] rDmg;
 
 		public void OnLoadEvent()
 		{
-			AssemblyExtensions.InitAssembly("VickTheRock", "0.1");
+			AssemblyExtensions.InitAssembly("VickTheRock", "0.2");
 
 			Print.LogMessage.Success("One little spark and before you know it, the whole world is burning.");
 
@@ -35,39 +35,40 @@ namespace DotaAllCombo.Heroes
 			Menu.AddItem(new MenuItem("keyBind", "Combo key").SetValue(new KeyBind('D', KeyBindType.Press)));
 
 
-		    skills.AddItem(new MenuItem("Skills", "Skills").SetValue(new AbilityToggler(new Dictionary<string, bool>
+			skills.AddItem(new MenuItem("Skills", "Skills").SetValue(new AbilityToggler(new Dictionary<string, bool>
 			{
-			    {"lina_dragon_slave", true},
-			    {"lina_light_strike_array", true},
-			    {"lina_laguna_blade", true}
+				{"lina_dragon_slave", true},
+				{"lina_light_strike_array", true},
+				{"lina_laguna_blade", true}
 			})));
 			items.AddItem(new MenuItem("Items", "Items:").SetValue(new AbilityToggler(new Dictionary<string, bool>
 			{
-			    {"item_cyclone", true},
-			    {"item_orchid", true}, {"item_bloodthorn", true},
-			    {"item_ethereal_blade", true},
-			    {"item_veil_of_discord", true},
-			    {"item_rod_of_atos", true},
-			    {"item_sheepstick", true},
-                {"item_dagon", true},
-                {"item_arcane_boots", true},
-			    {"item_blink", true},
-			    {"item_shivas_guard", true},
-			    {"item_soul_ring", true},
-			    {"item_ghost", true},
-			    {"item_cheese", true}
+				{"item_cyclone", true},
+				{"item_orchid", true}, 
+				{"item_bloodthorn", true},
+				{"item_ethereal_blade", true},
+				{"item_veil_of_discord", true},
+				{"item_rod_of_atos", true},
+				{"item_sheepstick", true},
+				{"item_dagon", true},
+				{"item_arcane_boots", true},
+				{"item_blink", true},
+				{"item_shivas_guard", true},
+				{"item_soul_ring", true},
+				{"item_ghost", true},
+				{"item_cheese", true}
 			})));
 			ult.AddItem(new MenuItem("AutoUlt", "AutoUlt").SetValue(new AbilityToggler(new Dictionary<string, bool>
 			{
-			    {"lina_laguna_blade", true}
+				{"lina_laguna_blade", true}
 			})));
 			items.AddItem(new MenuItem("Link", "Auto triggre Linken").SetValue(new AbilityToggler(new Dictionary<string, bool>
 			{
-			    {"item_force_staff", true},
-			    {"item_cyclone", true},
-			    {"item_orchid", true},
-                { "item_bloodthorn", true},
-			    {"item_rod_of_atos", true},
+				{"item_force_staff", true},
+				{"item_cyclone", true},
+				{"item_orchid", true},
+				{"item_bloodthorn", true},
+				{"item_rod_of_atos", true},
 			})));
 			Menu.AddSubMenu(skills);
 			Menu.AddSubMenu(items);
@@ -163,14 +164,17 @@ namespace DotaAllCombo.Heroes
 						cyclone.UseAbility(e);
 						Utils.Sleep(300, "cyclone");
 					}
-				
+
 					Vector3 start = e.NetworkActivity == NetworkActivity.Move ? new Vector3((float)((W.GetCastDelay(me, e, true) + 0.6 + (Game.Ping / 500)) * Math.Cos(e.RotationRad) * e.MovementSpeed + e.Position.X),
-												(float)((W.GetCastDelay(me, e, true) + 0.6 + (Game.Ping / 500)) * Math.Sin(e.RotationRad) * e.MovementSpeed + e.NetworkPosition.Y), e.NetworkPosition.Z): e.Position;
-						if (W != null && W.CanBeCasted() && Utils.SleepCheck("w")
-						&& (eulModifier != null && eulModifier.RemainingTime <= W.GetCastDelay(me, e, true) + 0.5
-						|| modifHex != null && modifHex.RemainingTime <= W.GetCastDelay(me, e, true) + 0.5
-						|| (sheep == null || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(sheep.Name) || sheep.Cooldown > 0)
-						&& (cyclone == null || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(cyclone.Name) || cyclone.Cooldown < 20 && cyclone.Cooldown > 0)))
+												(float)((W.GetCastDelay(me, e, true) + 0.6 + (Game.Ping / 500)) * Math.Sin(e.RotationRad) * e.MovementSpeed + e.NetworkPosition.Y), e.NetworkPosition.Z) : e.Position;
+					if (W != null && W.CanBeCasted()
+					&& me.Distance2D(start) <= W.GetCastRange() + me.HullRadius
+
+					&& Utils.SleepCheck("w")
+					&& (eulModifier != null && eulModifier.RemainingTime <= W.GetCastDelay(me, e, true) + 0.5
+					|| modifHex != null && modifHex.RemainingTime <= W.GetCastDelay(me, e, true) + 0.5
+					|| (sheep == null || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(sheep.Name) || sheep.Cooldown > 0)
+					&& (cyclone == null || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(cyclone.Name) || cyclone.Cooldown < 20 && cyclone.Cooldown > 0)))
 					{
 						W.UseAbility(start);
 						Utils.Sleep(150, "w");
@@ -261,12 +265,12 @@ namespace DotaAllCombo.Heroes
 								} // ethereal Item end
 								if (!ethereal.CanBeCasted() || ethereal == null ||
 									!Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(ethereal.Name))
-									{
+								{
 									if (
 										Q != null
 										&& Q.CanBeCasted()
 										&& me.CanCast()
-										&& me.Distance2D(e) < 1400
+										&& me.Distance2D(e) < Q.GetCastRange()+me.HullRadius
 										&& !stoneModif
 										&& !e.IsMagicImmune()
 										&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name)
@@ -353,8 +357,8 @@ namespace DotaAllCombo.Heroes
 												|| ethereal.Cooldown < 17))
 										&& !e.IsLinkensProtected()
 										&& dagon.CanBeCasted()
-                                        && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled("item_dagon")
-                                        && !e.IsMagicImmune()
+										&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled("item_dagon")
+										&& !e.IsMagicImmune()
 										&& !stoneModif
 										&& Utils.SleepCheck("dagon")
 										)
@@ -376,7 +380,7 @@ namespace DotaAllCombo.Heroes
 										cheese.UseAbility();
 										Utils.Sleep(200, "cheese");
 									} // cheese Item end
-									
+
 								}
 							}
 						}
@@ -390,7 +394,7 @@ namespace DotaAllCombo.Heroes
 
 		public void OnCloseEvent()
 		{
-			
+
 		}
 
 		private void A()
@@ -405,8 +409,8 @@ namespace DotaAllCombo.Heroes
 				{
 					if (v == null)
 						return;
-					
-					rDmg = new [] { 450, 650, 850 };
+
+					rDmg = new[] { 450, 650, 850 };
 
 
 					var leans = me.FindItem("item_aether_lens");
