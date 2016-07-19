@@ -58,12 +58,9 @@ namespace DotaAllCombo.Heroes
 
 			var modifInv = Toolset.invUnit(me);
 			
-
-		Console.WriteLine("1");
 			
 			if (Active)
 			{
-				Console.WriteLine("2");
 				e = me.ClosestToMouseTarget(1800);
 				if (e == null)
 					return;
@@ -77,7 +74,6 @@ namespace DotaAllCombo.Heroes
 				}
 				sheep = e.ClassID == ClassID.CDOTA_Unit_Hero_Tidehunter ? null : me.FindItem("item_sheepstick");
 
-				Console.WriteLine("3");
 				if (me.Distance2D(e) <= 1400 && e != null && e.IsAlive && !modifInv)
 				{
 					if ((!W.CanBeCasted() || !Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name)))
@@ -87,7 +83,6 @@ namespace DotaAllCombo.Heroes
 							Orbwalking.Orbwalk(e, 0, 1600, false, true);
 						}
 					}
-					Console.WriteLine("4");
 					var stoneModif = e.HasModifier("modifier_medusa_stone_gaze_stone");
 					if (stoneModif) return;
 					if ( // sheep
