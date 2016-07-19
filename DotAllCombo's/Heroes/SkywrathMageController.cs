@@ -12,13 +12,13 @@ namespace DotaAllCombo.Heroes
 	using Service;
 	using Service.Debug;
 
-	
+
 	internal class SkywrathMageController : Variables, IHeroController
 	{
 		private readonly Menu skills = new Menu("Skills", "Skills");
 		private readonly Menu items = new Menu("Items", "Items");
 		private readonly Menu ult = new Menu("AutoAbility", "AutoAbility");
-		private readonly Menu healh = new Menu("Healh", "Min % Enemy Healh to Ult");
+		private readonly Menu healh = new Menu("Healh", "Max Enemy Healh % to Ult");
 
 
 		private Ability Q, W, E, R;
@@ -178,6 +178,48 @@ namespace DotaAllCombo.Heroes
 				if (e.IsVisible && me.Distance2D(e) <= 2300)
 				{
 					if (
+						   Q != null
+						   && Q.CanBeCasted()
+						   && me.CanCast()
+						   && e.IsLinkensProtected()
+						   && !e.IsMagicImmune()
+						   && me.Distance2D(e) < Q.GetCastRange()+me.HullRadius
+						   && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name)
+						   && Utils.SleepCheck("Q")
+						   )
+					{
+						Q.UseAbility(e);
+						Utils.Sleep(200, "Q");
+					}
+					if (
+						E != null
+						&& E.CanBeCasted()
+						&& me.CanCast()
+						&& !e.IsLinkensProtected()
+						&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(E.Name)
+						&& me.Position.Distance2D(e) < E.GetCastRange()+me.HullRadius+500
+						&& Utils.SleepCheck("E"))
+					{
+						E.UseAbility(e);
+						Utils.Sleep(200, "E");
+					}
+					if ( // sheep
+						sheep != null
+						&& sheep.CanBeCasted()
+						&& me.CanCast()
+						&& !e.IsLinkensProtected()
+						&& !e.IsMagicImmune()
+						&& me.Distance2D(e) <= 1400
+						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(sheep.Name)
+						&& Utils.SleepCheck("sheep")
+						)
+					{
+						sheep.UseAbility(e);
+						Utils.Sleep(250, "sheep");
+					} // sheep Item end
+					if (E == null || !E.CanBeCasted() || me.IsSilenced() || me.Position.Distance2D(e) > E.GetCastRange() + me.HullRadius || !Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(E.Name))
+					{
+						if (
 						Q != null
 						&& Q.CanBeCasted()
 						&& me.CanCast()
@@ -234,20 +276,7 @@ namespace DotaAllCombo.Heroes
 						blink.UseAbility(pos);
 						Utils.Sleep(250, "blink");
 					}
-					if (
-						E != null
-						&& E.CanBeCasted()
-						&& me.CanCast()
-						&& !e.IsLinkensProtected()
-						&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(E.Name)
-						&& me.Position.Distance2D(e) < 1400
-						&& Utils.SleepCheck("E"))
-					{
-						E.UseAbility(e);
-						Utils.Sleep(200, "E");
-					}
-					if (E == null || !E.CanBeCasted() || me.IsSilenced() || !Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(E.Name))
-					{
+					
 						if ( // orchid
 							orchid != null
 							&& orchid.CanBeCasted()
@@ -393,20 +422,6 @@ namespace DotaAllCombo.Heroes
 										shiva.UseAbility();
 										Utils.Sleep(250, "shiva");
 									} // Shiva Item end
-									if ( // sheep
-										sheep != null
-										&& sheep.CanBeCasted()
-										&& me.CanCast()
-										&& !e.IsLinkensProtected()
-										&& !e.IsMagicImmune()
-										&& me.Distance2D(e) <= 1400
-										&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(sheep.Name)
-										&& Utils.SleepCheck("sheep")
-										)
-									{
-										sheep.UseAbility(e);
-										Utils.Sleep(250, "sheep");
-									} // sheep Item end
 
 									if (// Dagon
 										me.CanCast()
@@ -495,7 +510,7 @@ namespace DotaAllCombo.Heroes
 									(float)(me.Position.Y + 100 * Math.Sin(angle)), 0);
 
 								if ( W != null && W.CanBeCasted() && me.Distance2D(v[i]) <= 900 + Game.Ping
-									&& !v[i].IsMagicImmune()
+								    && !v[i].IsMagicImmune()
 									&& Menu.Item("AutoAbility").GetValue<AbilityToggler>().IsEnabled(W.Name)
 								   )
 									W.UseAbility();
@@ -538,7 +553,7 @@ namespace DotaAllCombo.Heroes
 
 						if (R != null && R.CanBeCasted() && me.Distance2D(v[i]) <= R.GetCastRange() + 100
 							&& !me.HasModifier("modifier_pugna_nether_ward_aura")
-							&& (v[i].MovementSpeed <= 220 && ((Active && !E.CanBeCasted() || !Active) || v[i].MagicDamageResist <= 0.07))
+							&& (v[i].MovementSpeed <= 220 && ((Active && !E.CanBeCasted() || !Active && E.CanBeCasted()) || v[i].MagicDamageResist <= 0.07))
 							&& !v[i].HasModifier("modifier_zuus_lightningbolt_vision_thinker")
 							&& !v[i].HasModifier("modifier_item_blade_mail_reflect")
 							&& !v[i].HasModifier("modifier_sniper_headshot")
@@ -640,7 +655,7 @@ namespace DotaAllCombo.Heroes
 
 						if (R != null && R.CanBeCasted() && me.Distance2D(v[i]) <= R.GetCastRange() + 100
 							&& !me.HasModifier("modifier_pugna_nether_ward_aura")
-							&& (v[i].MovementSpeed <= 220 && ((Active && !E.CanBeCasted() || !Active) || v[i].MagicDamageResist <= 0.07))
+							&& (v[i].MovementSpeed <= 220 && ((Active && !E.CanBeCasted() || !E.CanBeCasted()) || v[i].MagicDamageResist <= 0.07))
 							&& v[i].MagicDamageResist <= 0.07
 							&& v[i].Health >= (v[i].MaximumHealth / 100 * (Menu.Item("Healh").GetValue<Slider>().Value))
 							&& !v[i].HasModifier("modifier_item_blade_mail_reflect")
