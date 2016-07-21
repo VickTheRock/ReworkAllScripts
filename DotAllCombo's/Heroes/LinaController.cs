@@ -44,7 +44,7 @@ namespace DotaAllCombo.Heroes
 			items.AddItem(new MenuItem("Items", "Items:").SetValue(new AbilityToggler(new Dictionary<string, bool>
 			{
 				{"item_cyclone", true},
-				{"item_orchid", true}, 
+				{"item_orchid", true},
 				{"item_bloodthorn", true},
 				{"item_ethereal_blade", true},
 				{"item_veil_of_discord", true},
@@ -165,14 +165,14 @@ namespace DotaAllCombo.Heroes
 						Utils.Sleep(300, "cyclone");
 					}
 
-					Vector3 start = e.NetworkActivity == NetworkActivity.Move ? new Vector3((float)((W.GetCastDelay(me, e, true) + 0.6 + (Game.Ping / 500)) * Math.Cos(e.RotationRad) * e.MovementSpeed + e.Position.X),
-												(float)((W.GetCastDelay(me, e, true) + 0.6 + (Game.Ping / 500)) * Math.Sin(e.RotationRad) * e.MovementSpeed + e.NetworkPosition.Y), e.NetworkPosition.Z) : e.Position;
+					Vector3 start = e.NetworkActivity == NetworkActivity.Move ? new Vector3((float)((W.GetCastDelay(me, e, true) + 0.5 + (Game.Ping / 1000)) * Math.Cos(e.RotationRad) * e.MovementSpeed + e.Position.X),
+												(float)((W.GetCastDelay(me, e, true) + 0.5 + (Game.Ping / 1000)) * Math.Sin(e.RotationRad) * e.MovementSpeed + e.NetworkPosition.Y), e.NetworkPosition.Z) : e.NetworkPosition;
 					if (W != null && W.CanBeCasted()
 					&& me.Distance2D(start) <= W.GetCastRange() + me.HullRadius
 
 					&& Utils.SleepCheck("w")
-					&& (eulModifier != null && eulModifier.RemainingTime <= W.GetCastDelay(me, e, true) + 0.5
-					|| modifHex != null && modifHex.RemainingTime <= W.GetCastDelay(me, e, true) + 0.5
+					&& (eulModifier != null && eulModifier.RemainingTime <= W.GetCastDelay(me, e, true) + 0.5 + (Game.Ping / 4000)
+					|| modifHex != null && modifHex.RemainingTime <= W.GetCastDelay(me, e, true) + 0.5 + (Game.Ping / 4000)
 					|| (sheep == null || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(sheep.Name) || sheep.Cooldown > 0)
 					&& (cyclone == null || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(cyclone.Name) || cyclone.Cooldown < 20 && cyclone.Cooldown > 0)))
 					{
@@ -270,7 +270,7 @@ namespace DotaAllCombo.Heroes
 										Q != null
 										&& Q.CanBeCasted()
 										&& me.CanCast()
-										&& me.Distance2D(e) < Q.GetCastRange()+me.HullRadius
+										&& me.Distance2D(e) < Q.GetCastRange() + me.HullRadius
 										&& !stoneModif
 										&& !e.IsMagicImmune()
 										&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name)
