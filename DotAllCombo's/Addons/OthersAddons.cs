@@ -1,7 +1,3 @@
-﻿
-using System.Collections.Generic;
-using Ensage.Common.Menu;
-
 namespace DotaAllCombo.Addons
 {
 	using System.Security.Permissions;
@@ -52,7 +48,7 @@ namespace DotaAllCombo.Addons
 			_load = false;
 		}
 		private float _lastRange, AttackRange;
-		private ParticleEffect rangeDisplay;
+		private ParticleEffect rangeDisplay, particleEffect;
 		/*
 		public static readonly List<TrackingProjectile> Projectiles = ObjectManager.TrackingProjectiles.Where(x=>
 						x.Source.ClassID == ClassID.CDOTA_Unit_Hero_ArcWarden
@@ -190,26 +186,31 @@ namespace DotaAllCombo.Addons
 			//TODO:TARGETMARKER
 			e = me.ClosestToMouseTarget(10000);
 			if (e == null) return;
-			if (!e.IsIllusion && e.IsAlive)
-			{
-
-				if (!OnScreen(e.Position)) return;
-				var screenPos = HUDInfo.GetHPbarPosition(e);
-				var text = "Target to Death";
-				var size = new Vector2(18, 18);
-				var textSize = Drawing.MeasureText(text, "Arial", size, FontFlags.AntiAlias);
-				var position = new Vector2(screenPos.X - textSize.X + 85, screenPos.Y -35);
-				Drawing.DrawText(text,position,size,(me.Distance2D(e) <= 1200 ? Color.Coral : Color.White),
-					FontFlags.AntiAlias);
-				Drawing.DrawText(text, new Vector2(screenPos.X - textSize.X + 84, screenPos.Y - 35),
-					 size, Color.Black,FontFlags.AntiAlias);
-				// Drawing.DrawText("Target to Death", HeroPositionOnScreen(e), new Vector2(16, 20), me.Distance2D(e) < 1200 ? Color.Coral : Color.WhiteSmoke, FontFlags.AntiAlias | FontFlags.Additive | FontFlags.DropShadow);
-			}
+			if (e != null && e.IsValid && !e.IsIllusion && e.IsAlive && e.IsVisible)
+					DrawTarget();
+				else if (particleEffect != null)
+				{
+					particleEffect.Dispose();
+					particleEffect = null;
+				}
+			// TY  splinterjke.:)
 		}
 
-		private bool OnScreen(Vector3 v)
-		{
-			return !(Drawing.WorldToScreen(v).X < 0 || Drawing.WorldToScreen(v).X > Drawing.Width || Drawing.WorldToScreen(v).Y < 0 || Drawing.WorldToScreen(v).Y > Drawing.Height);
+		private void DrawTarget()
+	    {
+			if (particleEffect == null)
+			{
+				particleEffect = new ParticleEffect(@"particles\ui_mouseactions\range_finder_tower_aoe.vpcf", e);    
+				particleEffect.SetControlPoint(2, new Vector3(me.Position.X, me.Position.Y, me.Position.Z));
+				particleEffect.SetControlPoint(6, new Vector3(1, 0, 0)); 
+				particleEffect.SetControlPoint(7, new Vector3(e.Position.X, e.Position.Y, e.Position.Z));
+			}
+			else 
+			{
+				particleEffect.SetControlPoint(2, new Vector3(me.Position.X, me.Position.Y, me.Position.Z));
+				particleEffect.SetControlPoint(6, new Vector3(1, 0, 0));
+				particleEffect.SetControlPoint(7, new Vector3(e.Position.X, e.Position.Y, e.Position.Z));
+			}
 		}
 		private static void Drawing_OnPostReset(EventArgs args)
 		{

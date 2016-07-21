@@ -90,6 +90,7 @@
     <Compile Include="Heroes\BountyHunterController.cs" />
     <Compile Include="Heroes\BrewmasterController.cs" />
     <Compile Include="Heroes\BroodmotherController.cs" />
+    <Compile Include="Heroes\ChaosKnightController.cs" />
     <Compile Include="Heroes\ClinkzController.cs" />
     <Compile Include="Heroes\DrowRangerController.cs" />
     <Compile Include="Heroes\EarthSpiritController.cs" />

@@ -1,5 +1,3 @@
-﻿using Ensage.Common.Objects.UtilityObjects;
-
 namespace DotaAllCombo.Heroes
 {
 	using System;
@@ -19,8 +17,8 @@ namespace DotaAllCombo.Heroes
 	{
 		private readonly Menu skills = new Menu("Skills", "Skills");
 		private readonly Menu items = new Menu("Items", "Items");
-		private readonly Menu ult = new Menu("AutoUlt", "AutoUlt");
-		private readonly Menu healh = new Menu("Healh", "Min % Enemy Healh to Ult");
+		private readonly Menu ult = new Menu("AutoAbility", "AutoAbility");
+		private readonly Menu healh = new Menu("Healh", "Max Enemy Healh % to Ult");
 
 
 		private Ability Q, W, E, R;
@@ -29,7 +27,7 @@ namespace DotaAllCombo.Heroes
 		public void OnLoadEvent()
 		{
 
-			AssemblyExtensions.InitAssembly("VickTheRock", "0.1");
+			AssemblyExtensions.InitAssembly("VickTheRock", "1.0");
 
 			Print.LogMessage.Success("I am sworn to turn the tide where ere I can.");
 
@@ -42,6 +40,7 @@ namespace DotaAllCombo.Heroes
 			{
 				{"skywrath_mage_arcane_bolt", true},
 				{"skywrath_mage_concussive_shot", true},
+				{"skywrath_mage_ancient_seal", true},
 				{"skywrath_mage_mystic_flare", true}
 			})));
 			items.AddItem(new MenuItem("Items", "Items:").SetValue(new AbilityToggler(new Dictionary<string, bool>
@@ -60,10 +59,17 @@ namespace DotaAllCombo.Heroes
 				{"item_ghost", true},
 				{"item_cheese", true}
 			})));
-			ult.AddItem(new MenuItem("autoUlt", "AutoUlt").SetValue(true));
-			ult.AddItem(new MenuItem("AutoUlt", "AutoUlt").SetValue(new AbilityToggler(new Dictionary<string, bool>
+			ult.AddItem(new MenuItem("autoUlt", "AutoAbility").SetValue(true));
+			ult.AddItem(new MenuItem("AutoAbility", "AutoAbility").SetValue(new AbilityToggler(new Dictionary<string, bool>
 			{
-				{"skywrath_mage_mystic_flare", true}
+				{"skywrath_mage_concussive_shot", true},
+				{"skywrath_mage_ancient_seal", true},
+				{"skywrath_mage_mystic_flare", true},
+				{"item_rod_of_atos", true},
+				{"item_cyclone", true},
+				{"item_ethereal_blade", true},
+				{"item_veil_of_discord", true},
+
 			})));
 			items.AddItem(new MenuItem("Link", "Auto triggre Linken").SetValue(new AbilityToggler(new Dictionary<string, bool>
 			{
@@ -80,7 +86,6 @@ namespace DotaAllCombo.Heroes
 			Menu.AddSubMenu(items);
 			Menu.AddSubMenu(ult);
 			Menu.AddSubMenu(healh);
-			Orbwalking.Load();
 		} // OnLoadEvent
 
 		public void OnCloseEvent()
@@ -173,6 +178,48 @@ namespace DotaAllCombo.Heroes
 				if (e.IsVisible && me.Distance2D(e) <= 2300)
 				{
 					if (
+						   Q != null
+						   && Q.CanBeCasted()
+						   && me.CanCast()
+						   && e.IsLinkensProtected()
+						   && !e.IsMagicImmune()
+						   && me.Distance2D(e) < Q.GetCastRange()+me.HullRadius
+						   && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name)
+						   && Utils.SleepCheck("Q")
+						   )
+					{
+						Q.UseAbility(e);
+						Utils.Sleep(200, "Q");
+					}
+					if (
+						E != null
+						&& E.CanBeCasted()
+						&& me.CanCast()
+						&& !e.IsLinkensProtected()
+						&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(E.Name)
+						&& me.Position.Distance2D(e) < E.GetCastRange()+me.HullRadius+500
+						&& Utils.SleepCheck("E"))
+					{
+						E.UseAbility(e);
+						Utils.Sleep(200, "E");
+					}
+					if ( // sheep
+						sheep != null
+						&& sheep.CanBeCasted()
+						&& me.CanCast()
+						&& !e.IsLinkensProtected()
+						&& !e.IsMagicImmune()
+						&& me.Distance2D(e) <= 1400
+						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(sheep.Name)
+						&& Utils.SleepCheck("sheep")
+						)
+					{
+						sheep.UseAbility(e);
+						Utils.Sleep(250, "sheep");
+					} // sheep Item end
+					if (E == null || !E.CanBeCasted() || me.IsSilenced() || me.Position.Distance2D(e) > E.GetCastRange() + me.HullRadius || !Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(E.Name))
+					{
+						if (
 						Q != null
 						&& Q.CanBeCasted()
 						&& me.CanCast()
@@ -229,20 +276,7 @@ namespace DotaAllCombo.Heroes
 						blink.UseAbility(pos);
 						Utils.Sleep(250, "blink");
 					}
-					if (
-						E != null
-						&& E.CanBeCasted()
-						&& me.CanCast()
-						&& !e.IsLinkensProtected()
-						&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(E.Name)
-						&& me.Position.Distance2D(e) < 1400
-						&& Utils.SleepCheck("E"))
-					{
-						E.UseAbility(e);
-						Utils.Sleep(200, "E");
-					}
-					if (E == null || !E.CanBeCasted() || me.IsSilenced() || !Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(E.Name))
-					{
+					
 						if ( // orchid
 							orchid != null
 							&& orchid.CanBeCasted()
@@ -388,20 +422,6 @@ namespace DotaAllCombo.Heroes
 										shiva.UseAbility();
 										Utils.Sleep(250, "shiva");
 									} // Shiva Item end
-									if ( // sheep
-										sheep != null
-										&& sheep.CanBeCasted()
-										&& me.CanCast()
-										&& !e.IsLinkensProtected()
-										&& !e.IsMagicImmune()
-										&& me.Distance2D(e) <= 1400
-										&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(sheep.Name)
-										&& Utils.SleepCheck("sheep")
-										)
-									{
-										sheep.UseAbility(e);
-										Utils.Sleep(250, "sheep");
-									} // sheep Item end
 
 									if (// Dagon
 										me.CanCast()
@@ -489,14 +509,16 @@ namespace DotaAllCombo.Heroes
 								Vector3 pos = new Vector3((float)(me.Position.X + 100 * Math.Cos(angle)),
 									(float)(me.Position.Y + 100 * Math.Sin(angle)), 0);
 
-								if (W != null && W.CanBeCasted() && me.Distance2D(v[i]) <= 900 + Game.Ping
-								   && !v[i].IsMagicImmune()
+								if ( W != null && W.CanBeCasted() && me.Distance2D(v[i]) <= 900 + Game.Ping
+								    && !v[i].IsMagicImmune()
+									&& Menu.Item("AutoAbility").GetValue<AbilityToggler>().IsEnabled(W.Name)
 								   )
 									W.UseAbility();
 
 								if (atos != null && R != null && R.CanBeCasted() && atos.CanBeCasted()
 								   && me.Distance2D(v[i]) <= 900 + Game.Ping
 								   && !v[i].IsMagicImmune()
+								   && Menu.Item("AutoAbility").GetValue<AbilityToggler>().IsEnabled(atos.Name)
 								   )
 									atos.UseAbility(v[i]);
 
@@ -505,13 +527,14 @@ namespace DotaAllCombo.Heroes
 								   && !v[i].HasModifier("modifier_skywrath_mystic_flare_aura_effect")
 								   && !v[i].HasModifier("modifier_dazzle_shallow_grave")
 								   && !v[i].IsMagicImmune()
-								   && Menu.Item("AutoUlt").GetValue<AbilityToggler>().IsEnabled(R.Name)
+								   && Menu.Item("AutoAbility").GetValue<AbilityToggler>().IsEnabled(R.Name)
 								   )
 									R.UseAbility(pos);
 
 								if (cyclone != null && !R.CanBeCasted()
 									&& cyclone.CanBeCasted()
 									&& me.Distance2D(v[i]) <= 500 + Game.Ping
+									&& Menu.Item("AutoAbility").GetValue<AbilityToggler>().IsEnabled(cyclone.Name)
 									)
 									cyclone.UseAbility(me);
 
@@ -524,6 +547,7 @@ namespace DotaAllCombo.Heroes
 						if (cyclone != null && reflect && cyclone.CanBeCasted() &&
 							v[i].HasModifier("modifier_skywrath_mystic_flare_aura_effect") &&
 							me.Distance2D(v[i]) < cyclone.GetCastRange()
+							&& Menu.Item("AutoAbility").GetValue<AbilityToggler>().IsEnabled(cyclone.Name)
 							)
 							cyclone.UseAbility(me);
 
@@ -559,7 +583,7 @@ namespace DotaAllCombo.Heroes
 							 || (v[i].FindItem("item_force_staff") == null || v[i].IsStunned() || v[i].IsHexed() || v[i].IsRooted()))
 							&& v[i].Health >= (v[i].MaximumHealth / 100 * (Menu.Item("Healh").GetValue<Slider>().Value))
 							&& !v[i].IsMagicImmune()
-							&& Menu.Item("AutoUlt").GetValue<AbilityToggler>().IsEnabled(R.Name)
+							&& Menu.Item("AutoAbility").GetValue<AbilityToggler>().IsEnabled(R.Name)
 							)
 							R.UseAbility(Prediction.InFront(v[i], 90));
 
@@ -625,7 +649,7 @@ namespace DotaAllCombo.Heroes
 
 							 && v[i].Health >= (v[i].MaximumHealth / 100 * (Menu.Item("Healh").GetValue<Slider>().Value))
 							 && !v[i].IsMagicImmune())
-							&& Menu.Item("AutoUlt").GetValue<AbilityToggler>().IsEnabled(R.Name)
+							&& Menu.Item("AutoAbility").GetValue<AbilityToggler>().IsEnabled(R.Name)
 							)
 							R.UseAbility(Prediction.InFront(v[i], 70));
 
@@ -659,7 +683,7 @@ namespace DotaAllCombo.Heroes
 							|| (v[i].FindItem("item_cyclone") == null || v[i].IsStunned() || v[i].IsHexed() || v[i].IsRooted()))
 							&& (v[i].FindItem("item_force_staff") != null && v[i].FindItem("item_force_staff").Cooldown > 0
 							|| (v[i].FindItem("item_force_staff") == null || v[i].IsStunned() || v[i].IsHexed() || v[i].IsRooted()))
-							&& Menu.Item("AutoUlt").GetValue<AbilityToggler>().IsEnabled(R.Name)
+							&& Menu.Item("AutoAbility").GetValue<AbilityToggler>().IsEnabled(R.Name)
 							)
 							R.UseAbility(Prediction.InFront(v[i], 90));
 
@@ -669,6 +693,7 @@ namespace DotaAllCombo.Heroes
 							 || (v[i].Distance2D(me) <= me.HullRadius + 10
 							 && v[i].NetworkActivity == NetworkActivity.Attack)
 							 || v[i].MagicDamageResist <= 0.07)
+							&& Menu.Item("AutoAbility").GetValue<AbilityToggler>().IsEnabled(W.Name)
 							&& !v[i].IsMagicImmune()
 							)
 							W.UseAbility();
@@ -678,6 +703,7 @@ namespace DotaAllCombo.Heroes
 							&& me.Distance2D(v[i]) <= 1200
 							&& v[i].MagicDamageResist <= 0.07
 							&& !v[i].IsMagicImmune()
+							&& Menu.Item("AutoAbility").GetValue<AbilityToggler>().IsEnabled(atos.Name)
 							)
 							atos.UseAbility(v[i]);
 
@@ -685,11 +711,13 @@ namespace DotaAllCombo.Heroes
 							&& vail.CanBeCasted()
 							&& !v[i].IsMagicImmune()
 							&& me.Distance2D(v[i]) <= 1200
+							&& Menu.Item("AutoAbility").GetValue<AbilityToggler>().IsEnabled(vail.Name)
 							)
 							vail.UseAbility(v[i].Position);
 
 						if (E != null && v[i].HasModifier("modifier_skywrath_mystic_flare_aura_effect")
 							&& E.CanBeCasted()
+							&& Menu.Item("AutoAbility").GetValue<AbilityToggler>().IsEnabled(E.Name)
 							&& (v[i].FindItem("item_manta") != null && v[i].FindItem("item_manta").Cooldown > 0
 							|| (v[i].FindItem("item_manta") == null || v[i].IsStunned() || v[i].IsHexed() || v[i].IsRooted()))
 							&& me.Distance2D(v[i]) <= 900
@@ -701,7 +729,8 @@ namespace DotaAllCombo.Heroes
 							&& !v[i].HasModifier("modifier_legion_commander_duel")
 							&& ethereal.CanBeCasted()
 							&& E.CanBeCasted()
-							&& me.Distance2D(v[i]) <= 1000
+							&& me.Distance2D(v[i]) <= ethereal.GetCastRange()+me.HullRadius
+							&& Menu.Item("AutoAbility").GetValue<AbilityToggler>().IsEnabled(ethereal.Name)
 							)
 							ethereal.UseAbility(v[i]);
 
@@ -778,6 +807,7 @@ namespace DotaAllCombo.Heroes
 							 && (v[i].FindItem("item_manta") != null && v[i].FindItem("item_manta").Cooldown > 0
 							 || (v[i].FindItem("item_manta") == null || v[i].IsStunned() || v[i].IsHexed() || v[i].IsRooted()))
 							 && !v[i].IsMagicImmune()
+							 && Menu.Item("AutoAbility").GetValue<AbilityToggler>().IsEnabled(E.Name)
 							 && !v[i].HasModifier("modifier_medusa_stone_gaze_stone")
 							 )
 							 E.UseAbility(v[i]);

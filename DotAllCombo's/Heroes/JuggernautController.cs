@@ -15,7 +15,7 @@
 	{
 		private static Ability Q, W, R;
 
-		private Item urn, ethereal, dagon, halberd, mjollnir, orchid, abyssal, mom, Shiva, mail, bkb, satanic, medall;
+		private Item urn, ethereal, dagon, halberd, mjollnir, orchid, abyssal, mom, Shiva, mail, bkb, satanic, medall, manta;
 		private readonly Menu ult = new Menu("Ult", "Ult");
 
 		public void Combo()
@@ -55,7 +55,7 @@
 			satanic = me.FindItem("item_satanic");
 			medall = me.FindItem("item_medallion_of_courage") ?? me.FindItem("item_solar_crest");
 			Shiva = me.FindItem("item_shivas_guard");
-
+			manta = me.FindItem("item_manta");
 			var v =
 				ObjectManager.GetEntities<Hero>()
 					.Where(x => x.Team != me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && !x.IsMagicImmune())
@@ -63,16 +63,14 @@
 			e = me.ClosestToMouseTarget(1800);
 			
 			if (e == null) return;
-			if (Active && me.Distance2D(e) <= 1400 && me.HasModifier("modifier_juggernaut_blade_fury"))
+			if (Active && me.Distance2D(e) <= 1400 && me.HasModifier("modifier_juggernaut_blade_fury") && Utils.SleepCheck("move"))
 			{
-				if (Menu.Item("orbwalk").GetValue<bool>() && me.Distance2D(e) <= 1900)
-				{
-					Orbwalking.Orbwalk(e, 0, 1600, true, true);
-				}
+				me.Move(Prediction.InFront(e, 150));
+				Utils.Sleep(150, "move");
 			}
 			if (Active && me.Distance2D(e) <= 1400)
             {
-				if (Menu.Item("orbwalk").GetValue<bool>())
+				if (Menu.Item("orbwalk").GetValue<bool>() && !me.HasModifier("modifier_juggernaut_blade_fury"))
 				{
 					Orbwalking.Orbwalk(e, 0, 1600, true, true);
 				}
@@ -101,6 +99,20 @@
 					mjollnir.UseAbility(me);
 					Utils.Sleep(250, "mjollnir");
 				} // Mjollnir Item end
+				if ((manta != null
+					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(manta.Name))
+					&& manta.CanBeCasted() && me.IsSilenced() && Utils.SleepCheck("manta"))
+				{
+					manta.UseAbility();
+					Utils.Sleep(400, "manta");
+				}
+				if ((manta != null && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(manta.Name))
+					&& manta.CanBeCasted() && (e.Position.Distance2D(me.Position) <= me.GetAttackRange() + me.HullRadius)
+					&& Utils.SleepCheck("manta"))
+				{
+					manta.UseAbility();
+					Utils.Sleep(150, "manta");
+				}
 				if ( // Medall
 					medall != null
 					&& medall.CanBeCasted()
@@ -191,7 +203,7 @@
 					}
 				}
 				if (
-					  W != null && W.CanBeCasted() && me.Distance2D(e) <= e.AttackRange + 120
+					  W != null && W.CanBeCasted() && me.Distance2D(e) <= e.AttackRange + e.HullRadius+24
 					  && me.Health <= (me.MaximumHealth * 0.4)
 					  && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name)
 					  && Utils.SleepCheck("W")
@@ -281,7 +293,8 @@
 				    {"item_black_king_bar", true},
 				    {"item_satanic", true},
 				    {"item_medallion_of_courage", true},
-				    {"item_solar_crest", true}
+				    {"item_solar_crest", true},
+				   {"item_manta", true}
 				})));
 			Menu.AddItem(new MenuItem("Heel", "Min targets to BKB").SetValue(new Slider(2, 1, 5)));
 			Menu.AddItem(new MenuItem("Heelm", "Min targets to BladeMail").SetValue(new Slider(2, 1, 5)));
