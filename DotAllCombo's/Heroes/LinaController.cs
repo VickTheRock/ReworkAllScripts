@@ -156,7 +156,7 @@ namespace DotaAllCombo.Heroes
 					if (
 						cyclone != null
 						&& cyclone.CanBeCasted()
-						&& me.Distance2D(e) <= 900
+						&& me.Distance2D(e) <= 1100
 						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(cyclone.Name)
 						&& W.CanBeCasted()
 						&& Utils.SleepCheck("cyclone"))
