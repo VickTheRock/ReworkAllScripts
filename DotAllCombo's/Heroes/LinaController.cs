@@ -141,16 +141,19 @@ namespace DotaAllCombo.Heroes
 					{
 						Orbwalking.Orbwalk(e, 0, 1600, true, true);
 					}
+					float angle = me.FindAngleBetween(e.Position, true);
+					Vector3 pos = new Vector3((float)(e.Position.X - 500 * Math.Cos(angle)), (float)(e.Position.Y - 500 * Math.Sin(angle)), 0);
 					if (
 						blink != null
 						&& me.CanCast()
 						&& blink.CanBeCasted()
-						&& me.Distance2D(e) > 600
+						&& me.Distance2D(e) >= me.GetAttackRange()+me.HullRadius
+						&& me.Distance2D(pos) <= 1180
 						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name)
 						&& Utils.SleepCheck("blink")
 						)
 					{
-						blink.UseAbility(e.Position);
+						blink.UseAbility(pos);
 						Utils.Sleep(250, "blink");
 					}
 					if (
@@ -165,14 +168,14 @@ namespace DotaAllCombo.Heroes
 						Utils.Sleep(300, "cyclone");
 					}
 
-					Vector3 start = e.NetworkActivity == NetworkActivity.Move ? new Vector3((float)((W.GetCastDelay(me, e, true) + 0.5 + (Game.Ping / 1000)) * Math.Cos(e.RotationRad) * e.MovementSpeed + e.Position.X),
-												(float)((W.GetCastDelay(me, e, true) + 0.5 + (Game.Ping / 1000)) * Math.Sin(e.RotationRad) * e.MovementSpeed + e.NetworkPosition.Y), e.NetworkPosition.Z) : e.NetworkPosition;
+					Vector3 start = e.NetworkActivity == NetworkActivity.Move ? new Vector3((float)((W.GetCastDelay(me, e, true) + 0.5) * Math.Cos(e.RotationRad) * e.MovementSpeed + e.Position.X),
+												(float)((W.GetCastDelay(me, e, true) + 0.5) * Math.Sin(e.RotationRad) * e.MovementSpeed + e.NetworkPosition.Y), e.NetworkPosition.Z) : e.NetworkPosition;
 					if (W != null && W.CanBeCasted()
 					&& me.Distance2D(start) <= W.GetCastRange() + me.HullRadius
 
 					&& Utils.SleepCheck("w")
-					&& (eulModifier != null && eulModifier.RemainingTime <= W.GetCastDelay(me, e, true) + 0.5 + (Game.Ping / 4000)
-					|| modifHex != null && modifHex.RemainingTime <= W.GetCastDelay(me, e, true) + 0.5 + (Game.Ping / 4000)
+					&& (eulModifier != null && eulModifier.RemainingTime <= W.GetCastDelay(me, e, true) + 0.5
+					|| modifHex != null && modifHex.RemainingTime <= W.GetCastDelay(me, e, true) + 0.5
 					|| (sheep == null || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(sheep.Name) || sheep.Cooldown > 0)
 					&& (cyclone == null || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(cyclone.Name) || cyclone.Cooldown < 20 && cyclone.Cooldown > 0)))
 					{
