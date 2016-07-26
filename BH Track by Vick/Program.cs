@@ -93,7 +93,7 @@ namespace ControlCreep_By_Vick
         {
 			var me = ObjectMgr.LocalHero;
 			var player = ObjectMgr.LocalPlayer;
-			if (player == null || player.Team == Team.Observer || me.ClassID != ClassID.CDOTA_Unit_Hero_BountyHunter)
+			if (player == null || player.Team == Team.Observer || me == null || me.ClassID != ClassID.CDOTA_Unit_Hero_BountyHunter)
 				return;
 			if (Game.IsKeyDown(keyTrack) && !Game.IsChatOpen && Utils.SleepCheck("toggle"))
             {
