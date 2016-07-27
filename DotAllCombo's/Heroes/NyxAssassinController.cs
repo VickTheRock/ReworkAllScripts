@@ -75,21 +75,20 @@
 						Orbwalking.Orbwalk(e, 0, 1600, true, true);
 					}
 					if (
-                        R != null
-                        && R.CanBeCasted()
-                        && !me.HasModifier("modifier_nyx_assassin_vendetta")
-                        && me.Distance2D(e) <= 1400
-                        && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name)
-                        && Utils.SleepCheck("R")
-                        )
-                    {
-                        R.UseAbility();
-                        Utils.Sleep(200, "R");
-                    }
-                    if (me.HasModifier("modifier_nyx_assassin_vendetta"))
-                        return;
-                    if (!R.CanBeCasted() ||
-                        R == null || !me.HasModifier("modifier_nyx_assassin_vendetta") || !Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name))
+					   R != null
+					   && R.CanBeCasted()
+					   && !me.HasModifier("modifier_nyx_assassin_vendetta")
+					   && me.Distance2D(e) <= 1400
+					   && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name)
+					   && Utils.SleepCheck("R")
+					   )
+					{
+						R.UseAbility();
+						Utils.Sleep(200, "R");
+					}
+					if (R != null && R.IsInAbilityPhase || me.HasModifier("modifier_nyx_assassin_vendetta") || R.IsChanneling) return;
+					 if (R == null || !R.CanBeCasted() && !me.HasModifier("modifier_nyx_assassin_vendetta")
+						|| !Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name))
                     {
                         if (stoneModif) return;
                         float angle = me.FindAngleBetween(e.Position, true);
@@ -122,7 +121,6 @@
                             Utils.Sleep(250, "vail");
                         }
 
-
                         if ( // ethereal
                             ethereal != null &&
                             ethereal.CanBeCasted()
@@ -137,8 +135,7 @@
                             ethereal.UseAbility(e);
                             Utils.Sleep(150, "ethereal");
                         }
-
-
+						
                         if ((vail == null || !vail.CanBeCasted() || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(vail.Name)) && (ethereal == null || !ethereal.CanBeCasted() || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(ethereal.Name)))
                         {
                             if ( // sheep
@@ -295,8 +292,7 @@
                                 dagon.UseAbility(e);
                                 Utils.Sleep(200, "dagon");
                             } // Dagon Item end
-
-
+							
                             if ( // Mjollnir
                                 mjollnir != null &&
                                 mjollnir.CanBeCasted() &&
@@ -310,8 +306,7 @@
                                 mjollnir.UseAbility(me);
                                 Utils.Sleep(250, "mjollnir");
                             } // Mjollnir Item end
-
-
+							
                             if ( // Satanic 
                                 satanic != null &&
                                 me.Health <= (me.MaximumHealth * 0.3) &&

@@ -63,7 +63,7 @@ namespace DotaAllCombo.Heroes
 						)
 					{
 						a[i].Attack(e);
-						Utils.Sleep(300, a[i].Handle + "Attack");
+						Utils.Sleep(330, a[i].Handle + "Attack");
 					}
 					else if (a[i].Distance2D(e) <= 1000)
 					{
