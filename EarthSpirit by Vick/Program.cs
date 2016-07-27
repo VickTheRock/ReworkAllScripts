@@ -157,6 +157,13 @@ namespace EarthSpirit
 							me.Move(r.Position);
 							Utils.Sleep(250, "RemMove");
 						}
+						else
+						{
+							if (Menu.Item("orbwalk").GetValue<bool>() && me.Distance2D(e) <= 1900)
+							{
+								Orbwalking.Orbwalk(e, 0, 1600, true, true);
+							}
+						}
 						if (//Q Skill
 							W != null
 							&& (!Q.CanBeCasted()
@@ -557,6 +564,13 @@ namespace EarthSpirit
 						{
 							me.Move(r.Position);
 							Utils.Sleep(300, "RemMove");
+						}
+						else
+						{
+							if (Menu.Item("orbwalk").GetValue<bool>() && me.Distance2D(e) <= 1900)
+							{
+								Orbwalking.Orbwalk(e, 0, 1600, true, true);
+							}
 						}
 						if (//Q Skill
 						  r != null
