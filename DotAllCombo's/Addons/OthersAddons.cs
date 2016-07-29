@@ -21,6 +21,8 @@ namespace DotaAllCombo.Addons
 
 		public void Load()
 		{
+			Console.OutputEncoding = System.Text.Encoding.UTF8;
+
 			_text = new Font(
 			   Drawing.Direct3DDevice9,
 			   new FontDescription

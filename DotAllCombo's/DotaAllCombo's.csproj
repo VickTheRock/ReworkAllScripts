@@ -86,6 +86,7 @@
     <Compile Include="Addons\_Addon.cs" />
     <Compile Include="Extensions\Toolset.cs" />
     <Compile Include="Heroes\AntimageController.cs" />
+    <Compile Include="Heroes\AxeController.cs" />
     <Compile Include="Heroes\BloodseekerController.cs" />
     <Compile Include="Heroes\BountyHunterController.cs" />
     <Compile Include="Heroes\BrewmasterController.cs" />

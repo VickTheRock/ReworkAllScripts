@@ -415,8 +415,9 @@
 									else
 										elsecount += 1;
 									if (bkb != null && bkb.Cooldown <= 0 &&
-										Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(bkb.Name) &&
-										(!W.CanBeCasted() || W == null))
+										Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(bkb.Name)
+										&& Menu.Item("BKB").GetValue<KeyBind>().Active 
+										&& (!W.CanBeCasted() || W == null))
 										bkb.UseAbility();
 									else
 										elsecount += 1;

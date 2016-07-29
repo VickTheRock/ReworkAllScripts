@@ -65,7 +65,7 @@
 			if (e == null) return;
 			if (Active && me.Distance2D(e) <= 1400 && me.HasModifier("modifier_juggernaut_blade_fury") && Utils.SleepCheck("move"))
 			{
-				me.Move(Prediction.InFront(e, 150));
+				me.Move(Prediction.InFront(e, 170));
 				Utils.Sleep(150, "move");
 			}
 			if (Active && me.Distance2D(e) <= 1400)

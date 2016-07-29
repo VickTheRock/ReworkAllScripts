@@ -107,8 +107,8 @@
 			{
 				var enemies = ObjectManager.GetEntities<Hero>()
 						.Where(x => x.IsAlive && x.Team != me.Team && !x.IsIllusion && !x.IsMagicImmune()
-						&& !x.Modifiers.Any(y => y.Name == "modifier_abaddon_borrowed_time"
-						|| y.Name == "modifier_item_blade_mail_reflect")
+						&& !x.HasModifier("modifier_abaddon_borrowed_time")
+						|| !x.HasModifier("modifier_item_blade_mail_reflect")
 						&& x.Distance2D(e) > 200).ToList();
 				e = GetClosestToTarget(enemies, e) ?? null;
 				if (Utils.SleepCheck("spam"))
@@ -691,6 +691,7 @@
 						&& !v[i].HasModifier("modifier_shadow_demon_disruption")
 						&& !v[i].HasModifier("modifier_faceless_void_time_walk")
 						&& !v[i].HasModifier("modifier_winter_wyvern_winters_curse")
+						&& !v[i].HasModifier("modifier_huskar_life_break_charge")
 						&& !v[i].HasModifier("modifier_mirana_leap")
 						&& !v[i].HasModifier("modifier_earth_spirit_rolling_boulder_caster")
 						&& !v[i].HasModifier("modifier_tusk_snowball_movement")

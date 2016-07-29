@@ -52,26 +52,26 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Ensage">
-      <HintPath>D:\Users\Vick\Downloads\PlaySharp\System\Ensage.dll</HintPath>
+      <HintPath>D:\Program Files (x86)\PlaySharp\References\Ensage.dll</HintPath>
     </Reference>
     <Reference Include="Ensage.Common">
-      <HintPath>D:\Users\Vick\Downloads\PlaySharp\System\Ensage.Common.dll</HintPath>
+      <HintPath>D:\Program Files (x86)\PlaySharp\References\Ensage.Common.dll</HintPath>
     </Reference>
     <Reference Include="Ensage.Menu">
-      <HintPath>D:\Users\Vick\Downloads\PlaySharp\System\Ensage.Menu.dll</HintPath>
+      <HintPath>D:\Program Files (x86)\PlaySharp\System\Ensage.Menu.dll</HintPath>
     </Reference>
     <Reference Include="EnsageSharp.Sandbox">
-      <HintPath>D:\Users\Vick\Downloads\PlaySharp\System\EnsageSharp.Sandbox.dll</HintPath>
+      <HintPath>D:\Program Files (x86)\PlaySharp\System\EnsageSharp.Sandbox.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\Users\Vick\Downloads\PlaySharp\System\Newtonsoft.Json.dll</HintPath>
+      <HintPath>D:\Program Files (x86)\PlaySharp\References\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX">
-      <HintPath>D:\Users\Vick\Downloads\PlaySharp\System\SharpDX.dll</HintPath>
+      <HintPath>D:\Program Files (x86)\PlaySharp\References\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Direct3D9">
-      <HintPath>D:\Users\Vick\Downloads\PlaySharp\System\SharpDX.Direct3D9.dll</HintPath>
+      <HintPath>D:\Program Files (x86)\PlaySharp\References\SharpDX.Direct3D9.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

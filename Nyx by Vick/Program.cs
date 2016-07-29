@@ -1,425 +1,493 @@
-//ONLY LOVE MazaiPC ;) 
-using System;
-using System.Linq;
-using Ensage.Common.Menu;
-using Ensage;
-using SharpDX;
-using Ensage.Common.Extensions;
-using Ensage.Common;
-using SharpDX.Direct3D9;
-using System.Windows.Input;
-
-using System.Collections.Generic;
-namespace Nyx_by_Vick
-{
-    internal class Program
+namespace NyxbyVick
+{//ONLY LOVE MazaiPC ;) 
+	using System;
+	using System.Linq;
+	using Ensage.Common.Menu;
+	using Ensage;
+	using SharpDX;
+	using Ensage.Common.Extensions;
+	using Ensage.Common;
+	using System.Collections.Generic;
+	internal class Program
     {
 		private static readonly Menu Menu = new Menu("Nyx", "Nyx by Vick", true, "npc_dota_hero_nyx_assassin", true);
-        private static Item soulring, arcane, blink, shiva, dagon, mjollnir, mom, halberd, abyssal, ethereal, cheese, satanic, medall, vail;
-        private static Ability Q, W, R;
-		private static bool keyCombo;
-		private static Font txt;
-        private static Font not;
-        private static bool loaded;
-        private static Hero me;
-        private static Hero target;
-		private static readonly Dictionary<string, bool> Skills = new Dictionary<string, bool>
+		private static readonly Menu items = new Menu("Items", "Items");
+		private static readonly Menu skills = new Menu("Skills: ", "Skills: ");
+		private static Ability Q, W, R;
+		private static Item sheep, vail, soul, abyssal, mjollnir, arcane, blink, shiva, dagon, ethereal, cheese, halberd, satanic, mom, medall;
+		
+		private static bool Active;
+        private static Hero me,e;
+
+		private static void OnLoadEvent(object sender, EventArgs args)
+		{
+
+			if (ObjectManager.LocalHero.ClassID != ClassID.CDOTA_Unit_Hero_Nyx_Assassin) return;
+			Menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true));
+			Menu.AddItem(new MenuItem("orbwalk", "orbwalk").SetValue(true));
+			Menu.AddItem(new MenuItem("Combo Key", "Combo Key").SetValue(new KeyBind('D', KeyBindType.Press)));
+			Menu.AddSubMenu(items);
+			items.AddItem(new MenuItem("Items", "Items").SetValue(new AbilityToggler(new Dictionary<string, bool>
 			{
-				{"nyx_assassin_vendetta",true}
-			};
-		static void Main(string[] args)
-        {
-			Menu.AddItem(new MenuItem("ComboKey", "Combo Key").SetValue(new KeyBind('D', KeyBindType.Press)));
-			Menu.AddItem(new MenuItem("Skills", ":").SetValue(new AbilityToggler(Skills)));
+				{"item_orchid", true},
+				{"item_bloodthorn", true},
+				{"item_ethereal_blade", true},
+				{"item_veil_of_discord", true},
+				{"item_rod_of_atos", true},
+				{"item_sheepstick", true},
+				{"item_arcane_boots", true},
+				{"item_dagon", true},
+				{"item_blink", true},
+				{"item_soul_ring", true},
+				{"item_medallion_of_courage", true},
+				{"item_mask_of_madness", true},
+				{"item_abyssal_blade", true},
+				{"item_mjollnir", true},
+				{"item_satanic", true},
+				{"item_solar_crest", true},
+				{"item_ghost", true},
+				{"item_cheese", true}
+			})));
+			Menu.AddSubMenu(skills);
+			skills.AddItem(new MenuItem("Skills", "Skills").SetValue(new AbilityToggler(new Dictionary<string, bool>
+			{
+				{"nyx_assassin_impale", true},
+				{"nyx_assassin_mana_burn", true},
+				{"nyx_assassin_vendetta", true}
+			})));
+			Menu.AddItem(new MenuItem("Kill", "KillSteal W").SetValue(true));
 			Menu.AddToMainMenu();
-
 			Game.OnUpdate += Game_OnUpdate;
-            Console.WriteLine("> Nyx by Vick# loaded!");
+			Print.LogMessage.Success("My purpose is clear, my targets doomed.");
+		}
 
-            txt = new Font(
-               Drawing.Direct3DDevice9,
-               new FontDescription
-               {
-                   FaceName = "Tahoma",
-                   Height = 12,
-                   OutputPrecision = FontPrecision.Default,
-                   Quality = FontQuality.Default
-               });
+		private static void OnCloseEvent(object sender, EventArgs args)
+		{
+			Game.OnUpdate -= Game_OnUpdate;
+			Menu.RemoveFromMainMenu();
+		}
 
-            not = new Font(
-               Drawing.Direct3DDevice9,
-               new FontDescription
-               {
-                   FaceName = "Tahoma",
-                   Height = 20,
-                   OutputPrecision = FontPrecision.Default,
-                   Quality = FontQuality.Default
-               });
-
-            Drawing.OnPreReset += Drawing_OnPreReset;
-            Drawing.OnPostReset += Drawing_OnPostReset;
-            Drawing.OnEndScene += Drawing_OnEndScene;
-            AppDomain.CurrentDomain.DomainUnload += CurrentDomain_DomainUnload;
-        }
+		static void Main()
+        {
+			Events.OnLoad += OnLoadEvent;
+			Events.OnClose += OnCloseEvent;
+		}
 
         public static void Game_OnUpdate(EventArgs args)
         {
-            var me = ObjectManager.LocalHero;
-            if (!Game.IsInGame || me.ClassID != ClassID.CDOTA_Unit_Hero_Nyx_Assassin)
-            {
-                return;
-            }
-			keyCombo = Game.IsKeyDown(Menu.Item("ComboKey").GetValue<KeyBind>().Key);
-			if (keyCombo)
-            {
-                var target = me.ClosestToMouseTarget(2000);
-                if (target == null)
-                {
-                    return;
-                }
-                if (target.IsAlive && !target.IsInvul())
-                {
-                  
+            me = ObjectManager.LocalHero;
+            if (!Game.IsInGame || Game.IsWatchingGame || me== null || me.ClassID != ClassID.CDOTA_Unit_Hero_Nyx_Assassin)  return;
 
-                    //spell
-                    if (Q == null)
-                        Q = me.Spellbook.SpellQ;
+			Active = Game.IsKeyDown(Menu.Item("Combo Key").GetValue<KeyBind>().Key) && !Game.IsChatOpen;
+			if (Active && me.IsAlive)
+			{
+				e = me.ClosestToMouseTarget(2000);
+				if (e == null) return;
+				Q = me.Spellbook.SpellQ;
 
-                    if (W == null)
-                        W = me.Spellbook.SpellW;
+				W = me.Spellbook.SpellW;
 
-					if (R == null)
-						R = me.Spellbook.SpellR;
+				R = me.Spellbook.SpellR;
 
-					// item 
-					if (satanic == null)
-                        satanic = me.FindItem("item_satanic");
+				// item 
+				sheep = e.ClassID == ClassID.CDOTA_Unit_Hero_Tidehunter ? null : me.FindItem("item_sheepstick");
 
-                    if (shiva == null)
-                        shiva = me.FindItem("item_shivas_guard");
+				satanic = me.FindItem("item_satanic");
 
-                    dagon = me.Inventory.Items.FirstOrDefault(item => item.Name.Contains("item_dagon"));
+				shiva = me.FindItem("item_shivas_guard");
 
-                    if (arcane == null)
-                        arcane = me.FindItem("item_arcane_boots");
+				dagon = me.Inventory.Items.FirstOrDefault(item => item.Name.Contains("item_dagon"));
 
-                    if (mom == null)
-                        mom = me.FindItem("item_mask_of_madness");
+				arcane = me.FindItem("item_arcane_boots");
 
-					vail = me.FindItem("item_veil_of_discord");
+				mom = me.FindItem("item_mask_of_madness");
 
-					if (medall == null)
-                        medall = me.FindItem("item_medallion_of_courage") ?? me.FindItem("item_solar_crest");
+				vail = me.FindItem("item_veil_of_discord");
 
-                    if (ethereal == null)
-                        ethereal = me.FindItem("item_ethereal_blade");
+				medall = me.FindItem("item_medallion_of_courage") ?? me.FindItem("item_solar_crest");
 
-                    if (blink == null)
-                        blink = me.FindItem("item_blink");
+				ethereal = me.FindItem("item_ethereal_blade");
 
-                    if (soulring == null)
-                        soulring = me.FindItem("item_soul_ring");
+				blink = me.FindItem("item_blink");
 
-                    if (cheese == null)
-                        cheese = me.FindItem("item_cheese");
+				soul = me.FindItem("item_soul_ring");
 
-                    if (halberd == null)
-                        halberd = me.FindItem("item_heavens_halberd");
+				cheese = me.FindItem("item_cheese");
 
-                    if (abyssal == null)
-                        abyssal = me.FindItem("item_abyssal_blade");
+				halberd = me.FindItem("item_heavens_halberd");
 
-                    if (mjollnir == null)
-                        mjollnir = me.FindItem("item_mjollnir");
-                    var linkens = target.Modifiers.Any(x => x.Name == "modifier_item_spheretarget") || target.Inventory.Items.Any(x => x.Name == "item_sphere");
-                    var ModifEther = target.Modifiers.Any(y => y.Name == "modifier_item_ethereal_blade_slow");
-					if (target.IsVisible && me.Distance2D(target) <= 1200)
+				abyssal = me.FindItem("item_abyssal_blade");
+
+				mjollnir = me.FindItem("item_mjollnir");
+				var stoneModif = e.HasModifier("modifier_medusa_stone_gaze_stone");
+				var linkens = e.IsLinkensProtected();
+				var noBlade = e.HasModifier("modifier_item_blade_mail_reflect");
+				if (e.IsVisible && me.Distance2D(e) <= 2300 && !noBlade)
+				{
+					if (Menu.Item("orbwalk").GetValue<bool>() && me.Distance2D(e) <= 1900)
 					{
+						Orbwalking.Orbwalk(e, 0, 1600, true, true);
+					}
+					if (
+					   R != null
+					   && R.CanBeCasted()
+					   && !me.HasModifier("modifier_nyx_assassin_vendetta")
+					   && me.Distance2D(e) <= 1400
+					   && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name)
+					   && Utils.SleepCheck("R")
+					   )
+					{
+						R.UseAbility();
+						Utils.Sleep(200, "R");
+					}
+					if (R!=null && (R.IsInAbilityPhase || me.HasModifier("modifier_nyx_assassin_vendetta") || R.IsChanneling)) return;
+					if (R == null || !R.CanBeCasted() && !me.HasModifier("modifier_nyx_assassin_vendetta")
+					   || !Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name))
+					{
+						if (stoneModif) return;
+						float angle = me.FindAngleBetween(e.Position, true);
+						Vector3 pos = new Vector3((float)(e.Position.X - 100 * Math.Cos(angle)), (float)(e.Position.Y - 100 * Math.Sin(angle)), 0);
 						if (
-						(!me.CanAttack()
-						|| me.Distance2D(target) >= 120)
-						&& me.NetworkActivity != NetworkActivity.Attack
-						&& me.Distance2D(target) <= 1200
-						&& Utils.SleepCheck("Move"))
-						{
-							me.Move(target.Predict(300));
-							Utils.Sleep(390, "Move");
-						}
-						else if (
-						   me.Distance2D(target) <= 145
-						   && me.CanAttack()
-						   && Utils.SleepCheck("R")
-						   )
-						{
-							me.Attack(target);
-							Utils.Sleep(230, "R");
-						}
-						if (
-						   R != null
-						   && R.CanBeCasted()
-						   && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name)
-						   && !me.Modifiers.Any(x => x.Name == "modifier_nyx_assassin_vendetta")
-						   && me.Distance2D(target) <= 1400
-						   && Utils.SleepCheck("R")
-						   )
-						{
-							R.UseAbility();
-							Utils.Sleep(200, "R");
-						}
-						if (me.Modifiers.Any(x => x.Name == "modifier_nyx_assassin_vendetta"))
-							return;
-						if (!R.CanBeCasted() || R == null && !me.Modifiers.Any(x => x.Name == "modifier_nyx_assassin_vendetta") || !Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name))
-						{
-
-
-							if ( // vail
-							vail != null &&
-							vail.CanBeCasted() &&
-							me.CanCast() &&
-							!target.IsMagicImmune() &&
-							Utils.SleepCheck("vail") &&
-							me.Distance2D(target) <= 1500
+							blink != null
+							&& Q.CanBeCasted()
+							&& me.CanCast()
+							&& blink.CanBeCasted()
+							&& me.Distance2D(e) >= 300
+							&& me.Distance2D(pos) <= 1180
+							&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name)
+							&& Utils.SleepCheck("blink")
 							)
+						{
+							blink.UseAbility(pos);
+							Utils.Sleep(250, "blink");
+						}
+						if ( // vail
+							vail != null
+							&& vail.CanBeCasted()
+							&& me.CanCast()
+							&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(vail.Name)
+							&& !e.IsMagicImmune()
+							&& Utils.SleepCheck("vail")
+							&& me.Distance2D(e) <= 1500
+							)
+						{
+							vail.UseAbility(e.Position);
+							Utils.Sleep(250, "vail");
+						}
+
+						if ( // ethereal
+							ethereal != null &&
+							ethereal.CanBeCasted()
+							&& (!vail.CanBeCasted()
+								|| vail == null)
+							&& me.CanCast() &&
+							!linkens &&
+							!e.IsMagicImmune() &&
+							Utils.SleepCheck("ethereal")
+							)
+						{
+							ethereal.UseAbility(e);
+							Utils.Sleep(150, "ethereal");
+						}
+
+						if ((vail == null || !vail.CanBeCasted() || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(vail.Name)) && (ethereal == null || !ethereal.CanBeCasted() || !Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(ethereal.Name)))
+						{
+							if ( // sheep
+								sheep != null
+								&& sheep.CanBeCasted()
+								&& me.CanCast()
+								&& !e.IsLinkensProtected()
+								&& !e.IsMagicImmune()
+								&& me.Distance2D(e) <= 1400
+								&& !stoneModif
+								&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(sheep.Name)
+								&& Utils.SleepCheck("sheep")
+								)
 							{
-								vail.UseAbility(target.Position);
-								Utils.Sleep(250, "vail");
+								sheep.UseAbility(e);
+								Utils.Sleep(250, "sheep");
+							} // sheep Item end
+							if (Q != null
+								&& Q.CanBeCasted()
+								&& Q.Cooldown <= 0
+								&& me.AghanimState() ? me.Distance2D(e) <= 1190 : me.Distance2D(e) <= Q.GetCastRange() - 50
+								&& !e.IsMagicImmune()
+								&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name)
+								&& Utils.SleepCheck("Q"))
+							{
+								Q.CastSkillShot(e);
+								Utils.Sleep(100, "Q");
 							}
+							if (W.CanBeCasted()
+								&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name)
+								&& e.Mana >= (me.MaximumMana * 0.2)
+								&& me.Position.Distance2D(e.Position) < 800
+								&& Utils.SleepCheck("W"))
+							{
+								W.UseAbility(e);
+								Utils.Sleep(100, "W");
+							}
+
+							if ( // SoulRing Item 
+								soul != null &&
+								me.Health >= (me.MaximumHealth * 0.3) &&
+								me.Mana <= R.ManaCost &&
+								soul.CanBeCasted()
+								&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(soul.Name))
+							{
+								soul.UseAbility();
+							} // SoulRing Item end
+
+							if ( // Arcane Boots Item
+								arcane != null &&
+								me.Mana <= Q.ManaCost &&
+								arcane.CanBeCasted()
+								&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(arcane.Name))
+							{
+								arcane.UseAbility();
+							} // Arcane Boots Item end
+
+							if ( // Shiva Item
+								shiva != null &&
+								shiva.CanBeCasted() &&
+								me.CanCast() &&
+								!e.IsMagicImmune() &&
+								Utils.SleepCheck("shiva") &&
+								me.Distance2D(e) <= 600
+								&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(shiva.Name)
+								)
+							{
+								shiva.UseAbility();
+								Utils.Sleep(250, "shiva");
+							} // Shiva Item end
+
+							if ( // Medall
+								medall != null &&
+								medall.CanBeCasted() &&
+								me.CanCast() &&
+								!e.IsMagicImmune() &&
+								Utils.SleepCheck("Medall")
+								&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(medall.Name)
+								&& me.Distance2D(e) <= 500
+								)
+							{
+								medall.UseAbility(e);
+								Utils.Sleep(250, "Medall");
+							} // Medall Item end
+
+							if ( // MOM
+								mom != null &&
+								mom.CanBeCasted() &&
+								me.CanCast() &&
+								Utils.SleepCheck("mom") &&
+								me.Distance2D(e) <= 700
+								&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(mom.Name)
+								)
+							{
+								mom.UseAbility();
+								Utils.Sleep(250, "mom");
+							} // MOM Item end
 
 							if (
-								Q != null 
-								&& Q.CanBeCasted() &&
-								blink.CanBeCasted() &&
-								me.Position.Distance2D(target.Position) > 300 &&
-								Utils.SleepCheck("blink"))
+								// cheese
+								cheese != null
+								&& cheese.CanBeCasted()
+								&& me.Health <= (me.MaximumHealth * 0.3)
+								&& me.Distance2D(e) <= 700
+								&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(cheese.Name)
+								&& Utils.SleepCheck("cheese")
+								)
 							{
-								blink.UseAbility(target.Position);
-								Utils.Sleep(250, "blink");
-							}
-							if (// ethereal
-						   ethereal != null &&
-						   ethereal.CanBeCasted()
-						   && (!vail.CanBeCasted()
-						   || vail == null)
-						   && me.CanCast() &&
-						   !linkens &&
-						   !target.IsMagicImmune() &&
-						   Utils.SleepCheck("ethereal")
-						  )
+								cheese.UseAbility();
+								Utils.Sleep(200, "cheese");
+							} // cheese Item end
+							if ( // Abyssal Blade
+								abyssal != null &&
+								abyssal.CanBeCasted() &&
+								me.CanCast() &&
+								!e.IsMagicImmune() &&
+								Utils.SleepCheck("abyssal") &&
+								me.Distance2D(e) <= 400
+								&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(abyssal.Name)
+								)
 							{
-								ethereal.UseAbility(target);
-								Utils.Sleep(150, "ethereal");
-							}
+								abyssal.UseAbility(e);
+								Utils.Sleep(250, "abyssal");
+							} // Abyssal Item end
 
-
-							
-							if ((vail ==null|| !vail.CanBeCasted()) && (ethereal ==null || !ethereal.CanBeCasted()) && !R.CanBeCasted() || !Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name))
+							if ( // Hellbard
+								halberd != null &&
+								halberd.CanBeCasted() &&
+								me.CanCast() &&
+								!e.IsMagicImmune() &&
+								Utils.SleepCheck("halberd") &&
+								me.Distance2D(e) <= 700
+								&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(halberd.Name)
+								)
 							{
+								halberd.UseAbility(e);
+								Utils.Sleep(250, "halberd");
+							} // Hellbard Item end
 
-								if (
-									Q != null 
-									&& Q.CanBeCasted() 
-									&& me.Position.Distance2D(target.Position) < Q.CastRange - 50 &&
-									Utils.SleepCheck("Q"))
-								{
-									Q.CastSkillShot(target);
-									Utils.Sleep(100, "Q");
-								}
-								if (W != null 
-									&& W.CanBeCasted()
-									&& target.Mana >= (target.MaximumMana * 0.3)
-									&& me.Position.Distance2D(target.Position) < 800
-									&& Utils.SleepCheck("W"))
-								{
-									W.UseAbility(target);
-									Utils.Sleep(100, "W");
-								}
+							if ( // Dagon
+								me.CanCast()
+								&& dagon != null
+								&& (ethereal == null
+									|| (e.HasModifier("modifier_item_ethereal_blade_slow")
+										|| ethereal.Cooldown < 17))
+								&& !e.IsLinkensProtected()
+								&& dagon.CanBeCasted()
+								&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled("item_dagon")
+								&& !e.IsMagicImmune()
+								&& !stoneModif
+								&& Utils.SleepCheck("dagon")
+								)
+							{
+								dagon.UseAbility(e);
+								Utils.Sleep(200, "dagon");
+							} // Dagon Item end
 
-								// orchid Item end
-								if (// SoulRing Item 
-									soulring != null &&
-									me.Health >= (me.MaximumHealth * 0.3) &&
-									me.Mana <= R.ManaCost &&
-									soulring.CanBeCasted())
-								{
-									soulring.UseAbility();
-								} // SoulRing Item end
+							if ( // Mjollnir
+								mjollnir != null &&
+								mjollnir.CanBeCasted() &&
+								me.CanCast() &&
+								!e.IsMagicImmune() &&
+								Utils.SleepCheck("mjollnir")
+								&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(mjollnir.Name)
+								&& me.Distance2D(e) <= 900
+								)
+							{
+								mjollnir.UseAbility(me);
+								Utils.Sleep(250, "mjollnir");
+							} // Mjollnir Item end
 
-								if (// Arcane Boots Item
-									arcane != null &&
-									me.Mana <= Q.ManaCost &&
-									arcane.CanBeCasted())
-								{
-									arcane.UseAbility();
-								} // Arcane Boots Item end
-
-								if (// Shiva Item
-									shiva != null &&
-									shiva.CanBeCasted() &&
-									me.CanCast() &&
-									!target.IsMagicImmune() &&
-									Utils.SleepCheck("shiva") &&
-									me.Distance2D(target) <= 600
-									)
-								{
-									shiva.UseAbility();
-									Utils.Sleep(250, "shiva");
-								} // Shiva Item end
-
-								if ( // Medall
-							   medall != null &&
-							   medall.CanBeCasted() &&
-							   me.CanCast() &&
-							   !target.IsMagicImmune() &&
-							   Utils.SleepCheck("Medall") &&
-							   me.Distance2D(target) <= 500
-							   )
-								{
-									medall.UseAbility(target);
-									Utils.Sleep(250, "Medall");
-								} // Medall Item end
-
-								if (// MOM
-									mom != null &&
-									mom.CanBeCasted() &&
-									me.CanCast() &&
-									Utils.SleepCheck("mom") &&
-									me.Distance2D(target) <= 700
-									)
-								{
-									mom.UseAbility();
-									Utils.Sleep(250, "mom");
-								} // MOM Item end
-
-
-								if ( // Abyssal Blade
-									abyssal != null &&
-									abyssal.CanBeCasted() &&
-									me.CanCast() &&
-									!target.IsMagicImmune() &&
-									Utils.SleepCheck("abyssal") &&
-									me.Distance2D(target) <= 400
-									)
-								{
-									abyssal.UseAbility(target);
-									Utils.Sleep(250, "abyssal");
-								} // Abyssal Item end
-
-								if ( // Hellbard
-									halberd != null &&
-									halberd.CanBeCasted() &&
-									me.CanCast() &&
-									!target.IsMagicImmune() &&
-									Utils.SleepCheck("halberd") &&
-									me.Distance2D(target) <= 700
-									)
-								{
-									halberd.UseAbility(target);
-									Utils.Sleep(250, "halberd");
-								} // Hellbard Item end
-
-
-
-
-								// ethereal Item end
-
-								if (// Dagon
-								   (dagon != null &&
-								   ethereal != null &&
-								   ModifEther || !ethereal.CanBeCasted())
-								   && dagon.CanBeCasted() &&
-								   me.CanCast() &&
-								   !target.IsMagicImmune() &&
-								   Utils.SleepCheck("dagon")
-								  )
-								{
-									dagon.UseAbility(target);
-									Utils.Sleep(150, "dagon");
-								} // Dagon Item end
-
-
-								if ( // Mjollnir
-									mjollnir != null &&
-									mjollnir.CanBeCasted() &&
-									me.CanCast() &&
-									!target.IsMagicImmune() &&
-									Utils.SleepCheck("mjollnir") &&
-									me.Distance2D(target) <= 900
-								   )
-								{
-									mjollnir.UseAbility(me);
-									Utils.Sleep(250, "mjollnir");
-								} // Mjollnir Item end
-
-								if (// Dagon
-									dagon != null &&
-									(ethereal == null || !ethereal.CanBeCasted())
-									&& dagon.CanBeCasted() &&
-									me.CanCast() &&
-									!target.IsMagicImmune() &&
-									Utils.SleepCheck("dagon")
-								   )
-								{
-									dagon.UseAbility(target);
-									Utils.Sleep(150, "dagon");
-								} // Dagon Item end
-
-
-								if (// Satanic 
-									satanic != null &&
-									me.Health <= (me.MaximumHealth * 0.3) &&
-									satanic.CanBeCasted() &&
-									me.Distance2D(target) <= 700 &&
-									Utils.SleepCheck("Satanic")
-									)
-								{
-									satanic.UseAbility();
-									Utils.Sleep(350, "Satanic");
-								} // Satanic Item end
-
-							}
+							if ( // Satanic 
+								satanic != null &&
+								me.Health <= (me.MaximumHealth * 0.3) &&
+								satanic.CanBeCasted() &&
+								me.Distance2D(e) <= 700 &&
+								Utils.SleepCheck("Satanic")
+								&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(satanic.Name)
+								)
+							{
+								satanic.UseAbility();
+								Utils.Sleep(350, "Satanic");
+							} // Satanic Item end
 						}
 					}
-                }
-            }
-        }
-      
+				}
+			}
+			if (Menu.Item("Kill").GetValue<bool>() && me.IsAlive && (me.IsVisibleToEnemies || !me.IsInvisible()))
+			{
+				var enemies =
+					ObjectManager.GetEntities<Hero>()
+						.Where(x => x.IsVisible && x.IsAlive && x.Team != me.Team && !x.IsIllusion).ToList();
+				if (enemies.Count <= 0) return;
+				foreach (var v in enemies)
+				{
+					if (v == null) return;
 
-        static void CurrentDomain_DomainUnload(object sender, EventArgs e)
-        {
-            txt.Dispose();
-            not.Dispose();
-        }
+					var wM = new[] { 3.5, 4, 4.5, 5 };
+					var wDmg = me.TotalIntelligence * wM[W.Level - 1];
 
-        static void Drawing_OnEndScene(EventArgs args)
-        {
-            if (Drawing.Direct3DDevice9 == null || Drawing.Direct3DDevice9.IsDisposed || !Game.IsInGame)
-                return;
+					var damageW = Math.Floor(wDmg * (1 - v.MagicDamageResist));
 
-            var player = ObjectManager.LocalPlayer;
-            var me = ObjectManager.LocalHero;
-            if (player == null || player.Team == Team.Observer || me.ClassID != ClassID.CDOTA_Unit_Hero_Nyx_Assassin)
-                return;
+					var lens = me.HasModifier("modifier_item_aether_lens");
+					var spellamplymult = 1 + (me.TotalIntelligence / 16 / 100);
+					if (v.NetworkName == "CDOTA_Unit_Hero_Spectre" && v.Spellbook.Spell3.Level > 0)
+					{
+						damageW =
+							Math.Floor(wDmg *
+									   (1 - (0.10 + v.Spellbook.Spell3.Level * 0.04)) * (1 - v.MagicDamageResist));
+					}
 
-            if (keyCombo)
-            {
-                txt.DrawText(null, "Nyx Combo Active!", 4, 150, Color.Gold);
-            }
-            
-            
-        }
+					if (lens) damageW = damageW * 1.08;
+					if (v.HasModifier("modifier_kunkka_ghost_ship_damage_absorb")) damageW = damageW * 0.5;
+					if (v.HasModifier("modifier_item_mask_of_madness_berserk")) damageW = damageW * 1.3;
+					damageW = damageW * spellamplymult;
+					if (damageW > v.Mana)
+						damageW = v.Mana;
 
-        static void Drawing_OnPostReset(EventArgs args)
-        {
-            txt.OnResetDevice();
-            not.OnResetDevice();
-        }
 
-        static void Drawing_OnPreReset(EventArgs args)
-        {
-            txt.OnLostDevice();
-            not.OnLostDevice();
-        }
+					if ( // vail
+						vail != null
+						&& vail.CanBeCasted()
+						&& W.CanBeCasted()
+						&& v.Health <= damageW * 1.25
+						&& v.Health >= damageW
+						&& me.CanCast()
+						&& !v.HasModifier("modifier_item_veil_of_discord_debuff")
+						&& !v.IsMagicImmune()
+						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(vail.Name)
+						&& me.Distance2D(v) <= W.GetCastRange()
+						&& Utils.SleepCheck("vail")
+						)
+					{
+						vail.UseAbility(v.Position);
+						Utils.Sleep(250, "vail");
+					}
+					int etherealdamage = (int)(((me.TotalIntelligence * 2) + 75));
+					if ( // vail
+						ethereal != null
+						&& ethereal.CanBeCasted()
+						&& W != null
+						&& W.CanBeCasted()
+						&& v.Health <= etherealdamage + damageW * 1.4
+						&& v.Health >= damageW
+						&& me.CanCast()
+						&& !v.HasModifier("modifier_item_ethereal_blade_slow")
+						&& !v.IsMagicImmune()
+						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(ethereal.Name)
+						&& me.Distance2D(v) <= ethereal.GetCastRange() + 50
+						&& Utils.SleepCheck("ethereal")
+						)
+					{
+						ethereal.UseAbility(v);
+						Utils.Sleep(250, "ethereal");
+					}
+
+					if (W != null && v != null && W.CanBeCasted()
+					   && me.AghanimState() ? me.Distance2D(v) <= 1050 : me.Distance2D(v) <= W.GetCastRange() + 50
+					   && !v.HasModifier("modifier_tusk_snowball_movement")
+					   && !v.HasModifier("modifier_snowball_movement_friendly")
+					   && !v.HasModifier("modifier_templar_assassin_refraction_absorb")
+					   && !v.HasModifier("modifier_ember_spirit_flame_guard")
+					   && !v.HasModifier("modifier_ember_spirit_sleight_of_fist_caster_invulnerability")
+					   && !v.HasModifier("modifier_obsidian_destroyer_astral_imprisonment_prison")
+					   && !v.HasModifier("modifier_puck_phase_shift")
+					   && !v.HasModifier("modifier_eul_cyclone")
+					   && !v.HasModifier("modifier_dazzle_shallow_grave")
+					   && !v.HasModifier("modifier_shadow_demon_disruption")
+					   && !v.HasModifier("modifier_necrolyte_reapers_scythe")
+					   && !v.HasModifier("modifier_necrolyte_reapers_scythe")
+					   && !v.HasModifier("modifier_storm_spirit_ball_lightning")
+					   && !v.HasModifier("modifier_ember_spirit_fire_remnant")
+					   && !v.HasModifier("modifier_nyx_assassin_spiked_carapace")
+					   && !v.HasModifier("modifier_phantom_lancer_doppelwalk_phase")
+					   && !v.FindSpell("abaddon_borrowed_time").CanBeCasted() &&
+					   !v.HasModifier("modifier_abaddon_borrowed_time_damage_redirect")
+					   && !v.IsMagicImmune()
+					   && v.Health < damageW
+					   && Utils.SleepCheck(v.Handle.ToString()))
+					{
+						W.UseAbility(v);
+						Utils.Sleep(150, v.Handle.ToString());
+						return;
+					}
+				}
+			}
+		}
     }
+	internal class Print
+	{
+		public class LogMessage
+		{
+			public static void Success(string text, params object[] arguments)
+			{
+				Game.PrintMessage("<font color='#e0007b'>" + text + "</font>", MessageType.LogMessage);
+			}
+		} // Console class
+	}
 }
  
  

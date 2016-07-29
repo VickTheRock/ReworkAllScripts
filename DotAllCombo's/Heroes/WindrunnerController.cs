@@ -17,8 +17,9 @@
 		private Ability Q, W, E, R;
 
 		private Item urn, orchid, ethereal, dagon, halberd, blink, mjollnir, abyssal, mom, Shiva, mail, bkb, iron, satanic, medall;
+		private Vector3 blinkpos;
 
-        
+
 
 		public void Combo()
 		{
@@ -57,26 +58,54 @@
 					Orbwalking.Orbwalk(e, 0, 1600, true, true);
 				}
 			}
-			if (Active && me.Distance2D(e) <= 1400 && e != null && e.IsAlive && !me.IsInvisible())
+			if (Active && me.Distance2D(e) <= 1400 && e.IsAlive && !me.IsInvisible())
 			{
-				if (
-					Q != null && Q.CanBeCasted() && me.Distance2D(e) <= 1300
-					&& me.CanAttack()
-					&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name)
-					&& Utils.SleepCheck("Q")
-					)
+				if (iron != null)
 				{
-					Q.UseAbility(e);
-					Utils.Sleep(100, "Q");
+					float angle = me.FindAngleBetween(e.Position, true);
+					Vector3 pos = new Vector3((float)(e.Position.X - 290 * Math.Cos(angle)), (float)(e.Position.Y - 290 * Math.Sin(angle)), 0);
+					if (
+						Q != null && Q.CanBeCasted() && me.Distance2D(e) <= 1300
+						&& me.CanAttack()
+						&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name)
+						&& Utils.SleepCheck("Q")
+						)
+					{
+						Q.UseAbility(e);
+						Utils.Sleep(100, "Q");
+					}
+					if (
+						iron != null
+						&& blink != null
+						&& blink.Cooldown > 11
+						&& iron.CanBeCasted()
+						&& me.Distance2D(e) <= 300
+						&& me.CanAttack()
+						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled("item_branches")
+						&& Utils.SleepCheck("iron")
+						)
+					{
+						iron.UseAbility(pos);
+						Utils.Sleep(10000, "iron");
+					}
 				}
+				
 				float angleblink = me.FindAngleBetween(e.Position, true);
-				Vector3 blinkpos = new Vector3((float)(e.Position.X +200 * Math.Cos(angleblink)), (float)(e.Position.Y + 200 * Math.Sin(angleblink)), 0);
+				if (iron != null)
+				{
+					blinkpos = new Vector3((float)(e.Position.X + 200 * Math.Cos(angleblink)), (float)(e.Position.Y + 200 * Math.Sin(angleblink)), 0);
+				}
+				else
+				{
+					blinkpos = new Vector3((float)(e.Position.X - 200 * Math.Cos(angleblink)), (float)(e.Position.Y - 200 * Math.Sin(angleblink)), 0);
+				}
+				
 				if (
 					blink != null
 					&& me.CanCast()
 					&& blink.CanBeCasted()
 					&& me.Distance2D(e) < 1190
-					&& ((iron == null && me.Distance2D(e) > me.AttackRange)
+					&& ((iron == null && me.Distance2D(e) > me.GetAttackRange())
 					|| (iron != null && iron.CanBeCasted() && !Q.CanBeCasted()))
 					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name)
 					&& Utils.SleepCheck("blink")
@@ -84,25 +113,8 @@
 				{
 					blink.UseAbility(blinkpos);
 					Utils.Sleep(250, "blink");
-					
 				}
-				float angle = me.FindAngleBetween(e.Position, true);
-				Vector3 pos = new Vector3((float)(e.Position.X - 290 * Math.Cos(angle)), (float)(e.Position.Y - 290 * Math.Sin(angle)), 0);
-
-				if (
-					iron != null
-					&&blink != null 
-					&& blink.Cooldown > 11
-					&& iron.CanBeCasted()
-					&& me.Distance2D(e) <= 300
-					&& me.CanAttack()
-					//&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(iron.Name)
-					&& Utils.SleepCheck("iron")
-					)
-				{
-					iron.UseAbility(pos);
-					Utils.Sleep(10000, "iron");
-				}
+				
 				if (
 					R != null && R.CanBeCasted() && me.Distance2D(e) <= 800
 					&& me.CanAttack()
@@ -295,7 +307,7 @@
 				    {"item_branches", true},
 				    {"item_heavens_halberd", true},
 				    {"item_orchid", true},
-                    { "item_bloodthorn", true},
+                    {"item_bloodthorn", true},
 				    {"item_blink", true},
 				    {"item_mjollnir", true},
 				    {"item_urn_of_shadows", true},

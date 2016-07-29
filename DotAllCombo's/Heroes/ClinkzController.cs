@@ -1,4 +1,4 @@
-namespace DotaAllCombo.Heroes
+﻿namespace DotaAllCombo.Heroes
 {
 	using System;
 	using System.Collections.Generic;
@@ -27,7 +27,7 @@ namespace DotaAllCombo.Heroes
 			mail,
 			bkb,
 			satanic,
-			medall;
+            medall;
 		public void Combo()
 		{
 			Active = Game.IsKeyDown(Menu.Item("keyBind").GetValue<KeyBind>().Key);
@@ -59,18 +59,18 @@ namespace DotaAllCombo.Heroes
 			var modifInv = Toolset.invUnit(me);
 
 			var Units = ObjectManager.GetEntities<Unit>().Where(creep =>
-			(creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral
-			|| creep.ClassID == ClassID.CDOTA_BaseNPC_Invoker_Forged_Spirit
-			|| creep.ClassID == ClassID.CDOTA_BaseNPC_Creep
-			|| creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
-			|| creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege
-			|| creep.ClassID == ClassID.CDOTA_Unit_Hero_Beastmaster_Boar
-			)
-			&& creep.Health >= (creep.MaximumHealth * 0.7)
-			&& creep.IsAlive
-			&& creep.Distance2D(me) <= R.GetCastRange() + me.HullRadius
-			&& creep.IsSpawned
-			&& creep.Team != me.Team).ToList();
+				(creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral
+				|| creep.ClassID == ClassID.CDOTA_BaseNPC_Invoker_Forged_Spirit
+				|| creep.ClassID == ClassID.CDOTA_BaseNPC_Creep
+				|| creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
+				|| creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege
+				|| creep.ClassID == ClassID.CDOTA_Unit_Hero_Beastmaster_Boar
+				)
+				&& creep.Health >= (creep.MaximumHealth * 0.7)
+				&& creep.IsAlive
+				&& creep.Distance2D(me) <= R.GetCastRange() + me.HullRadius
+				&& creep.IsSpawned
+				&& creep.Team != me.Team).ToList();
 
 			if (R != null && R.CanBeCasted()
 				&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name)
@@ -81,7 +81,6 @@ namespace DotaAllCombo.Heroes
 				R.UseAbility(Units.OrderBy(x => x.Health).Last());
 				Utils.Sleep(1500, "R");
 			}
-
 			if (Active)
 			{
 				e = me.ClosestToMouseTarget(1800);
@@ -97,6 +96,7 @@ namespace DotaAllCombo.Heroes
 				}
 				sheep = e.ClassID == ClassID.CDOTA_Unit_Hero_Tidehunter ? null : me.FindItem("item_sheepstick");
 
+				Console.WriteLine("3");
 				if (me.Distance2D(e) <= 1400 && e != null && e.IsAlive && !modifInv)
 				{
 					if ((!W.CanBeCasted() || !Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name)))
@@ -106,6 +106,7 @@ namespace DotaAllCombo.Heroes
 							Orbwalking.Orbwalk(e, 0, 1600, false, true);
 						}
 					}
+					Console.WriteLine("4");
 					var stoneModif = e.HasModifier("modifier_medusa_stone_gaze_stone");
 					if (stoneModif) return;
 					if ( // sheep
@@ -133,7 +134,7 @@ namespace DotaAllCombo.Heroes
 						Utils.Sleep(150, "Q");
 					}
 					if (W != null && W.CanBeCasted()
-						&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name))
+					    && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name))
 					{
 						if (Menu.Item("orbwalk").GetValue<bool>() && me.Distance2D(e) <= 1900)
 						{
@@ -192,26 +193,26 @@ namespace DotaAllCombo.Heroes
 					} // orchid Item end
 
 					if (Shiva != null && Shiva.CanBeCasted() && me.Distance2D(e) <= 600
-						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(Shiva.Name)
-						&& !e.IsMagicImmune() && Utils.SleepCheck("Shiva"))
+					    && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(Shiva.Name)
+					    && !e.IsMagicImmune() && Utils.SleepCheck("Shiva"))
 					{
 						Shiva.UseAbility();
 						Utils.Sleep(100, "Shiva");
 					}
 
 					if (ethereal != null && ethereal.CanBeCasted()
-						&& me.Distance2D(e) <= 700 && me.Distance2D(e) <= 400
-						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(ethereal.Name) &&
-						Utils.SleepCheck("ethereal"))
+					    && me.Distance2D(e) <= 700 && me.Distance2D(e) <= 400
+					    && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(ethereal.Name) &&
+					    Utils.SleepCheck("ethereal"))
 					{
 						ethereal.UseAbility(e);
 						Utils.Sleep(100, "ethereal");
 					}
 
 					if (dagon != null
-						&& dagon.CanBeCasted()
-						&& me.Distance2D(e) <= 500
-						&& Utils.SleepCheck("dagon"))
+					    && dagon.CanBeCasted()
+					    && me.Distance2D(e) <= 500
+					    && Utils.SleepCheck("dagon"))
 					{
 						dagon.UseAbility(e);
 						Utils.Sleep(100, "dagon");
@@ -231,7 +232,7 @@ namespace DotaAllCombo.Heroes
 						Utils.Sleep(250, "abyssal");
 					} // Abyssal Item end
 					if (urn != null && urn.CanBeCasted() && urn.CurrentCharges > 0 && me.Distance2D(e) <= 400
-						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(urn.Name) && Utils.SleepCheck("urn"))
+					    && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(urn.Name) && Utils.SleepCheck("urn"))
 					{
 						urn.UseAbility(e);
 						Utils.Sleep(240, "urn");
@@ -242,8 +243,8 @@ namespace DotaAllCombo.Heroes
 						&& me.CanCast()
 						&& !e.IsMagicImmune()
 						&& (e.NetworkActivity == NetworkActivity.Attack
-							|| e.NetworkActivity == NetworkActivity.Crit
-							|| e.NetworkActivity == NetworkActivity.Attack2)
+						    || e.NetworkActivity == NetworkActivity.Crit
+						    || e.NetworkActivity == NetworkActivity.Attack2)
 						&& Utils.SleepCheck("halberd")
 						&& me.Distance2D(e) <= 700
 						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(halberd.Name)
@@ -265,21 +266,20 @@ namespace DotaAllCombo.Heroes
 						Utils.Sleep(240, "satanic");
 					} // Satanic Item end
 					if (mail != null && mail.CanBeCasted() && (v.Count(x => x.Distance2D(me) <= 650) >=
-															   (Menu.Item("Heelm").GetValue<Slider>().Value)) &&
-						Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(mail.Name) && Utils.SleepCheck("mail"))
+					                                           (Menu.Item("Heelm").GetValue<Slider>().Value)) &&
+					    Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(mail.Name) && Utils.SleepCheck("mail"))
 					{
 						mail.UseAbility();
 						Utils.Sleep(100, "mail");
 					}
 					if (bkb != null && bkb.CanBeCasted() && (v.Count(x => x.Distance2D(me) <= 650) >=
-															 (Menu.Item("Heel").GetValue<Slider>().Value)) &&
-						Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(bkb.Name) && Utils.SleepCheck("bkb"))
+					                                         (Menu.Item("Heel").GetValue<Slider>().Value)) &&
+					    Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(bkb.Name) && Utils.SleepCheck("bkb"))
 					{
 						bkb.UseAbility();
 						Utils.Sleep(100, "bkb");
 					}
 				}
-
 			}
 		}
 
@@ -293,31 +293,31 @@ namespace DotaAllCombo.Heroes
 			Menu.AddItem(new MenuItem("orbwalk", "orbwalk").SetValue(true));
 			Menu.AddItem(new MenuItem("keyBind", "Combo key").SetValue(new KeyBind('D', KeyBindType.Press)));
 
-			Menu.AddItem(
+		    Menu.AddItem(
 				new MenuItem("Skills", "Skills").SetValue(new AbilityToggler(new Dictionary<string, bool>
 				{
-					{"clinkz_death_pact", true},
-					{"clinkz_searing_arrows", true},
-					{"clinkz_strafe", true}
+				    {"clinkz_death_pact", true},
+				    {"clinkz_searing_arrows", true},
+				    {"clinkz_strafe", true}
 				})));
 			Menu.AddItem(
 				new MenuItem("Items", "Items:").SetValue(new AbilityToggler(new Dictionary<string, bool>
 				{
-				{"item_mask_of_madness", true},
-				{"item_heavens_halberd", true},
-				{"item_sheepstick", true},
-				{"item_orchid", true},
-				{"item_bloodthorn", true},
-				{"item_mjollnir", true},
-				{"item_urn_of_shadows", true},
-				{"item_ethereal_blade", true},
-				{"item_abyssal_blade", true},
-				{"item_shivas_guard", true},
-				{"item_blade_mail", true},
-				{"item_black_king_bar", true},
-				{"item_satanic", true},
-				{"item_medallion_of_courage", true},
-				{"item_solar_crest", true}
+				    {"item_mask_of_madness", true},
+				    {"item_heavens_halberd", true},
+					{"item_sheepstick", true},
+					{"item_orchid", true},
+                    { "item_bloodthorn", true},
+				    {"item_mjollnir", true},
+				    {"item_urn_of_shadows", true},
+				    {"item_ethereal_blade", true},
+				    {"item_abyssal_blade", true},
+				    {"item_shivas_guard", true},
+				    {"item_blade_mail", true},
+				    {"item_black_king_bar", true},
+				    {"item_satanic", true},
+				    {"item_medallion_of_courage", true},
+				    {"item_solar_crest", true}
 				})));
 			Menu.AddItem(new MenuItem("Heel", "Min targets to BKB").SetValue(new Slider(2, 1, 5)));
 			Menu.AddItem(new MenuItem("Heelm", "Min targets to BladeMail").SetValue(new Slider(2, 1, 5)));
