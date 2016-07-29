@@ -183,19 +183,22 @@ namespace DotaAllCombo.Addons
 					if (rangeDisplay != null) rangeDisplay.Dispose();
 					rangeDisplay = null;
 				}
-
+			
 
 			//TODO:TARGETMARKER
 			e = me.ClosestToMouseTarget(10000);
-			if (e == null) return;
-			if (e != null && e.IsValid && !e.IsIllusion && e.IsAlive && e.IsVisible)
-					DrawTarget();
-				else if (particleEffect != null)
-				{
-					particleEffect.Dispose();
-					particleEffect = null;
-				}
+			if (e != null && e.IsValid && !e.IsIllusion && e.IsAlive && e.IsVisible &&
+			    MainMenu.OthersMenu.Item("ShowTargetMarker").GetValue<bool>())
+			{
+				DrawTarget();
+			}
+			else if (particleEffect != null)
+			{
+				particleEffect.Dispose();
+				particleEffect = null;
+			}
 			// TY  splinterjke.:)
+
 		}
 
 		private void DrawTarget()

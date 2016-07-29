@@ -35,6 +35,7 @@ namespace DotaAllCombo.Service
 			//addonsMenu.AddSubMenu(dodgeMenu);
 
 			othersMenu.AddItem(new MenuItem("others", "Others Addon's").SetValue(true));
+			othersMenu.AddItem(new MenuItem("ShowTargetMarker", "Show Target Marker").SetValue(true));
 			othersMenu.AddItem(new MenuItem("ShowAttakRange", "Show AttackRange").SetValue(true));
 
 			//ul.AddItem(new MenuItem("minLVL", "Min Hero Level to Escape").SetValue(new Slider(7, 5, 25)));
