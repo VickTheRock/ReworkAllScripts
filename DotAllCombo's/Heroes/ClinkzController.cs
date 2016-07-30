@@ -56,31 +56,8 @@
 					.ToList();
 
 
-			var modifInv = Toolset.invUnit(me);
+			var modifInv = me.IsInvisible();
 
-			var Units = ObjectManager.GetEntities<Unit>().Where(creep =>
-				(creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral
-				|| creep.ClassID == ClassID.CDOTA_BaseNPC_Invoker_Forged_Spirit
-				|| creep.ClassID == ClassID.CDOTA_BaseNPC_Creep
-				|| creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
-				|| creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege
-				|| creep.ClassID == ClassID.CDOTA_Unit_Hero_Beastmaster_Boar
-				)
-				&& creep.Health >= (creep.MaximumHealth * 0.7)
-				&& creep.IsAlive
-				&& creep.Distance2D(me) <= R.GetCastRange() + me.HullRadius
-				&& creep.IsSpawned
-				&& creep.Team != me.Team).ToList();
-
-			if (R != null && R.CanBeCasted()
-				&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name)
-				&& Utils.SleepCheck("R")
-				&& !me.HasModifier("modifier_clinkz_death_pact")
-				&& !me.IsInvisible())
-			{
-				R.UseAbility(Units.OrderBy(x => x.Health).Last());
-				Utils.Sleep(1500, "R");
-			}
 			if (Active)
 			{
 				e = me.ClosestToMouseTarget(1800);
@@ -279,6 +256,34 @@
 						bkb.UseAbility();
 						Utils.Sleep(100, "bkb");
 					}
+				}
+			}
+			if (Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name))
+			{
+				var Units = ObjectManager.GetEntities<Unit>().Where(creep =>
+				(creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral
+				|| creep.ClassID == ClassID.CDOTA_BaseNPC_Invoker_Forged_Spirit
+				|| creep.ClassID == ClassID.CDOTA_BaseNPC_Creep
+				|| creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
+				|| creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege
+				|| creep.ClassID == ClassID.CDOTA_Unit_Hero_Beastmaster_Boar
+				)
+				&& creep.Health >= (creep.MaximumHealth * 0.7)
+				&& creep.IsAlive
+				&& creep.Distance2D(me) <= R.GetCastRange() + me.HullRadius
+				&& creep.IsSpawned
+				&& creep.Team != me.Team).ToList();
+
+				if (R != null && R.CanBeCasted()
+					&& Utils.SleepCheck("R")
+					&& !me.HasModifier("modifier_clinkz_death_pact")
+					&& !me.IsInvisible())
+				{
+					if (Units.Count > 0)
+					{
+						R.UseAbility(Units.OrderBy(x => x.Health).LastOrDefault());
+					}
+					Utils.Sleep(1500, "R");
 				}
 			}
 		}
