@@ -7,7 +7,7 @@
 	using Ensage.Common;
 	using Ensage.Common.Extensions;
 	using Ensage.Common.Menu;
-
+	using SharpDX;
 	using Service;
 	using Service.Debug;
 
@@ -16,18 +16,8 @@
 	{
 		private Ability Q, W, R;
 
-		private Item urn, orchid, sheep,
-			ethereal,
-			dagon,
-			halberd,
-			mjollnir,
-			abyssal,
-			mom,
-			Shiva,
-			mail,
-			bkb,
-			satanic,
-            medall;
+		private Item urn, orchid, sheep, ethereal, dagon, halberd, mjollnir,
+					 abyssal, mom, Shiva, mail, bkb, blink, satanic, medall;
 		public void Combo()
 		{
 			Active = Game.IsKeyDown(Menu.Item("keyBind").GetValue<KeyBind>().Key);
@@ -48,6 +38,7 @@
 			mail = me.FindItem("item_blade_mail");
 			bkb = me.FindItem("item_black_king_bar");
 			satanic = me.FindItem("item_satanic");
+			blink = me.FindItem("item_blink");
 			medall = me.FindItem("item_medallion_of_courage") ?? me.FindItem("item_solar_crest");
 			Shiva = me.FindItem("item_shivas_guard");
 			var v =
@@ -86,6 +77,22 @@
 					Console.WriteLine("4");
 					var stoneModif = e.HasModifier("modifier_medusa_stone_gaze_stone");
 					if (stoneModif) return;
+					float angle = me.FindAngleBetween(e.Position, true);
+					Vector3 pos = new Vector3((float)(e.Position.X - 500 * Math.Cos(angle)), (float)(e.Position.Y - 500 * Math.Sin(angle)), 0);
+					if (
+						blink != null
+						&& Q.CanBeCasted()
+						&& me.CanCast()
+						&& blink.CanBeCasted()
+						&& me.Distance2D(e) >= 490
+						&& me.Distance2D(pos) <= 1180
+						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name)
+						&& Utils.SleepCheck("blink")
+						)
+					{
+						blink.UseAbility(pos);
+						Utils.Sleep(250, "blink");
+					}
 					if ( // sheep
 						sheep != null
 						&& sheep.CanBeCasted()
@@ -306,20 +313,21 @@
 				    {"clinkz_strafe", true}
 				})));
 			Menu.AddItem(
-				new MenuItem("Items", "Items:").SetValue(new AbilityToggler(new Dictionary<string, bool>
+				new MenuItem("Items", ":").SetValue(new AbilityToggler(new Dictionary<string, bool>
 				{
 				    {"item_mask_of_madness", true},
 				    {"item_heavens_halberd", true},
 					{"item_sheepstick", true},
 					{"item_orchid", true},
-                    { "item_bloodthorn", true},
+                    {"item_bloodthorn", true},
 				    {"item_mjollnir", true},
 				    {"item_urn_of_shadows", true},
 				    {"item_ethereal_blade", true},
 				    {"item_abyssal_blade", true},
 				    {"item_shivas_guard", true},
 				    {"item_blade_mail", true},
-				    {"item_black_king_bar", true},
+					{"item_blink", true},
+					{"item_black_king_bar", true},
 				    {"item_satanic", true},
 				    {"item_medallion_of_courage", true},
 				    {"item_solar_crest", true}
