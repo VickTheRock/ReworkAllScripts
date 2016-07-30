@@ -198,7 +198,6 @@ namespace DotaAllCombo.Addons
 				particleEffect = null;
 			}
 			// TY  splinterjke.:)
-
 		}
 
 		private void DrawTarget()

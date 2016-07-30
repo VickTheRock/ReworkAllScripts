@@ -100,6 +100,8 @@
 
 		public void Combo()
 		{
+			if (!Menu.Item("enabled").IsActive())
+				return;
 			e = me.ClosestToMouseTarget(2000);
 			if (e.HasModifier("modifier_abaddon_borrowed_time")
 			|| e.HasModifier("modifier_item_blade_mail_reflect")
@@ -352,8 +354,7 @@
 										Q.UseAbility(e);
 										Utils.Sleep(200, "Q");
 									}
-
-
+									
 									if (
 									   R != null
 									   && R.CanBeCasted()
