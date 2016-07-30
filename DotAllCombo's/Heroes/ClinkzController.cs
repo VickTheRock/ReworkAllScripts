@@ -270,7 +270,7 @@
 				)
 				&& creep.Health >= (creep.MaximumHealth * 0.7)
 				&& creep.IsAlive
-				&& creep.Distance2D(me) <= R.GetCastRange() + me.HullRadius
+				&& creep.Distance2D(me) <= R.GetCastRange() + 300
 				&& creep.IsSpawned
 				&& creep.Team != me.Team).ToList();
 
@@ -283,7 +283,7 @@
 					{
 						R.UseAbility(Units.OrderBy(x => x.Health).LastOrDefault());
 					}
-					Utils.Sleep(1500, "R");
+					Utils.Sleep(1000, "R");
 				}
 			}
 		}
