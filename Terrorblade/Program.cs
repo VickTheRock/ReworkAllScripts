@@ -71,7 +71,7 @@ namespace Terrorblade
 			Menu.AddItem(new MenuItem("Heel", "Min targets to BKB|BladeMail").SetValue(new Slider(2, 1, 5)));
 			Menu.AddToMainMenu();
 			Game.OnUpdate += Game_OnUpdate;
-			LogMessage.Success("I am sworn to turn the tide where ere I can.");
+			LogMessage.Success("The self-righteous shall choke on their sanctimony.");
 		}
 		private static void OnCloseEvent(object sender, EventArgs args)
 		{
