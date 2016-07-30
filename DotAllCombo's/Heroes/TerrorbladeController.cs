@@ -439,7 +439,7 @@
 		{
 			AssemblyExtensions.InitAssembly("VickTheRock", "0.1a");
 
-			Print.LogMessage.Success("I came a long way to see you die.");
+			Print.LogMessage.Success("The self-righteous shall choke on their sanctimony.");
 
 			Menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true));
 			Menu.AddItem(new MenuItem("orbwalk", "orbwalk").SetValue(true));
