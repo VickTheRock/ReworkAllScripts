@@ -123,6 +123,7 @@
     <Compile Include="Heroes\UrsaController.cs" />
     <Compile Include="Heroes\VenomancerController.cs" />
     <Compile Include="Heroes\ViperController.cs" />
+    <Compile Include="Heroes\WeaverController.cs" />
     <Compile Include="Heroes\WindrunnerController.cs" />
     <Compile Include="Heroes\ZuusController.cs" />
     <Compile Include="Heroes\_HeroController.cs" />
