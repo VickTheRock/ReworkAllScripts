@@ -79,10 +79,11 @@ namespace Enchantress
 			
 			if (!Menu.Item("enabled").IsActive())
 				return;
-			e = me.ClosestToMouseTarget(2000);
+			e = me.ClosestToMouseTarget(3500);
             if (e == null)return;
-				
-                W = me.Spellbook.SpellW;
+
+			Active = Game.IsKeyDown(Menu.Item("keyBind").GetValue<KeyBind>().Key);
+			W = me.Spellbook.SpellW;
                 E = me.Spellbook.SpellE;
                 R = me.Spellbook.SpellR;
 
@@ -107,25 +108,27 @@ namespace Enchantress
             var Wmodif = e.HasModifier("modifier_enchantress_enchant_slow");
 
 			var stoneModif = e.HasModifier("modifier_medusa_stone_gaze_stone");
+			if (me.HasModifier("modifier_item_hurricane_pike_range") && !me.IsAttacking() && Utils.SleepCheck("Attackpike"))
+			{
+				//if (Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name) || R.CanBeCasted())
+				//{
+					//R.UseAbility(e);
+				//}
+				//else
+				//{
+					me.Attack(e);
+				//}
+				Utils.Sleep(120, "Attackpike");
+			}
 			if (Active && me.IsAlive && e.IsAlive && Utils.SleepCheck("activated"))
             {
+	            
+				if (me.HasModifier("modifier_item_hurricane_pike_range"))return;
+
 	            if (pike != null)
 	            {
-		            //var pikeMod = me.Modifiers.ToList().Exists(y => y.Name == "modifier_item_hurricane_pike_range");
-		            var pike_range = me.Modifiers.FirstOrDefault(y => y.Name == "modifier_item_hurricane_pike_range");
-
-		            if (
-			            R != null
-			            && !R.CanBeCasted()
-			            && pike_range != null
-			            && pike_range.StackCount > 0
-			            && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name)
-			            )
-		            {
-			            Orbwalking.Orbwalk(e, 0, 7000, true, true);
-		            }
-		            if (pike != null
-		                && pike.CanBeCasted()
+					
+		            if (pike.CanBeCasted()
 		                && me.IsAttacking()
 		                && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(pike.Name)
 		                && (e.Health <= (((me.MinimumDamage + me.MaximumDamage) / 2 + me.BonusDamage)* 4)

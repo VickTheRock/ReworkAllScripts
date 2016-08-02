@@ -187,8 +187,10 @@ namespace Terrorblade
 							manta.UseAbility();
 							Utils.Sleep(400, "manta");
 						}
-						if ((manta != null && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(manta.Name)) &&
-							manta.CanBeCasted() && (e.Position.Distance2D(me.Position) <= me.GetAttackRange() + me.HullRadius) &&
+						if ((manta != null && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(manta.Name))
+							&& manta.CanBeCasted() 
+							&& (E == null || !E.CanBeCasted() || !Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(E.Name)) 
+							&& (e.Position.Distance2D(me.Position) <= me.GetAttackRange() + me.HullRadius) &&
 							Utils.SleepCheck("manta"))
 						{
 							manta.UseAbility();
@@ -208,7 +210,8 @@ namespace Terrorblade
 							Utils.Sleep(150, "Q");
 						}
 						if (W.CanBeCasted()
-							&& !Q.CanBeCasted()
+							&& !Q.CanBeCasted() 
+							&& (E == null || !E.CanBeCasted() || !Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(E.Name))
 							&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name)
 							&& me.Position.Distance2D(e) < me.GetAttackRange()
 							&& Utils.SleepCheck("W"))

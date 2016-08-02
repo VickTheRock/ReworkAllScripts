@@ -36,7 +36,7 @@
 				if (e == null) return;
 				if (e.IsAlive && !e.IsInvul())
 				{
-					if (me.IsAlive && me.Distance2D(e) <= 1200)
+					if (me.IsAlive && me.Distance2D(e) <= 1900)
 					{
 						// item 
 						satanic = me.FindItem("item_satanic");
@@ -60,7 +60,6 @@
 						sheep = e.ClassID == ClassID.CDOTA_Unit_Hero_Tidehunter ? null : me.FindItem("item_sheepstick");
 						var linkens = e.IsLinkensProtected();
 
-
 						if (
 							(R.CanBeCasted()
 							 || me.Health >= (me.MaximumHealth * 0.4))
@@ -71,6 +70,38 @@
 						{
 							blink.UseAbility(e.Position);
 							Utils.Sleep(250, "blink");
+						}
+						if (
+							Q.CanBeCasted()
+							&& ((dagon != null && !dagon.CanBeCasted())
+								|| (R.CanBeCasted()
+									&& me.Health >= (me.MaximumHealth * 0.3))
+								|| (!R.CanBeCasted() && me.Health <= (me.MaximumHealth * 0.3)))
+							&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name)
+							&& me.Position.Distance2D(e) < Q.GetCastRange() &&
+							Utils.SleepCheck("Q"))
+						{
+							Q.UseAbility();
+							Utils.Sleep(150, "Q");
+						}
+						if (E.CanBeCasted()
+							&& !Q.CanBeCasted()
+							&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(E.Name)
+							&& me.Position.Distance2D(e) < me.GetAttackRange()
+							&& Utils.SleepCheck("E"))
+						{
+							E.UseAbility();
+							Utils.Sleep(150, "E");
+						}
+						if (W.CanBeCasted()
+							&& !Q.CanBeCasted()
+							&& (E == null || !E.CanBeCasted() || !Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(E.Name))
+							&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name)
+							&& me.Position.Distance2D(e) < me.GetAttackRange()
+							&& Utils.SleepCheck("W"))
+						{
+							W.UseAbility();
+							Utils.Sleep(150, "W");
 						}
 						if ( // sheep
 							sheep != null
@@ -86,7 +117,6 @@
 							sheep.UseAbility(e);
 							Utils.Sleep(250, "sheep");
 						} // sheep Item end
-						  //var ModifEther = e.Modifiers.Any(y => y.Name == "modifier_item_ethereal_blade_slow");
 						var stoneModif = e.HasModifier("modifier_medusa_stone_gaze_stone");
 						if (phase != null
 							&& phase.CanBeCasted()
@@ -118,42 +148,12 @@
 							Utils.Sleep(400, "manta");
 						}
 						if ((manta != null && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(manta.Name)) &&
-							manta.CanBeCasted() && (e.Position.Distance2D(me.Position) <= me.GetAttackRange() + me.HullRadius) &&
-							Utils.SleepCheck("manta"))
+							manta.CanBeCasted() && (e.Position.Distance2D(me.Position) <= me.GetAttackRange() + me.HullRadius) 
+							&& (E==null || !E.CanBeCasted() || !Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(E.Name))
+							&& Utils.SleepCheck("manta"))
 						{
 							manta.UseAbility();
 							Utils.Sleep(150, "manta");
-						}
-						if (
-							Q.CanBeCasted()
-							&& ((dagon != null && !dagon.CanBeCasted())
-								|| (R.CanBeCasted()
-									&& me.Health >= (me.MaximumHealth * 0.3))
-								|| (!R.CanBeCasted() && me.Health <= (me.MaximumHealth * 0.3)))
-							&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name)
-							&& me.Position.Distance2D(e) < Q.GetCastRange() &&
-							Utils.SleepCheck("Q"))
-						{
-							Q.UseAbility();
-							Utils.Sleep(150, "Q");
-						}
-						if (W.CanBeCasted()
-							&& !Q.CanBeCasted()
-							&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name)
-							&& me.Position.Distance2D(e) < me.GetAttackRange()
-							&& Utils.SleepCheck("W"))
-						{
-							W.UseAbility();
-							Utils.Sleep(150, "W");
-						}
-						if (E.CanBeCasted()
-							&& !Q.CanBeCasted()
-							&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(E.Name)
-							&& me.Position.Distance2D(e) < me.GetAttackRange()
-							&& Utils.SleepCheck("E"))
-						{
-							E.UseAbility();
-							Utils.Sleep(150, "E");
 						}
 						if ( // orchid
 							orchid != null
@@ -255,12 +255,12 @@
 							mom.UseAbility();
 							Utils.Sleep(250, "mom");
 						} // MOM Item end
-
-
+						
 						if ( // Abyssal Blade
 							abyssal != null
 							&& abyssal.CanBeCasted()
 							&& me.CanCast()
+							&& !linkens
 							&& Utils.SleepCheck("abyssal")
 							&& Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(abyssal.Name)
 							&& me.Distance2D(e) <= 400
@@ -399,8 +399,8 @@
 					var linkens = ult.IsLinkensProtected();
 					if (!linkens
 						&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name)
-						&& ult.Health >= (ult.MaximumHealth / 100 * Menu.Item("heal").GetValue<Slider>().Value)
-						&& me.Health <= (me.MaximumHealth / 100 * Menu.Item("healme").GetValue<Slider>().Value) && Utils.SleepCheck("R"))
+						&& ult.Health > (ult.MaximumHealth / 100 * Menu.Item("heal").GetValue<Slider>().Value)
+						&& me.Health < (me.MaximumHealth / 100 * Menu.Item("healme").GetValue<Slider>().Value) && Utils.SleepCheck("R"))
 					{
 						R.UseAbility(ult);
 						Utils.Sleep(500, "R");

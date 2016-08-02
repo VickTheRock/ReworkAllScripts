@@ -117,7 +117,7 @@ namespace DotaAllCombo.Heroes
 			Shiva = me.FindItem("item_shivas_guard");
 
 
-			var stoneModif = e.Modifiers.Any(y => y.Name == "modifier_medusa_stone_gaze_stone");
+			var stoneModif = e.HasModifier("modifier_medusa_stone_gaze_stone");
 
 
 
@@ -388,7 +388,7 @@ namespace DotaAllCombo.Heroes
 					me.CanCast()
 					&& dagon != null
 					&& (ethereal == null
-						|| (e.Modifiers.Any(y => y.Name == "modifier_item_ethereal_blade_slow")
+						|| (e.HasModifier("modifier_item_ethereal_blade_slow")
 							|| ethereal.Cooldown < 17))
 					&& !e.IsLinkensProtected()
 					&& dagon.CanBeCasted()
@@ -493,6 +493,7 @@ namespace DotaAllCombo.Heroes
 					   remnant != null
 					   && D.CanBeCasted()
 					   && me.CanCast()
+					   && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(D.Name)
 					   && remnant[i].Distance2D(e) <= 500
 					   && Utils.SleepCheck("D")
 					   )
@@ -739,7 +740,7 @@ namespace DotaAllCombo.Heroes
 					me.CanCast()
 					&& dagon != null
 					&& (ethereal == null
-						|| (e.Modifiers.Any(y => y.Name == "modifier_item_ethereal_blade_slow")
+						|| (e.HasModifier("modifier_item_ethereal_blade_slow")
 							|| ethereal.Cooldown < 17))
 					&& !e.IsLinkensProtected()
 					&& dagon.CanBeCasted()
@@ -841,7 +842,8 @@ namespace DotaAllCombo.Heroes
 					{"item_ethereal_blade", true},
 					{"item_blink", true},
 					{"item_heavens_halberd", true},
-					{"item_orchid", true}, {"item_bloodthorn", true},
+					{"item_orchid", true},
+					{ "item_bloodthorn", true},
 					{"item_urn_of_shadows", true},
 					{"item_veil_of_discord", true},
 					{"item_abyssal_blade", true},

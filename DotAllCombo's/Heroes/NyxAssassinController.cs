@@ -24,11 +24,11 @@
             if (!Game.IsInGame || Game.IsPaused || Game.IsWatchingGame)
                 return;
 
-			e = me.ClosestToMouseTarget(2000);
-			if (e == null) return;
 			Active = Game.IsKeyDown(Menu.Item("Combo Key").GetValue<KeyBind>().Key) && !Game.IsChatOpen;
-			if (Active && me.IsAlive && e.IsAlive)
-            {
+			if (Active && me.IsAlive)
+			{
+				e = me.ClosestToMouseTarget(2000);
+				if (e == null) return;
 				Q = me.Spellbook.SpellQ;
 
 				W = me.Spellbook.SpellW;
@@ -86,8 +86,9 @@
 						R.UseAbility();
 						Utils.Sleep(200, "R");
 					}
-					if (R != null && R.IsInAbilityPhase || me.HasModifier("modifier_nyx_assassin_vendetta") || R.IsChanneling) return;
-					 if (R == null || !R.CanBeCasted() && !me.HasModifier("modifier_nyx_assassin_vendetta")
+
+					if (R != null && (R.IsInAbilityPhase || me.HasModifier("modifier_nyx_assassin_vendetta") || R.IsChanneling)) return;
+					if (R == null || !R.CanBeCasted() && !me.HasModifier("modifier_nyx_assassin_vendetta")
 						|| !Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name))
                     {
                         if (stoneModif) return;
@@ -351,8 +352,11 @@
 			        if (v.HasModifier("modifier_kunkka_ghost_ship_damage_absorb")) damageW = damageW*0.5;
 			        if (v.HasModifier("modifier_item_mask_of_madness_berserk")) damageW = damageW*1.3;
 			        damageW = damageW*spellamplymult;
+			        if (damageW > v.Mana)
+				        damageW = v.Mana;
 
-			        if ( // vail
+
+					if ( // vail
 				        vail != null
 				        && vail.CanBeCasted()
 				        && W.CanBeCasted()

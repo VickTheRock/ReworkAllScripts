@@ -15,7 +15,7 @@
     {
         private static Ability Q, W, R;
 
-        private static Item urn, dagon, mjollnir, orchid, abyssal, mom, Shiva, mail, bkb, satanic, medall, blink;
+        private static Item urn, dagon, mjollnir, orchid, abyssal, mom, Shiva, mail, bkb, satanic, medall, blink, sheep;
 		
 		public void Combo()
 		{
@@ -41,6 +41,7 @@
 			e = me.ClosestToMouseTarget(1800);
 			if (e == null) return;
 
+			sheep = e.ClassID == ClassID.CDOTA_Unit_Hero_Tidehunter ? null : me.FindItem("item_sheepstick");
 			var stoneModif = e.Modifiers.All(y => y.Name == "modifier_medusa_stone_gaze_stone");
 
 
@@ -92,6 +93,20 @@
 					R.UseAbility();
 					Utils.Sleep(200, "R");
 				}
+				if ( // sheep
+						sheep != null
+						&& sheep.CanBeCasted()
+						&& me.CanCast()
+						&& !e.IsLinkensProtected()
+						&& !e.IsMagicImmune()
+						&& me.Distance2D(e) <= 1400
+						&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(sheep.Name)
+						&& Utils.SleepCheck("sheep")
+						)
+				{
+					sheep.UseAbility(e);
+					Utils.Sleep(250, "sheep");
+				} // sheep Item end
 				if (
 					   blink != null
 					   && me.CanCast()
@@ -260,7 +275,8 @@
                     {"item_blink", true},
 				    {"item_heavens_halberd", true},
 				    {"item_orchid", true},
-                    { "item_bloodthorn", true},
+					{"item_sheepstick", true},
+					{ "item_bloodthorn", true},
 				    {"item_urn_of_shadows", true},
 				    {"item_abyssal_blade", true},
 				    {"item_shivas_guard", true},

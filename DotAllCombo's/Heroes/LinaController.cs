@@ -1,4 +1,4 @@
-namespace DotaAllCombo.Heroes
+﻿namespace DotaAllCombo.Heroes
 {
 	using SharpDX;
 	using System;

@@ -1,8 +1,7 @@
-﻿using System.Threading.Tasks;
-using SharpDX;
-
-namespace DotaAllCombo.Heroes
+﻿namespace DotaAllCombo.Heroes
 {
+	using System.Threading.Tasks;
+	using SharpDX;
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
@@ -20,58 +19,12 @@ namespace DotaAllCombo.Heroes
 
 		private Item urn, orchid, ethereal, dagon, halberd, blink, mjollnir, abyssal, mom, Shiva, mail, bkb, satanic, medall;
 		
-		private readonly Menu ult = new Menu("AutoAbility", "Ultimate on an ally.");
-
-		public void OnLoadEvent()
-		{
-			AssemblyExtensions.InitAssembly("VickTheRock", "0.1b");
-
-			Print.LogMessage.Success("The threads of fate are mine to weave.");
-
-			Menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true));
-			Menu.AddItem(new MenuItem("orbwalk", "orbwalk").SetValue(true));
-			Menu.AddItem(new MenuItem("keyBind", "Combo key").SetValue(new KeyBind('D', KeyBindType.Press)));
-
-			Menu.AddItem(
-				new MenuItem("Skills", "Skills").SetValue(new AbilityToggler(new Dictionary<string, bool>
-				{
-					{"weaver_shukuchi", true},
-				    {"weaver_the_swarm", true},
-				    {"weaver_time_lapse", true}
-				})));
-			Menu.AddItem(
-				new MenuItem("Items", "Items:").SetValue(new AbilityToggler(new Dictionary<string, bool>
-				{
-					{"item_mask_of_madness", true},
-					{"item_heavens_halberd", true},
-					{"item_orchid", true},
-					{"item_bloodthorn", true},
-					{"item_blink", true},
-					{"item_mjollnir", true},
-					{"item_urn_of_shadows", true},
-					{"item_ethereal_blade", true},
-					{"item_abyssal_blade", true},
-					{"item_shivas_guard", true},
-					{"item_blade_mail", true},
-					{"item_black_king_bar", true},
-					{"item_satanic", true},
-					{"item_medallion_of_courage", true},
-					{"item_solar_crest", true}
-				})));
-			Menu.AddItem(new MenuItem("Heelm", "Min targets to BladeMail").SetValue(new Slider(2, 1, 5)));
-			Menu.AddItem(new MenuItem("Heel", "Min targets to BKB").SetValue(new Slider(2, 1, 5)));
-			Menu.AddItem(new MenuItem("MomentDownHealth", "Min Health Down To Ult").SetValue(new Slider(450, 200, 2000)));
-
-			ult.AddItem(new MenuItem("ult", "Use ult in Ally").SetValue(true));
-			ult.AddItem(new MenuItem("MomentAllyDownHealth", "Min Ally Health Down To Ult").SetValue(new Slider(750, 300, 2000)))
-				.SetTooltip("You need have AghanimS!");
-			Menu.AddSubMenu(ult);
-
-		}
+		private readonly Menu ultME = new Menu("Options Ultimate me", "Ultimate on an Me.");
+		private readonly Menu ultALLY = new Menu("Options Ultimate Ally", "Ultimate on an Ally.");
 
 		public void Combo()
 		{
-			if(!Menu.Item("enabled").GetValue<bool>())return;
+			if (!Menu.Item("enabled").GetValue<bool>()) return;
 
 			Active = Game.IsKeyDown(Menu.Item("keyBind").GetValue<KeyBind>().Key);
 
@@ -97,9 +50,9 @@ namespace DotaAllCombo.Heroes
 				ObjectManager.GetEntities<Hero>()
 					.Where(x => x.Team != me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && !x.IsMagicImmune())
 					.ToList();
-		    e = me.ClosestToMouseTarget(2400);
+			e = me.ClosestToMouseTarget(2400);
 			if (e == null) return;
-			
+
 			if (Active && me.IsInvisible())
 			{
 				if (me.Distance2D(e) <= 150 && Utils.SleepCheck("Attack") && me.NetworkActivity != NetworkActivity.Attack)
@@ -107,7 +60,7 @@ namespace DotaAllCombo.Heroes
 					me.Attack(e);
 					Utils.Sleep(150, "Attack");
 				}
-				else if (me.Distance2D(e) <= 2400 && me.Distance2D(e) >= 130 && me.NetworkActivity!=NetworkActivity.Attack && Utils.SleepCheck("Move"))
+				else if (me.Distance2D(e) <= 2400 && me.Distance2D(e) >= 130 && me.NetworkActivity != NetworkActivity.Attack && Utils.SleepCheck("Move"))
 				{
 					me.Move(e.Position);
 					Utils.Sleep(150, "Move");
@@ -128,7 +81,7 @@ namespace DotaAllCombo.Heroes
 						Utils.Sleep(100, "W");
 					}
 				}
-				if (W!=null && W.IsInAbilityPhase || me.HasModifier("modifier_weaver_shukuchi"))return;
+				if (W != null && W.IsInAbilityPhase || me.HasModifier("modifier_weaver_shukuchi")) return;
 
 				if (Menu.Item("orbwalk").GetValue<bool>())
 				{
@@ -299,24 +252,28 @@ namespace DotaAllCombo.Heroes
 			OnTimedEvent();
 		}
 
-		
+
 		public void OnCloseEvent()
 		{
-			
+
+			//Drawing.OnDraw -= DrawUltiDamage;
 		}
-		
+
 		private void OnTimedEvent()
 		{
-			if(Game.IsPaused || R == null)return;
+			if (Game.IsPaused || R == null) return;
 			if (R != null)
 			{
 				if (Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name))
 				{
+					//Console.WriteLine("PING"+(int)Game.Ping);
 					float now = me.Health;
-					Task.Delay(4000).ContinueWith(_ =>
+					Task.Delay(4000 - (int)Game.Ping).ContinueWith(_ =>
 					{
+						
 						float back4 = me.Health;
-						if ((now - back4)>= Menu.Item("MomentDownHealth").GetValue<Slider>().Value )
+						if ((Menu.Item("ultMode2").GetValue<bool>() && (now - back4) >= Menu.Item("MomentDownHealth2").GetValue<Slider>().Value
+								|| (Menu.Item("ultMode1").GetValue<bool>() && (((int)me.MaximumHealth / (4 / (now - back4))) / 1000000) >= ((double)Menu.Item("MomentDownHealth1").GetValue<Slider>().Value / 100))) && R.CanBeCasted())
 						{
 							if (R.CanBeCasted() && Utils.SleepCheck("R"))
 							{
@@ -327,7 +284,6 @@ namespace DotaAllCombo.Heroes
 								Utils.Sleep(250, "R");
 							}
 						}
-
 					});
 
 					var ally = ObjectManager.GetEntities<Hero>()
@@ -337,16 +293,17 @@ namespace DotaAllCombo.Heroes
 						foreach (var a in ally)
 						{
 							float allyHealth = a.Health;
-							Task.Delay(4000).ContinueWith(_ =>
+							Task.Delay(4000 - (int)Game.Ping).ContinueWith(_ =>
 							{
-								float backAlly = a.Health;
-								if ((allyHealth - backAlly) >= Menu.Item("MomentAllyDownHealth").GetValue<Slider>().Value && R.CanBeCasted() && me.Distance2D(a) <= 1000 + me.HullRadius + 24)
+
+								float backAlly4 = a.Health;
+								if ((Menu.Item("ultMode2Ally").GetValue<bool>() && (allyHealth - backAlly4) >= Menu.Item("MomentAllyDownHealth2").GetValue<Slider>().Value
+										|| (Menu.Item("ultMode1Ally").GetValue<bool>() && (((int)a.MaximumHealth / (4 / (allyHealth - backAlly4))) / 1000000) >= ((double)Menu.Item("MomentAllyDownHealth1").GetValue<Slider>().Value / 100))) && me.Distance2D(a)<= 1000 + me.HullRadius)
 								{
-									Console.WriteLine(allyHealth - backAlly);
-									if (Utils.SleepCheck("ally"))
+									if (R.CanBeCasted() && Utils.SleepCheck("RAlly"))
 									{
 										R.UseAbility(a);
-										Utils.Sleep(250, "ally");
+										Utils.Sleep(250, "RAlly");
 									}
 								}
 							});
@@ -355,5 +312,107 @@ namespace DotaAllCombo.Heroes
 				}
 			}
 		}
+		private bool OnScreen(Vector3 v)
+		{
+			return !(Drawing.WorldToScreen(v).X < 0 || Drawing.WorldToScreen(v).X > Drawing.Width || Drawing.WorldToScreen(v).Y < 0 || Drawing.WorldToScreen(v).Y > Drawing.Height);
+		}
+
+		public void OnLoadEvent()
+		{
+			AssemblyExtensions.InitAssembly("VickTheRock", "0.1b");
+
+			Print.LogMessage.Success("The threads of fate are mine to weave.");
+
+			Menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true));
+			Menu.AddItem(new MenuItem("orbwalk", "orbwalk").SetValue(true));
+			Menu.AddItem(new MenuItem("keyBind", "Combo key").SetValue(new KeyBind('D', KeyBindType.Press)));
+
+			Menu.AddItem(
+				new MenuItem("Skills", "Skills").SetValue(new AbilityToggler(new Dictionary<string, bool>
+				{
+					{"weaver_shukuchi", true},
+					{"weaver_the_swarm", true},
+					{"weaver_time_lapse", true}
+				})));
+			Menu.AddItem(
+				new MenuItem("Items", "Items:").SetValue(new AbilityToggler(new Dictionary<string, bool>
+				{
+					{"item_mask_of_madness", true},
+					{"item_heavens_halberd", true},
+					{"item_orchid", true},
+					{"item_bloodthorn", true},
+					{"item_blink", true},
+					{"item_mjollnir", true},
+					{"item_urn_of_shadows", true},
+					{"item_ethereal_blade", true},
+					{"item_abyssal_blade", true},
+					{"item_shivas_guard", true},
+					{"item_blade_mail", true},
+					{"item_black_king_bar", true},
+					{"item_satanic", true},
+					{"item_medallion_of_courage", true},
+					{"item_solar_crest", true}
+				})));
+			Menu.AddItem(new MenuItem("Heelm", "Min targets to BladeMail").SetValue(new Slider(2, 1, 5)));
+			Menu.AddItem(new MenuItem("Heel", "Min targets to BKB").SetValue(new Slider(2, 1, 5)));
+
+			//ult.AddItem(new MenuItem("ultDraw", "Show me Lost Health").SetValue(true));
+			ultALLY.AddItem(new MenuItem("ult", "Use ult in Ally").SetValue(true));
+			ultME.AddItem(new MenuItem("ultMode1", "Use 1 Mode(% Health)").SetValue(true));
+			ultME.AddItem(new MenuItem("MomentDownHealth1", "Min Health Down To Ult").SetValue(new Slider(35, 5, 100)));
+
+			ultME.AddItem(new MenuItem("ultMode2", "Use 2 Mode(Count Health)").SetValue(true));
+			ultME.AddItem(new MenuItem("MomentDownHealth2", "Min Health Down To Ult").SetValue(new Slider(450, 200, 2000)));
+			ultALLY.AddItem(new MenuItem("ultMode1Ally", "Use 1 Mode(% Health Ally)").SetValue(true));
+			ultALLY.AddItem(new MenuItem("MomentAllyDownHealth1", "Min Health % Ally Down To Ult").SetValue(new Slider(35, 5, 100)));
+			ultALLY.AddItem(new MenuItem("ultMode2Ally", "Use 2 Mode(Count Health Ally)").SetValue(true));
+			ultALLY.AddItem(new MenuItem("MomentAllyDownHealth2", "Min Ally count Health Down To Ult").SetValue(new Slider(750, 300, 2000)))
+				.SetTooltip("You need have AghanimS!");
+
+			Menu.AddSubMenu(ultME);
+
+			Menu.AddSubMenu(ultALLY);
+
+			//Drawing.OnDraw += DrawUltiDamage;
+		}
+		/*private void DrawUltiDamage(EventArgs args)
+		{
+			if (!Game.IsInGame || Game.IsPaused || Game.IsWatchingGame)
+			{
+				return;
+			}
+			if (Menu.Item("ultDraw").GetValue<bool>())
+			{
+				float now = me.Health;
+				Task.Delay(4000 - (int)Game.Ping).ContinueWith(_ =>
+				{
+					float back4 = me.Health;
+					var health = (now - back4);
+					if (health < 0)
+						health = 0;
+
+					var screenPos = HUDInfo.GetHPbarPosition(me);
+					if (!OnScreen(me.Position)) return;
+
+					var text = ToString() + Math.Floor(health);
+					var size = new Vector2(18, 18);
+					var textSize = Drawing.MeasureText(text, "Arial", size, FontFlags.AntiAlias);
+					var position = new Vector2(screenPos.X - textSize.X + 91, screenPos.Y + 62);
+					Drawing.DrawText(
+						text,
+						position,
+						size,
+						(Color.LawnGreen),
+						FontFlags.AntiAlias);
+					Drawing.DrawText(
+						text,
+						new Vector2(screenPos.X - textSize.X + 92, screenPos.Y + 63),
+						size,
+						(Color.Black),
+						FontFlags.AntiAlias);
+				});
+			}
+		}*/
 	}
 }
+

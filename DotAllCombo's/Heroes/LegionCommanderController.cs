@@ -8,7 +8,7 @@
     using Ensage.Common.Extensions;
     using Ensage.Common.Menu;
     using SharpDX;
-
+	using SharpDX.Direct3D9;
 	using Service;
 	using Service.Debug;
 
@@ -19,6 +19,9 @@
         private Ability R, W, Q;
 		private double damage;
 
+		private Font txt;
+		private Font noti;
+		private Line lines;
 		private Item blink, armlet, blademail, bkb, abyssal, mjollnir, halberd, medallion, madness, urn, 
             satanic, solar, dust, sentry, mango, arcane, buckler, crimson, lotusorb, cheese, stick, 
             soul, force, cyclone, sheep, orchid;
@@ -84,6 +87,7 @@
 			if (!Game.IsInGame || Game.IsPaused || Game.IsWatchingGame)
 				return;
 			Q = me.Spellbook.SpellQ;
+			Active = Game.IsKeyDown(Menu.Item("keyBind").GetValue<KeyBind>().Key);
 			if (Menu.Item("steal").IsActive() && !me.HasModifier("modifier_legion_commander_duel") && Q != null && Q.CanBeCasted())
 			{
 				if (!me.IsAlive) return;
@@ -93,13 +97,13 @@
 					   .ToList();
 				var dmg = GetLowestToQ(v, me);
 				
-				if (dmg != null && Utils.SleepCheck("Q"))
+				if (dmg != null && Utils.SleepCheck("Q") && (Menu.Item("-dmg").IsActive() && !R.CanBeCasted() || !Menu.Item("-dmg").IsActive()))
 				{
 					Q.UseAbility(dmg.Position);
 					Utils.Sleep(150, "Q");
 				}
 			}
-			if (Game.IsKeyDown(Menu.Item("DUEL!").GetValue<KeyBind>().Key) && !Game.IsChatOpen)
+			if (Active && !Game.IsChatOpen)
             {
                 R = me.Spellbook.SpellR;
                 W = me.Spellbook.SpellW;
@@ -570,7 +574,7 @@
 			AssemblyExtensions.InitAssembly("VickTheRock", "0.1b");
 			
 			Menu.AddItem(new MenuItem("orbwalk", "orbwalk").SetValue(true));
-			Menu.AddItem(new MenuItem("DUEL!", "ComboKey").SetValue(new KeyBind('D', KeyBindType.Press)));
+			Menu.AddItem(new MenuItem("keyBind", "ComboKey").SetValue(new KeyBind('D', KeyBindType.Press)));
 			Menu.AddItem(
 				new MenuItem("BKB", "Black King Bar").SetValue(new KeyBind('F', KeyBindType.Toggle)));
             Menu.AddSubMenu(items);
@@ -622,16 +626,48 @@
 					    {"item_sheepstick", true}
 					})));
             skills.AddItem(new MenuItem("steal", "KillSteal Q").SetValue(true));
+			skills.AddItem(new MenuItem("-dmg", "Dont Use KillSteal if i have Duel").SetValue(true));
 			skills.AddItem(new MenuItem("dmg", "Show Damage Q Spell").SetValue(true));
 			skills.AddItem(new MenuItem("Skills", "Skills").SetValue(new AbilityToggler(new Dictionary<string, bool>
 			{
 			    {"legion_commander_press_the_attack", true},
 			})));
+
+			txt = new Font(
+			   Drawing.Direct3DDevice9,
+			   new FontDescription
+			   {
+				   FaceName = "Segoe UI",
+				   Height = 19,
+				   OutputPrecision = FontPrecision.Default,
+				   Quality = FontQuality.ClearType
+			   });
+
+			noti = new Font(
+			   Drawing.Direct3DDevice9,
+			   new FontDescription
+			   {
+				   FaceName = "Segoe UI",
+				   Height = 30,
+				   OutputPrecision = FontPrecision.Default,
+				   Quality = FontQuality.ClearType
+			   });
+
+			lines = new Line(Drawing.Direct3DDevice9);
+
+			Drawing.OnPreReset += Drawing_OnPreReset;
+			Drawing.OnPostReset += Drawing_OnPostReset;
+			Drawing.OnEndScene += Drawing_OnEndScene;
+			AppDomain.CurrentDomain.DomainUnload += CurrentDomain_DomainUnload;
 			Drawing.OnDraw += DrawUltiDamage;
 		}
 
 		public void OnCloseEvent()
 		{
+			AppDomain.CurrentDomain.DomainUnload -= CurrentDomain_DomainUnload;
+			Drawing.OnPreReset -= Drawing_OnPreReset;
+			Drawing.OnPostReset -= Drawing_OnPostReset;
+			Drawing.OnEndScene -= Drawing_OnEndScene;
 			Drawing.OnDraw-= DrawUltiDamage;
 		}
 
@@ -664,5 +700,80 @@
 						m.Name == "modifier_item_silver_edge_windwalk"))
 				return true;
 			return false;
-		}	}
+		}
+
+
+		void Drawing_OnEndScene(EventArgs args)
+		{
+			if (Drawing.Direct3DDevice9 == null || Drawing.Direct3DDevice9.IsDisposed || !Game.IsInGame)
+				return;
+			bkb = me.FindItem("item_black_king_bar");
+			if (bkb != null)
+			{
+				if (!Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(bkb.Name)
+					|| !Menu.Item("BKB").GetValue<KeyBind>().Active)
+				{
+					DrawBox(2, 490, 90, 20, 1, new ColorBGRA(0, 0, 90, 70));
+					DrawFilledBox(2, 490, 90, 20, new ColorBGRA(0, 0, 0, 90));
+					DrawShadowText(" BKB Disable", 4, 490, Color.Gold, txt);
+				}
+			}
+		}
+		
+
+		void CurrentDomain_DomainUnload(object sender, EventArgs e)
+		{
+			txt.Dispose();
+			noti.Dispose();
+			lines.Dispose();
+		}
+
+
+
+		void Drawing_OnPostReset(EventArgs args)
+		{
+			txt.OnResetDevice();
+			noti.OnResetDevice();
+			lines.OnResetDevice();
+		}
+
+		void Drawing_OnPreReset(EventArgs args)
+		{
+			txt.OnLostDevice();
+			noti.OnLostDevice();
+			lines.OnLostDevice();
+		}
+
+		public void DrawFilledBox(float x, float y, float w, float h, Color color)
+		{
+			var vLine = new Vector2[2];
+
+			lines.GLLines = true;
+			lines.Antialias = false;
+			lines.Width = w;
+
+			vLine[0].X = x + w / 2;
+			vLine[0].Y = y;
+			vLine[1].X = x + w / 2;
+			vLine[1].Y = y + h;
+
+			lines.Begin();
+			lines.Draw(vLine, color);
+			lines.End();
+		}
+
+		public void DrawBox(float x, float y, float w, float h, float px, Color color)
+		{
+			DrawFilledBox(x, y + h, w, px, color);
+			DrawFilledBox(x - px, y, px, h, color);
+			DrawFilledBox(x, y - px, w, px, color);
+			DrawFilledBox(x + w, y, px, h, color);
+		}
+
+		public void DrawShadowText(string stext, int x, int y, Color color, Font f)
+		{
+			f.DrawText(null, stext, x + 1, y + 1, Color.Black);
+			f.DrawText(null, stext, x, y, color);
+		}
+	}
 }
