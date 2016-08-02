@@ -255,8 +255,7 @@
 
 		public void OnCloseEvent()
 		{
-
-			//Drawing.OnDraw -= DrawUltiDamage;
+			
 		}
 
 		private void OnTimedEvent()
@@ -357,62 +356,22 @@
 			Menu.AddItem(new MenuItem("Heel", "Min targets to BKB").SetValue(new Slider(2, 1, 5)));
 
 			//ult.AddItem(new MenuItem("ultDraw", "Show me Lost Health").SetValue(true));
-			ultALLY.AddItem(new MenuItem("ult", "Use ult in Ally").SetValue(true));
+			ultALLY.AddItem(new MenuItem("ult", "Use ult in Ally").SetValue(true)).SetTooltip("You need have AghanimS!");
 			ultME.AddItem(new MenuItem("ultMode1", "Use 1 Mode(Number % of lost health)").SetValue(true));
 			ultME.AddItem(new MenuItem("MomentDownHealth1", "Min Health % Down To Ult").SetValue(new Slider(35, 5, 100))).SetTooltip("Minimal damage % in my max health which I absorb values 4 seconds before using the Ultimate.");
 
 			ultME.AddItem(new MenuItem("ultMode2", "Use 2 Mode(Number of lost health)").SetValue(true));
 			ultME.AddItem(new MenuItem("MomentDownHealth2", "Min Health Down To Ult").SetValue(new Slider(450, 200, 2000))).SetTooltip("Minimal damage which I absorb values 4 seconds before using the Ultimate.");
-			ultALLY.AddItem(new MenuItem("ultMode1Ally", "Use 1 Mode(% Number of lost health)").SetValue(true)).SetTooltip("Damage % which absorb ally in 4 seconds)");
-			ultALLY.AddItem(new MenuItem("MomentAllyDownHealth1", "Min Health % Ally Down To Ult").SetValue(new Slider(35, 5, 100))).SetTooltip("You need have AghanimS!");
-			ultALLY.AddItem(new MenuItem("ultMode2Ally", "Use 2 Mode(Number of lost health)").SetValue(true)).SetTooltip("Damage which absorb ally in 4 seconds)");
+			ultALLY.AddItem(new MenuItem("ultMode1Ally", "Use 1 Mode(% Number of lost health)").SetValue(true));
+			ultALLY.AddItem(
+				new MenuItem("MomentAllyDownHealth1", "Min Health % Ally Down To Ult").SetValue(new Slider(35, 5, 100))).SetTooltip("Damage % which absorb ally in 4 seconds)");
+			ultALLY.AddItem(new MenuItem("ultMode2Ally", "Use 2 Mode(Number of lost health)").SetValue(true));
 			ultALLY.AddItem(new MenuItem("MomentAllyDownHealth2", "Min Ally count Health Down To Ult").SetValue(new Slider(750, 300, 2000)))
-				.SetTooltip("You need have AghanimS!");
+				.SetTooltip("Damage which absorb ally in 4 seconds)");
 
 			Menu.AddSubMenu(ultME);
-
 			Menu.AddSubMenu(ultALLY);
-
-			//Drawing.OnDraw += DrawUltiDamage;
 		}
-		/*private void DrawUltiDamage(EventArgs args)
-		{
-			if (!Game.IsInGame || Game.IsPaused || Game.IsWatchingGame)
-			{
-				return;
-			}
-			if (Menu.Item("ultDraw").GetValue<bool>())
-			{
-				float now = me.Health;
-				Task.Delay(4000 - (int)Game.Ping).ContinueWith(_ =>
-				{
-					float back4 = me.Health;
-					var health = (now - back4);
-					if (health < 0)
-						health = 0;
-
-					var screenPos = HUDInfo.GetHPbarPosition(me);
-					if (!OnScreen(me.Position)) return;
-
-					var text = ToString() + Math.Floor(health);
-					var size = new Vector2(18, 18);
-					var textSize = Drawing.MeasureText(text, "Arial", size, FontFlags.AntiAlias);
-					var position = new Vector2(screenPos.X - textSize.X + 91, screenPos.Y + 62);
-					Drawing.DrawText(
-						text,
-						position,
-						size,
-						(Color.LawnGreen),
-						FontFlags.AntiAlias);
-					Drawing.DrawText(
-						text,
-						new Vector2(screenPos.X - textSize.X + 92, screenPos.Y + 63),
-						size,
-						(Color.Black),
-						FontFlags.AntiAlias);
-				});
-			}
-		}*/
 	}
 }
 
