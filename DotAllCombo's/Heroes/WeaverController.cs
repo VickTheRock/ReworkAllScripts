@@ -358,14 +358,14 @@
 
 			//ult.AddItem(new MenuItem("ultDraw", "Show me Lost Health").SetValue(true));
 			ultALLY.AddItem(new MenuItem("ult", "Use ult in Ally").SetValue(true));
-			ultME.AddItem(new MenuItem("ultMode1", "Use 1 Mode(% Health)").SetValue(true));
-			ultME.AddItem(new MenuItem("MomentDownHealth1", "Min Health Down To Ult").SetValue(new Slider(35, 5, 100)));
+			ultME.AddItem(new MenuItem("ultMode1", "Use 1 Mode(Number % of lost health)").SetValue(true));
+			ultME.AddItem(new MenuItem("MomentDownHealth1", "Min Health % Down To Ult").SetValue(new Slider(35, 5, 100))).SetTooltip("Minimal damage % in my max health which I absorb values 4 seconds before using the Ultimate.");
 
-			ultME.AddItem(new MenuItem("ultMode2", "Use 2 Mode(Count Health)").SetValue(true));
-			ultME.AddItem(new MenuItem("MomentDownHealth2", "Min Health Down To Ult").SetValue(new Slider(450, 200, 2000)));
-			ultALLY.AddItem(new MenuItem("ultMode1Ally", "Use 1 Mode(% Health Ally)").SetValue(true));
-			ultALLY.AddItem(new MenuItem("MomentAllyDownHealth1", "Min Health % Ally Down To Ult").SetValue(new Slider(35, 5, 100)));
-			ultALLY.AddItem(new MenuItem("ultMode2Ally", "Use 2 Mode(Count Health Ally)").SetValue(true));
+			ultME.AddItem(new MenuItem("ultMode2", "Use 2 Mode(Number of lost health)").SetValue(true));
+			ultME.AddItem(new MenuItem("MomentDownHealth2", "Min Health Down To Ult").SetValue(new Slider(450, 200, 2000))).SetTooltip("Minimal damage which I absorb values 4 seconds before using the Ultimate.");
+			ultALLY.AddItem(new MenuItem("ultMode1Ally", "Use 1 Mode(% Number of lost health)").SetValue(true)).SetTooltip("Damage % which absorb ally in 4 seconds)");
+			ultALLY.AddItem(new MenuItem("MomentAllyDownHealth1", "Min Health % Ally Down To Ult").SetValue(new Slider(35, 5, 100))).SetTooltip("You need have AghanimS!");
+			ultALLY.AddItem(new MenuItem("ultMode2Ally", "Use 2 Mode(Number of lost health)").SetValue(true)).SetTooltip("Damage which absorb ally in 4 seconds)");
 			ultALLY.AddItem(new MenuItem("MomentAllyDownHealth2", "Min Ally count Health Down To Ult").SetValue(new Slider(750, 300, 2000)))
 				.SetTooltip("You need have AghanimS!");
 
