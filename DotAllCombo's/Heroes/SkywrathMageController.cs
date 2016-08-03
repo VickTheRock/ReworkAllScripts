@@ -513,7 +513,6 @@ namespace DotaAllCombo.Heroes
 				{
 					var reflect = v[i].HasModifier("modifier_item_blade_mail_reflect");
 					 
-					Console.WriteLine(v[i].MagicDamageResist);
 					if (me.HasModifier("modifier_spirit_breaker_charge_of_darkness_vision"))
 					{
 
