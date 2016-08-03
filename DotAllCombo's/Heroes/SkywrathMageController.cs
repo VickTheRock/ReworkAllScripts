@@ -1,4 +1,4 @@
-﻿namespace DotaAllCombo.Heroes
+namespace DotaAllCombo.Heroes
 {
 	using System;
 	using System.Collections.Generic;
@@ -100,8 +100,6 @@
 
 		public void Combo()
 		{
-			if (!Menu.Item("enabled").IsActive())
-				return;
 			e = me.ClosestToMouseTarget(2000);
 			if (e.HasModifier("modifier_abaddon_borrowed_time")
 			|| e.HasModifier("modifier_item_blade_mail_reflect")
@@ -109,8 +107,8 @@
 			{
 				var enemies = ObjectManager.GetEntities<Hero>()
 						.Where(x => x.IsAlive && x.Team != me.Team && !x.IsIllusion && !x.IsMagicImmune()
-						&& !x.HasModifier("modifier_abaddon_borrowed_time")
-						|| !x.HasModifier("modifier_item_blade_mail_reflect")
+						&& (!x.HasModifier("modifier_abaddon_borrowed_time")
+						|| !x.HasModifier("modifier_item_blade_mail_reflect"))
 						&& x.Distance2D(e) > 200).ToList();
 				e = GetClosestToTarget(enemies, e) ?? null;
 				if (Utils.SleepCheck("spam"))
@@ -354,7 +352,8 @@
 										Q.UseAbility(e);
 										Utils.Sleep(200, "Q");
 									}
-									
+
+
 									if (
 									   R != null
 									   && R.CanBeCasted()
@@ -513,7 +512,8 @@
 				for (int i = 0; i < ecount; ++i)
 				{
 					var reflect = v[i].HasModifier("modifier_item_blade_mail_reflect");
-
+					 
+					Console.WriteLine(v[i].MagicDamageResist);
 					if (me.HasModifier("modifier_spirit_breaker_charge_of_darkness_vision"))
 					{
 
@@ -528,40 +528,48 @@
 								&& Utils.SleepCheck(v[i].Handle.ToString())
 								&& Menu.Item("AutoAbility").GetValue<AbilityToggler>().IsEnabled(W.Name)
 							   )
+							{ 
 								W.UseAbility();
+								Utils.Sleep(150, v[i].Handle.ToString());
+							}
 
-							if (atos != null && R != null && R.CanBeCasted() && atos.CanBeCasted()
+						if (atos != null && R != null && R.CanBeCasted() && atos.CanBeCasted()
 							   && me.Distance2D(v[i]) <= 900 + Game.Ping
 							   && !v[i].IsMagicImmune()
 								&& Utils.SleepCheck(v[i].Handle.ToString())
 							   && Menu.Item("AutoAbility").GetValue<AbilityToggler>().IsEnabled(atos.Name)
 							   )
+							{ 
 								atos.UseAbility(v[i]);
-
+								Utils.Sleep(150, v[i].Handle.ToString());
+							}
 							if (R != null && R.CanBeCasted() && me.Distance2D(v[i]) <= 700 + Game.Ping
-							   && !v[i].HasModifier("modifier_item_blade_mail_reflect")
-							   && !v[i].HasModifier("modifier_skywrath_mystic_flare_aura_effect")
-							   && !v[i].HasModifier("modifier_dazzle_shallow_grave")
-							   && !v[i].IsMagicImmune()
-								&& Utils.SleepCheck(v[i].Handle.ToString())
-							   && Menu.Item("AutoAbility").GetValue<AbilityToggler>().IsEnabled(R.Name)
-							   )
-								R.UseAbility(pos);
-							
-
-							if (cyclone != null && !R.CanBeCasted()
-								&& cyclone.CanBeCasted()
-								&& me.Distance2D(v[i]) <= 500 + Game.Ping
-								&& Utils.SleepCheck(v[i].Handle.ToString())
-								&& Menu.Item("AutoAbility").GetValue<AbilityToggler>().IsEnabled(cyclone.Name)
+							    && !v[i].HasModifier("modifier_item_blade_mail_reflect")
+							    && !v[i].HasModifier("modifier_skywrath_mystic_flare_aura_effect")
+							    && !v[i].HasModifier("modifier_dazzle_shallow_grave")
+							    && !v[i].IsMagicImmune()
+							    && Utils.SleepCheck(v[i].Handle.ToString())
+							    && Menu.Item("AutoAbility").GetValue<AbilityToggler>().IsEnabled(R.Name)
 								)
+							{
+								R.UseAbility(pos);
+								Utils.Sleep(150, v[i].Handle.ToString());
+							}
+							
+							if (cyclone != null && !R.CanBeCasted()
+							    && cyclone.CanBeCasted()
+							    && me.Distance2D(v[i]) <= 500 + Game.Ping
+							    && Utils.SleepCheck(v[i].Handle.ToString())
+							    && Menu.Item("AutoAbility").GetValue<AbilityToggler>().IsEnabled(cyclone.Name)
+								)
+							{
 								cyclone.UseAbility(me);
-							Utils.Sleep(150, v[i].Handle.ToString());
+								Utils.Sleep(150, v[i].Handle.ToString());
+							}
 
 						}
 
 					}
-
 					if (cyclone != null && reflect && cyclone.CanBeCasted() &&
 						v[i].HasModifier("modifier_skywrath_mystic_flare_aura_effect") &&
 						me.Distance2D(v[i]) < cyclone.GetCastRange()
@@ -585,8 +593,7 @@
 						 || v[i].HasModifier("modifier_ember_spirit_searing_chains")
 						 || v[i].HasModifier("modifier_dark_troll_warlord_ensnare")
 						 || v[i].HasModifier("modifier_crystal_maiden_frostbite")
-						 ||
-						 (v[i].FindSpell("rattletrap_power_cogs") != null &&
+						 || (v[i].FindSpell("rattletrap_power_cogs") != null &&
 						 v[i].FindSpell("rattletrap_power_cogs").IsInAbilityPhase)
 						 || v[i].HasModifier("modifier_axe_berserkers_call")
 						 || v[i].HasModifier("modifier_bane_fiends_grip")
@@ -628,109 +635,124 @@
 						 && ((v[i].FindSpell("abaddon_borrowed_time") != null
 							  && v[i].FindSpell("abaddon_borrowed_time").Cooldown > 0)
 							 || v[i].FindSpell("abaddon_borrowed_time") == null)
-
 						 && v[i].Health >= (v[i].MaximumHealth / 100 * (Menu.Item("Healh").GetValue<Slider>().Value))
 						 && !v[i].IsMagicImmune())
 						&& Menu.Item("AutoAbility").GetValue<AbilityToggler>().IsEnabled(R.Name)
 						 && Utils.SleepCheck(v[i].Handle.ToString())
 						)
+					{ 
 						R.UseAbility(Prediction.InFront(v[i], 70));
+						Utils.Sleep(250, v[i].Handle.ToString());
+					}
+
+				if (atos != null && R != null && R.CanBeCasted() && atos.CanBeCasted()
+					    && !v[i].IsLinkensProtected()
+					    && me.Distance2D(v[i]) <= 1200
+					    && v[i].MagicDamageResist <= 0.1
+					    && !v[i].IsMagicImmune()
+					    && Menu.Item("AutoAbility").GetValue<AbilityToggler>().IsEnabled(atos.Name)
+					    && Utils.SleepCheck(v[i].Handle.ToString())
+						)
+					{
+						atos.UseAbility(v[i]);
+						Utils.Sleep(250, v[i].Handle.ToString());
+					}
 
 					if (R != null && R.CanBeCasted() && me.Distance2D(v[i]) <= R.GetCastRange() + 100
-						&& !me.HasModifier("modifier_pugna_nether_ward_aura")
-						&& v[i].MovementSpeed <= 240 
-						&& v[i].MagicDamageResist <= 0.07
-						&& !v[i].HasModifier("modifier_zuus_lightningbolt_vision_thinker")
-						&& !v[i].HasModifier("modifier_item_blade_mail_reflect")
-						&& !v[i].HasModifier("modifier_sniper_headshot")
-						&& !v[i].HasModifier("modifier_leshrac_lightning_storm_slow")
-						&& !v[i].HasModifier("modifier_razor_unstablecurrent_slow")
-						&& !v[i].HasModifier("modifier_pudge_meat_hook")
-						&& !v[i].HasModifier("modifier_tusk_snowball_movement")
-						&& !v[i].HasModifier("modifier_faceless_void_time_walk")
-						&& !v[i].HasModifier("modifier_obsidian_destroyer_astral_imprisonment_prison")
-						&& !v[i].HasModifier("modifier_skywrath_mystic_flare_aura_effect")
-						&& !v[i].HasModifier("modifier_puck_phase_shift")
-						&& !v[i].HasModifier("modifier_abaddon_borrowed_time")
-						&& !v[i].HasModifier("modifier_winter_wyvern_winters_curse")
-						&& !v[i].HasModifier("modifier_eul_cyclone")
-						&& !v[i].HasModifier("modifier_dazzle_shallow_grave")
-						&& !v[i].HasModifier("modifier_brewmaster_storm_cyclone")
-						&& !v[i].HasModifier("modifier_mirana_leap")
-						&& !v[i].HasModifier("modifier_earth_spirit_rolling_boulder_caster")
-						&& !v[i].HasModifier("modifier_spirit_breaker_charge_of_darkness")
-						&& !v[i].HasModifier("modifier_shadow_demon_disruption")
-						&& ((v[i].FindSpell("abaddon_borrowed_time") != null
-						  && v[i].FindSpell("abaddon_borrowed_time").Cooldown > 0)
-						 || v[i].FindSpell("abaddon_borrowed_time") == null)
-						 && (v[i].FindItem("item_cyclone") != null && v[i].FindItem("item_cyclone").Cooldown > 0
-						 || (v[i].FindItem("item_cyclone") == null || v[i].IsStunned() || v[i].IsHexed() || v[i].IsRooted()))
-						 && (v[i].FindItem("item_force_staff") != null && v[i].FindItem("item_force_staff").Cooldown > 0
-						 || (v[i].FindItem("item_force_staff") == null || v[i].IsStunned() || v[i].IsHexed() || v[i].IsRooted()))
-						&& v[i].Health >= (v[i].MaximumHealth / 100 * (Menu.Item("Healh").GetValue<Slider>().Value))
-						&& !v[i].IsMagicImmune()
-						 && Utils.SleepCheck(v[i].Handle.ToString())
-						&& Menu.Item("AutoAbility").GetValue<AbilityToggler>().IsEnabled(R.Name)
+					    && !me.HasModifier("modifier_pugna_nether_ward_aura")
+					    && v[i].MovementSpeed <= 240
+					    && v[i].MagicDamageResist <= 0.1
+					    && !v[i].HasModifier("modifier_zuus_lightningbolt_vision_thinker")
+					    && !v[i].HasModifier("modifier_item_blade_mail_reflect")
+					    && !v[i].HasModifier("modifier_sniper_headshot")
+					    && !v[i].HasModifier("modifier_leshrac_lightning_storm_slow")
+					    && !v[i].HasModifier("modifier_razor_unstablecurrent_slow")
+					    && !v[i].HasModifier("modifier_pudge_meat_hook")
+					    && !v[i].HasModifier("modifier_tusk_snowball_movement")
+					    && !v[i].HasModifier("modifier_faceless_void_time_walk")
+					    && !v[i].HasModifier("modifier_obsidian_destroyer_astral_imprisonment_prison")
+					    && !v[i].HasModifier("modifier_skywrath_mystic_flare_aura_effect")
+					    && !v[i].HasModifier("modifier_puck_phase_shift")
+					    && !v[i].HasModifier("modifier_abaddon_borrowed_time")
+					    && !v[i].HasModifier("modifier_winter_wyvern_winters_curse")
+					    && !v[i].HasModifier("modifier_eul_cyclone")
+					    && !v[i].HasModifier("modifier_dazzle_shallow_grave")
+					    && !v[i].HasModifier("modifier_brewmaster_storm_cyclone")
+					    && !v[i].HasModifier("modifier_mirana_leap")
+					    && !v[i].HasModifier("modifier_earth_spirit_rolling_boulder_caster")
+					    && !v[i].HasModifier("modifier_spirit_breaker_charge_of_darkness")
+					    && !v[i].HasModifier("modifier_shadow_demon_disruption")
+					    && ((v[i].FindSpell("abaddon_borrowed_time") != null
+					         && v[i].FindSpell("abaddon_borrowed_time").Cooldown > 0)
+					        || v[i].FindSpell("abaddon_borrowed_time") == null)
+					    && (v[i].FindItem("item_cyclone") != null && v[i].FindItem("item_cyclone").Cooldown > 0
+					        || (v[i].FindItem("item_cyclone") == null || v[i].IsStunned() || v[i].IsHexed() || v[i].IsRooted()))
+					    && (v[i].FindItem("item_force_staff") != null && v[i].FindItem("item_force_staff").Cooldown > 0
+					        || (v[i].FindItem("item_force_staff") == null || v[i].IsStunned() || v[i].IsHexed() || v[i].IsRooted()))
+					    && v[i].Health >= (v[i].MaximumHealth/100*(Menu.Item("Healh").GetValue<Slider>().Value))
+					    && !v[i].IsMagicImmune()
+					    && Utils.SleepCheck(v[i].Handle.ToString())
+					    && Menu.Item("AutoAbility").GetValue<AbilityToggler>().IsEnabled(R.Name)
 						)
+					{
 						R.UseAbility(Prediction.InFront(v[i], 90));
+						Utils.Sleep(250, v[i].Handle.ToString());
+					}
+						
 
 					if (R != null && R.CanBeCasted() && me.Distance2D(v[i]) <= R.GetCastRange() + 100
-						&& !me.HasModifier("modifier_pugna_nether_ward_aura")
-						&& v[i].MovementSpeed <= 240
-						&& !E.CanBeCasted()
-						&& v[i].Health >= (v[i].MaximumHealth / 100 * (Menu.Item("Healh").GetValue<Slider>().Value))
-						&& !v[i].HasModifier("modifier_item_blade_mail_reflect")
-						&& !v[i].HasModifier("modifier_skywrath_mystic_flare_aura_effect")
-						&& !v[i].HasModifier("modifier_zuus_lightningbolt_vision_thinker")
-						&& !v[i].HasModifier("modifier_obsidian_destroyer_astral_imprisonment_prison")
-						&& !v[i].HasModifier("modifier_puck_phase_shift")
-						&& !v[i].HasModifier("modifier_eul_cyclone")
-						&& !v[i].HasModifier("modifier_invoker_tornado")
-						&& !v[i].HasModifier("modifier_dazzle_shallow_grave")
-						&& !v[i].HasModifier("modifier_brewmaster_storm_cyclone")
-						&& !v[i].HasModifier("modifier_spirit_breaker_charge_of_darkness")
-						&& !v[i].HasModifier("modifier_shadow_demon_disruption")
-						&& !v[i].HasModifier("modifier_faceless_void_time_walk")
-						&& !v[i].HasModifier("modifier_winter_wyvern_winters_curse")
-						&& !v[i].HasModifier("modifier_huskar_life_break_charge")
-						&& !v[i].HasModifier("modifier_mirana_leap")
-						&& !v[i].HasModifier("modifier_earth_spirit_rolling_boulder_caster")
-						&& !v[i].HasModifier("modifier_tusk_snowball_movement")
-						&& !v[i].IsMagicImmune()
-						&& !v[i].HasModifier("modifier_abaddon_borrowed_time")
-						&& ((v[i].FindSpell("abaddon_borrowed_time") != null
-						  && v[i].FindSpell("abaddon_borrowed_time").Cooldown > 0)
-						 || v[i].FindSpell("abaddon_borrowed_time") == null)
-						&& (v[i].FindItem("item_cyclone") != null && v[i].FindItem("item_cyclone").Cooldown > 0
-						|| (v[i].FindItem("item_cyclone") == null || v[i].IsStunned() || v[i].IsHexed() || v[i].IsRooted()))
-						&& (v[i].FindItem("item_force_staff") != null && v[i].FindItem("item_force_staff").Cooldown > 0
-						|| (v[i].FindItem("item_force_staff") == null || v[i].IsStunned() || v[i].IsHexed() || v[i].IsRooted()))
-						&& Menu.Item("AutoAbility").GetValue<AbilityToggler>().IsEnabled(R.Name)
-						 && Utils.SleepCheck(v[i].Handle.ToString())
+					    && !me.HasModifier("modifier_pugna_nether_ward_aura")
+					    && v[i].MovementSpeed <= 240
+					    && (!Active || !E.CanBeCasted())
+					    && v[i].Health >= (v[i].MaximumHealth/100*(Menu.Item("Healh").GetValue<Slider>().Value))
+					    && !v[i].HasModifier("modifier_item_blade_mail_reflect")
+					    && !v[i].HasModifier("modifier_skywrath_mystic_flare_aura_effect")
+					    && !v[i].HasModifier("modifier_zuus_lightningbolt_vision_thinker")
+					    && !v[i].HasModifier("modifier_obsidian_destroyer_astral_imprisonment_prison")
+					    && !v[i].HasModifier("modifier_puck_phase_shift")
+					    && !v[i].HasModifier("modifier_eul_cyclone")
+					    && !v[i].HasModifier("modifier_invoker_tornado")
+					    && !v[i].HasModifier("modifier_dazzle_shallow_grave")
+					    && !v[i].HasModifier("modifier_brewmaster_storm_cyclone")
+					    && !v[i].HasModifier("modifier_spirit_breaker_charge_of_darkness")
+					    && !v[i].HasModifier("modifier_shadow_demon_disruption")
+					    && !v[i].HasModifier("modifier_faceless_void_time_walk")
+					    && !v[i].HasModifier("modifier_winter_wyvern_winters_curse")
+					    && !v[i].HasModifier("modifier_huskar_life_break_charge")
+					    && !v[i].HasModifier("modifier_mirana_leap")
+					    && !v[i].HasModifier("modifier_earth_spirit_rolling_boulder_caster")
+					    && !v[i].HasModifier("modifier_tusk_snowball_movement")
+					    && !v[i].IsMagicImmune()
+					    && !v[i].HasModifier("modifier_abaddon_borrowed_time")
+					    && ((v[i].FindSpell("abaddon_borrowed_time") != null
+					         && v[i].FindSpell("abaddon_borrowed_time").Cooldown > 0)
+					        || v[i].FindSpell("abaddon_borrowed_time") == null)
+					    && (v[i].FindItem("item_cyclone") != null && v[i].FindItem("item_cyclone").Cooldown > 0
+					        || (v[i].FindItem("item_cyclone") == null || v[i].IsStunned() || v[i].IsHexed() || v[i].IsRooted()))
+					    && (v[i].FindItem("item_force_staff") != null && v[i].FindItem("item_force_staff").Cooldown > 0
+					        || (v[i].FindItem("item_force_staff") == null || v[i].IsStunned() || v[i].IsHexed() || v[i].IsRooted()))
+					    && Menu.Item("AutoAbility").GetValue<AbilityToggler>().IsEnabled(R.Name)
+					    && Utils.SleepCheck(v[i].Handle.ToString())
 						)
+					{
 						R.UseAbility(Prediction.InFront(v[i], 90));
+						Utils.Sleep(250, v[i].Handle.ToString());
+					}
 
 					if (W != null && W.CanBeCasted() && me.Distance2D(v[i]) <= 1400
-						&& ((v[i].MovementSpeed <= 255
-						&& !v[i].HasModifier("modifier_phantom_assassin_stiflingdagger"))
-						|| (v[i].Distance2D(me) <= me.HullRadius + 24
-						&& v[i].NetworkActivity == NetworkActivity.Attack)
-						|| v[i].MagicDamageResist <= 0.07)
-						&& Menu.Item("AutoAbility").GetValue<AbilityToggler>().IsEnabled(W.Name)
-						 && Utils.SleepCheck(v[i].Handle.ToString())
-						&& !v[i].IsMagicImmune()
+					    && ((v[i].MovementSpeed <= 255
+					         && !v[i].HasModifier("modifier_phantom_assassin_stiflingdagger"))
+					        || (v[i].Distance2D(me) <= me.HullRadius + 24
+					            && v[i].NetworkActivity == NetworkActivity.Attack)
+					        || v[i].MagicDamageResist <= 0.07)
+					    && Menu.Item("AutoAbility").GetValue<AbilityToggler>().IsEnabled(W.Name)
+					    && Utils.SleepCheck(v[i].Handle.ToString())
+					    && !v[i].IsMagicImmune()
 						)
+					{
 						W.UseAbility();
-
-					if (atos != null && R != null && R.CanBeCasted() && atos.CanBeCasted()
-						&& !v[i].IsLinkensProtected()
-						&& me.Distance2D(v[i]) <= 1200
-						&& v[i].MagicDamageResist <= 0.07
-						&& !v[i].IsMagicImmune()
-						&& Menu.Item("AutoAbility").GetValue<AbilityToggler>().IsEnabled(atos.Name)
-						 && Utils.SleepCheck(v[i].Handle.ToString())
-						)
-						atos.UseAbility(v[i]);
+						Utils.Sleep(250, v[i].Handle.ToString());
+					}
 
 					if (vail != null && v[i].HasModifier("modifier_skywrath_mystic_flare_aura_effect")
 						&& vail.CanBeCasted()
@@ -743,106 +765,113 @@
 					if (E != null && !E.CanBeCasted() && !v[i].IsStunned() && !v[i].IsHexed() && !v[i].IsRooted() && (orchid != null && orchid.CanBeCasted() || sheep != null && sheep.CanBeCasted()))
 						E = orchid ?? sheep;
 					if (E != null && v[i].HasModifier("modifier_skywrath_mystic_flare_aura_effect")
-						&& E.CanBeCasted()
-						&& Menu.Item("AutoAbility").GetValue<AbilityToggler>().IsEnabled(E.Name)
-						&& (v[i].FindItem("item_manta") != null && v[i].FindItem("item_manta").Cooldown > 0
-						|| (v[i].FindItem("item_manta") == null || v[i].IsStunned() || v[i].IsHexed() || v[i].IsRooted()))
-						&& me.Distance2D(v[i]) <= 900
-						 && Utils.SleepCheck(v[i].Handle.ToString())
+					    && E.CanBeCasted()
+					    && Menu.Item("AutoAbility").GetValue<AbilityToggler>().IsEnabled(E.Name)
+					    && (v[i].FindItem("item_manta") != null && v[i].FindItem("item_manta").Cooldown > 0
+					        || (v[i].FindItem("item_manta") == null || v[i].IsStunned() || v[i].IsHexed() || v[i].IsRooted()))
+					    && me.Distance2D(v[i]) <= 900
+					    && Utils.SleepCheck(v[i].Handle.ToString())
 						)
+					{
 						E.UseAbility(v[i]);
+						Utils.Sleep(250, v[i].Handle.ToString());
+					}
 
-					if (ethereal != null &&
-						v[i].HasModifier("modifier_skywrath_mystic_flare_aura_effect")
-						&& !v[i].HasModifier("modifier_legion_commander_duel")
-						&& ethereal.CanBeCasted()
-						&& E.CanBeCasted()
-						&& me.Distance2D(v[i]) <= ethereal.GetCastRange() + me.HullRadius
-						&& Menu.Item("AutoAbility").GetValue<AbilityToggler>().IsEnabled(ethereal.Name)
-						 && Utils.SleepCheck(v[i].Handle.ToString())
+				if (ethereal != null &&
+					    v[i].HasModifier("modifier_skywrath_mystic_flare_aura_effect")
+					    && !v[i].HasModifier("modifier_legion_commander_duel")
+					    && ethereal.CanBeCasted()
+					    && E.CanBeCasted()
+					    && me.Distance2D(v[i]) <= ethereal.GetCastRange() + me.HullRadius
+					    && Menu.Item("AutoAbility").GetValue<AbilityToggler>().IsEnabled(ethereal.Name)
+					    && Utils.SleepCheck(v[i].Handle.ToString())
 						)
+					{
 						ethereal.UseAbility(v[i]);
+						Utils.Sleep(250, v[i].Handle.ToString());
+					}
 
 					if (E != null && E.CanBeCasted() && me.Distance2D(v[i]) <= E.GetCastRange()
-						&& !v[i].IsLinkensProtected()
-						&&
-						(v[i].HasModifier("modifier_meepo_earthbind")
-						 || v[i].HasModifier("modifier_pudge_dismember")
-						 || v[i].HasModifier("modifier_naga_siren_ensnare")
-						 || v[i].HasModifier("modifier_lone_druid_spirit_bear_entangle_effect")
-						 || v[i].HasModifier("modifier_legion_commander_duel")
-						 || v[i].HasModifier("modifier_kunkka_torrent")
-						 || v[i].HasModifier("modifier_ice_blast")
-						 || v[i].HasModifier("modifier_enigma_black_hole_pull")
-						 || v[i].HasModifier("modifier_ember_spirit_searing_chains")
-						 || v[i].HasModifier("modifier_dark_troll_warlord_ensnare")
-						 || v[i].HasModifier("modifier_crystal_maiden_crystal_nova")
-						 || v[i].HasModifier("modifier_axe_berserkers_call")
-						 || v[i].HasModifier("modifier_bane_fiends_grip")
-						 || v[i].HasModifier("modifier_rubick_telekinesis")
-						 || v[i].HasModifier("modifier_storm_spirit_electric_vortex_pull")
-						 || v[i].HasModifier("modifier_winter_wyvern_cold_embrace")
-						 || v[i].HasModifier("modifier_shadow_shaman_shackles")
-						 || (v[i].FindSpell("magnataur_reverse_polarity") != null
-						 && v[i].FindSpell("magnataur_reverse_polarity").IsInAbilityPhase)
-						 || (v[i].FindItem("item_blink") != null && v[i].FindItem("item_blink").Cooldown > 11)
-						 || (v[i].FindSpell("queenofpain_blink") != null
-						 && v[i].FindSpell("queenofpain_blink").IsInAbilityPhase)
-						 || (v[i].FindSpell("antimage_blink") != null && v[i].FindSpell("antimage_blink").IsInAbilityPhase)
-						 || (v[i].FindSpell("antimage_mana_void") != null
-						 && v[i].FindSpell("antimage_mana_void").IsInAbilityPhase)
-						 || (v[i].FindSpell("legion_commander_duel") != null
-						 && v[i].FindSpell("legion_commander_duel").Cooldown <= 0)
-						 || (v[i].FindSpell("doom_bringer_doom") != null
-						 && v[i].FindSpell("doom_bringer_doom").IsInAbilityPhase)
-						 || (v[i].HasModifier("modifier_faceless_void_chronosphere_freeze")
-						 && v[i].ClassID != ClassID.CDOTA_Unit_Hero_FacelessVoid)
-						 || (v[i].FindSpell("witch_doctor_death_ward") != null &&
-						 v[i].FindSpell("witch_doctor_death_ward").IsInAbilityPhase)
-						 || (v[i].FindSpell("rattletrap_power_cogs") != null &&
-						 v[i].FindSpell("rattletrap_power_cogs").IsInAbilityPhase)
-						 || (v[i].FindSpell("tidehunter_ravage") != null &&
-						 v[i].FindSpell("tidehunter_ravage").IsInAbilityPhase)
-						 || (v[i].FindSpell("axe_berserkers_call") != null &&
-						 v[i].FindSpell("axe_berserkers_call").IsInAbilityPhase)
-						 || (v[i].FindSpell("brewmaster_primal_split") != null &&
-						 v[i].FindSpell("brewmaster_primal_split").IsInAbilityPhase)
-						 || (v[i].FindSpell("omniknight_guardian_angel") != null &&
-						 v[i].FindSpell("omniknight_guardian_angel").IsInAbilityPhase)
-						 || (v[i].FindSpell("queenofpain_sonic_wave") != null &&
-						 v[i].FindSpell("queenofpain_sonic_wave").IsInAbilityPhase)
-						 || (v[i].FindSpell("sandking_epicenter") != null &&
-						 v[i].FindSpell("sandking_epicenter").IsInAbilityPhase)
-						 || (v[i].FindSpell("slardar_slithereen_crush") != null &&
-						 v[i].FindSpell("slardar_slithereen_crush").IsInAbilityPhase)
-						 || (v[i].FindSpell("tiny_toss") != null && v[i].FindSpell("tiny_toss").IsInAbilityPhase)
-						 || (v[i].FindSpell("tusk_walrus_punch") != null &&
-						 v[i].FindSpell("tusk_walrus_punch").IsInAbilityPhase)
-						 || (v[i].FindSpell("faceless_void_time_walk") != null &&
-						 v[i].FindSpell("faceless_void_time_walk").IsInAbilityPhase)
-						 || (v[i].FindSpell("faceless_void_chronosphere") != null
-						 && v[i].FindSpell("faceless_void_chronosphere").IsInAbilityPhase)
-						 || (v[i].FindSpell("disruptor_static_storm") != null
-						 && v[i].FindSpell("disruptor_static_storm").Cooldown <= 0)
-						 || (v[i].FindSpell("lion_finger_of_death") != null
-						 && v[i].FindSpell("lion_finger_of_death").Cooldown <= 0)
-						 || (v[i].FindSpell("luna_eclipse") != null && v[i].FindSpell("luna_eclipse").Cooldown <= 0)
-						 || (v[i].FindSpell("lina_laguna_blade") != null && v[i].FindSpell("lina_laguna_blade").Cooldown <= 0)
-						 || (v[i].FindSpell("doom_bringer_doom") != null && v[i].FindSpell("doom_bringer_doom").Cooldown <= 0)
-						 || (v[i].FindSpell("life_stealer_rage") != null && v[i].FindSpell("life_stealer_rage").Cooldown <= 0
-						 && me.Level >= 7)
-						 )
-						 && (v[i].FindItem("item_manta") != null && v[i].FindItem("item_manta").Cooldown > 0
-						 || (v[i].FindItem("item_manta") == null || v[i].IsStunned() || v[i].IsHexed() || v[i].IsRooted()))
-						 && !v[i].IsMagicImmune()
-						 && Menu.Item("AutoAbility").GetValue<AbilityToggler>().IsEnabled(E.Name)
-						 && !v[i].HasModifier("modifier_medusa_stone_gaze_stone")
-						 && Utils.SleepCheck(v[i].Handle.ToString())
-						 )
+					    && !v[i].IsLinkensProtected()
+					    &&
+					    (v[i].HasModifier("modifier_meepo_earthbind")
+					     || v[i].HasModifier("modifier_pudge_dismember")
+					     || v[i].HasModifier("modifier_naga_siren_ensnare")
+					     || v[i].HasModifier("modifier_lone_druid_spirit_bear_entangle_effect")
+					     || v[i].HasModifier("modifier_legion_commander_duel")
+					     || v[i].HasModifier("modifier_kunkka_torrent")
+					     || v[i].HasModifier("modifier_ice_blast")
+					     || v[i].HasModifier("modifier_enigma_black_hole_pull")
+					     || v[i].HasModifier("modifier_ember_spirit_searing_chains")
+					     || v[i].HasModifier("modifier_dark_troll_warlord_ensnare")
+					     || v[i].HasModifier("modifier_crystal_maiden_crystal_nova")
+					     || v[i].HasModifier("modifier_axe_berserkers_call")
+					     || v[i].HasModifier("modifier_bane_fiends_grip")
+					     || v[i].HasModifier("modifier_rubick_telekinesis")
+					     || v[i].HasModifier("modifier_storm_spirit_electric_vortex_pull")
+					     || v[i].HasModifier("modifier_winter_wyvern_cold_embrace")
+					     || v[i].HasModifier("modifier_shadow_shaman_shackles")
+					     || (v[i].FindSpell("magnataur_reverse_polarity") != null
+					         && v[i].FindSpell("magnataur_reverse_polarity").IsInAbilityPhase)
+					     || (v[i].FindItem("item_blink") != null && v[i].FindItem("item_blink").Cooldown > 11)
+					     || (v[i].FindSpell("queenofpain_blink") != null
+					         && v[i].FindSpell("queenofpain_blink").IsInAbilityPhase)
+					     || (v[i].FindSpell("antimage_blink") != null && v[i].FindSpell("antimage_blink").IsInAbilityPhase)
+					     || (v[i].FindSpell("antimage_mana_void") != null
+					         && v[i].FindSpell("antimage_mana_void").IsInAbilityPhase)
+					     || (v[i].FindSpell("legion_commander_duel") != null
+					         && v[i].FindSpell("legion_commander_duel").Cooldown <= 0)
+					     || (v[i].FindSpell("doom_bringer_doom") != null
+					         && v[i].FindSpell("doom_bringer_doom").IsInAbilityPhase)
+					     || (v[i].HasModifier("modifier_faceless_void_chronosphere_freeze")
+					         && v[i].ClassID != ClassID.CDOTA_Unit_Hero_FacelessVoid)
+					     || (v[i].FindSpell("witch_doctor_death_ward") != null &&
+					         v[i].FindSpell("witch_doctor_death_ward").IsInAbilityPhase)
+					     || (v[i].FindSpell("rattletrap_power_cogs") != null &&
+					         v[i].FindSpell("rattletrap_power_cogs").IsInAbilityPhase)
+					     || (v[i].FindSpell("tidehunter_ravage") != null &&
+					         v[i].FindSpell("tidehunter_ravage").IsInAbilityPhase)
+					     || (v[i].FindSpell("axe_berserkers_call") != null &&
+					         v[i].FindSpell("axe_berserkers_call").IsInAbilityPhase)
+					     || (v[i].FindSpell("brewmaster_primal_split") != null &&
+					         v[i].FindSpell("brewmaster_primal_split").IsInAbilityPhase)
+					     || (v[i].FindSpell("omniknight_guardian_angel") != null &&
+					         v[i].FindSpell("omniknight_guardian_angel").IsInAbilityPhase)
+					     || (v[i].FindSpell("queenofpain_sonic_wave") != null &&
+					         v[i].FindSpell("queenofpain_sonic_wave").IsInAbilityPhase)
+					     || (v[i].FindSpell("sandking_epicenter") != null &&
+					         v[i].FindSpell("sandking_epicenter").IsInAbilityPhase)
+					     || (v[i].FindSpell("slardar_slithereen_crush") != null &&
+					         v[i].FindSpell("slardar_slithereen_crush").IsInAbilityPhase)
+					     || (v[i].FindSpell("tiny_toss") != null && v[i].FindSpell("tiny_toss").IsInAbilityPhase)
+					     || (v[i].FindSpell("tusk_walrus_punch") != null &&
+					         v[i].FindSpell("tusk_walrus_punch").IsInAbilityPhase)
+					     || (v[i].FindSpell("faceless_void_time_walk") != null &&
+					         v[i].FindSpell("faceless_void_time_walk").IsInAbilityPhase)
+					     || (v[i].FindSpell("faceless_void_chronosphere") != null
+					         && v[i].FindSpell("faceless_void_chronosphere").IsInAbilityPhase)
+					     || (v[i].FindSpell("disruptor_static_storm") != null
+					         && v[i].FindSpell("disruptor_static_storm").Cooldown <= 0)
+					     || (v[i].FindSpell("lion_finger_of_death") != null
+					         && v[i].FindSpell("lion_finger_of_death").Cooldown <= 0)
+					     || (v[i].FindSpell("luna_eclipse") != null && v[i].FindSpell("luna_eclipse").Cooldown <= 0)
+					     || (v[i].FindSpell("lina_laguna_blade") != null && v[i].FindSpell("lina_laguna_blade").Cooldown <= 0)
+					     || (v[i].FindSpell("doom_bringer_doom") != null && v[i].FindSpell("doom_bringer_doom").Cooldown <= 0)
+					     || (v[i].FindSpell("life_stealer_rage") != null && v[i].FindSpell("life_stealer_rage").Cooldown <= 0
+					         && me.Level >= 7)
+						    )
+					    && (v[i].FindItem("item_manta") != null && v[i].FindItem("item_manta").Cooldown > 0
+					        || (v[i].FindItem("item_manta") == null || v[i].IsStunned() || v[i].IsHexed() || v[i].IsRooted()))
+					    && !v[i].IsMagicImmune()
+					    && Menu.Item("AutoAbility").GetValue<AbilityToggler>().IsEnabled(E.Name)
+					    && !v[i].HasModifier("modifier_medusa_stone_gaze_stone")
+					    && Utils.SleepCheck(v[i].Handle.ToString())
+						)
+					{
 						E.UseAbility(v[i]);
+						Utils.Sleep(250, v[i].Handle.ToString());
+					}
 					
-
-
 					if (v[i].IsLinkensProtected() && (me.IsVisibleToEnemies || Active) && Utils.SleepCheck(v[i].Handle.ToString()))
 					{
 						if (force != null && force.CanBeCasted() && me.Distance2D(v[i]) < force.GetCastRange() &&
@@ -862,7 +891,6 @@
 							orchid.UseAbility(v[i]);
 						Utils.Sleep(350, v[i].Handle.ToString());
 					}
-					Utils.Sleep(250, v[i].Handle.ToString());
 				}
 			}
 		} // SkywrathMage class
