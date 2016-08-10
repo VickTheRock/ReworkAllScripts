@@ -1,3 +1,5 @@
+using SharpDX;
+
 namespace DotaAllCombo.Heroes
 {
 	using System;
@@ -407,17 +409,14 @@ namespace DotaAllCombo.Heroes
 			if (enemies.Count <= 0) return;
 			if (Menu.Item("autoUlt").GetValue<bool>() && me.IsAlive)
 			{
-				foreach (var v in enemies)
+				double[] penitence = { 0, 1.15, 1.2, 1.25, 1.3 };
+				double[] souls = { 0, 1.2, 1.3, 1.4, 1.5 };
+                rDmg = me.AghanimState()? new[] { 440, 540, 640 } : new[] { 225, 325, 425 };
+                qDmg = new[] { 85, 100, 115, 145 };
+
+                wDmg = new[] { 100, 175, 275, 350 };
+                foreach (var v in enemies)
 				{
-					if (me.AghanimState())
-						rDmg = new[] { 440, 540, 640 };
-					else
-						rDmg = new[] { 225, 325, 425 };
-
-					qDmg = new[] { 85, 100, 115, 145 };
-
-					wDmg = new[] { 100, 175, 275, 350 };
-
 					var lens = me.HasModifier("modifier_item_aether_lens");
 					var spellamplymult = 1 + (me.TotalIntelligence / 16 / 100);
 					var damageR = Math.Floor(rDmg[R.Level - 1] * (1 - v.MagicDamageResist));
@@ -437,6 +436,13 @@ namespace DotaAllCombo.Heroes
 					if (lens) damageR = damageR * 1.08;
 					if (v.HasModifier("modifier_kunkka_ghost_ship_damage_absorb")) damageR = damageR * 0.5;
 					if (v.HasModifier("modifier_item_mask_of_madness_berserk")) damageR = damageR * 1.3;
+					if (v.HasModifier("modifier_item_ethereal_blade_slow")) damageR = damageR * 1.4;
+					if (v.HasModifier("modifier_chen_penitence"))
+						damageR = damageR * penitence[ObjectManager.GetEntities<Hero>().FirstOrDefault(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Hero_Chen).Spellbook.Spell1.Level];
+                    
+					if (v.HasModifier("modifier_shadow_demon_soul_catcher"))
+						damageR = damageR * souls[ObjectManager.GetEntities<Hero>().FirstOrDefault(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Hero_Shadow_Demon).Spellbook.Spell2.Level];
+
 					damageR = damageR * spellamplymult;
 
 					var damageW = Math.Floor(wDmg[W.Level - 1] * (1 - v.MagicDamageResist));
@@ -454,6 +460,17 @@ namespace DotaAllCombo.Heroes
 					if (lens) damageW = damageW * 1.08;
 					if (v.HasModifier("modifier_kunkka_ghost_ship_damage_absorb")) damageW = damageW * 0.5;
 					if (v.HasModifier("modifier_item_mask_of_madness_berserk")) damageW = damageW * 1.3;
+					
+					if (me.HasModifier("modifier_item_aether_lens")) damageW = damageW * 1.08;
+					if (v.HasModifier("modifier_kunkka_ghost_ship_damage_absorb")) damageW = damageW * 0.5;
+					if (v.HasModifier("modifier_item_mask_of_madness_berserk")) damageW = damageW * 1.3;
+					if (v.HasModifier("modifier_item_ethereal_blade_slow")) damageW = damageW * 1.4;
+					if (v.HasModifier("modifier_chen_penitence"))
+						damageW = damageW * penitence[ObjectManager.GetEntities<Hero>().FirstOrDefault(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Hero_Chen).Spellbook.Spell1.Level];
+                    
+					if (v.HasModifier("modifier_shadow_demon_soul_catcher"))
+						damageW = damageW * souls[ObjectManager.GetEntities<Hero>().FirstOrDefault(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Hero_Shadow_Demon).Spellbook.Spell2.Level];
+
 					damageW = damageW * spellamplymult;
 
 					var damageQ = Math.Floor(qDmg[Q.Level - 1] * (1 - v.MagicDamageResist));
@@ -468,7 +485,15 @@ namespace DotaAllCombo.Heroes
 							damageQ = damageQ + eDmg[me.Spellbook.Spell3.Level] * 0.01 * v.Health * (1 - v.MagicDamageResist);
 					}
 					if (lens) damageQ = damageQ * 1.08;
+					if (v.HasModifier("modifier_item_ethereal_blade_slow")) damageQ = damageQ * 1.4;
+					if (v.HasModifier("modifier_chen_penitence"))
+						damageQ = damageQ * penitence[ObjectManager.GetEntities<Hero>().FirstOrDefault(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Hero_Chen).Spellbook.Spell1.Level];
+                    
+					if (v.HasModifier("modifier_shadow_demon_soul_catcher"))
+						damageQ = damageQ * souls[ObjectManager.GetEntities<Hero>().FirstOrDefault(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Hero_Shadow_Demon).Spellbook.Spell2.Level];
+
 					damageQ = damageQ * spellamplymult;
+
 					if (v.HasModifier("modifier_kunkka_ghost_ship_damage_absorb")) damageQ = damageQ * 0.5;
 					if (v.HasModifier("modifier_item_mask_of_madness_berserk")) damageQ = damageQ * 1.3;
 					if ( // vail
@@ -576,36 +601,85 @@ namespace DotaAllCombo.Heroes
 						Utils.Sleep(150, v.Handle.ToString());
 						return;
 					}
-					if (W != null && v != null && W.CanBeCasted()
-						&& me.Distance2D(v) <= W.GetCastRange() + 50
-						&& !v.HasModifier("modifier_tusk_snowball_movement")
-						&& !v.HasModifier("modifier_snowball_movement_friendly")
-						&& !v.HasModifier("modifier_templar_assassin_refraction_absorb")
-						&& !v.HasModifier("modifier_ember_spirit_flame_guard")
-						&& !v.HasModifier("modifier_ember_spirit_sleight_of_fist_caster_invulnerability")
-						&& !v.HasModifier("modifier_obsidian_destroyer_astral_imprisonment_prison")
-						&& !v.HasModifier("modifier_puck_phase_shift")
-						&& !v.HasModifier("modifier_eul_cyclone")
-						&& !v.HasModifier("modifier_dazzle_shallow_grave")
-						&& !v.HasModifier("modifier_shadow_demon_disruption")
-						&& !v.HasModifier("modifier_necrolyte_reapers_scythe")
-						&& !v.HasModifier("modifier_necrolyte_reapers_scythe")
-						&& !v.HasModifier("modifier_storm_spirit_ball_lightning")
-						&& !v.HasModifier("modifier_ember_spirit_fire_remnant")
-						&& !v.HasModifier("modifier_nyx_assassin_spiked_carapace")
-						&& !v.HasModifier("modifier_phantom_lancer_doppelwalk_phase")
-						&& !v.FindSpell("abaddon_borrowed_time").CanBeCasted() &&
-						!v.HasModifier("modifier_abaddon_borrowed_time_damage_redirect")
-						&& !v.IsMagicImmune()
-						&& Menu.Item("AutoUlt").GetValue<AbilityToggler>().IsEnabled(W.Name)
-						&& v.Health < damageW
-						&& Utils.SleepCheck(v.Handle.ToString()))
-					{
-						W.UseAbility(v.Position);
-						Utils.Sleep(150, v.Handle.ToString());
-						return;
-					}
-					if (R != null && v != null && R.CanBeCasted()
+                    Console.WriteLine(W.GetCastRange());
+				    if (me.Distance2D(v) <= W.GetCastRange() + me.HullRadius + 24)
+				    {
+                        if (W != null  && W.CanBeCasted()
+                        && !v.HasModifier("modifier_tusk_snowball_movement")
+                        && !v.HasModifier("modifier_snowball_movement_friendly")
+                        && !v.HasModifier("modifier_templar_assassin_refraction_absorb")
+                        && !v.HasModifier("modifier_ember_spirit_flame_guard")
+                        && !v.HasModifier("modifier_ember_spirit_sleight_of_fist_caster_invulnerability")
+                        && !v.HasModifier("modifier_obsidian_destroyer_astral_imprisonment_prison")
+                        && !v.HasModifier("modifier_puck_phase_shift")
+                        && !v.HasModifier("modifier_eul_cyclone")
+                        && !v.HasModifier("modifier_dazzle_shallow_grave")
+                        && !v.HasModifier("modifier_shadow_demon_disruption")
+                        && !v.HasModifier("modifier_necrolyte_reapers_scythe")
+                        && !v.HasModifier("modifier_necrolyte_reapers_scythe")
+                        && !v.HasModifier("modifier_storm_spirit_ball_lightning")
+                        && !v.HasModifier("modifier_ember_spirit_fire_remnant")
+                        && !v.HasModifier("modifier_nyx_assassin_spiked_carapace")
+                        && !v.HasModifier("modifier_phantom_lancer_doppelwalk_phase")
+                        && !v.FindSpell("abaddon_borrowed_time").CanBeCasted() &&
+                        !v.HasModifier("modifier_abaddon_borrowed_time_damage_redirect")
+                        && !v.IsMagicImmune()
+                        && Menu.Item("AutoUlt").GetValue<AbilityToggler>().IsEnabled(W.Name)
+                        && v.Health < damageW
+                        && Utils.SleepCheck(v.Handle.ToString()))
+                        {
+                            W.UseAbility(v.Position);
+                            Utils.Sleep(150, v.Handle.ToString());
+                        }
+                    }
+                    else if (me.Distance2D(v) >= W.GetCastRange() + me.HullRadius + 24 && me.Distance2D(v) <= W.GetCastRange() + me.HullRadius + 324)
+                    {
+                        float angle = me.FindAngleBetween(v.Position, true);
+                        Vector3 pos = new Vector3((float)(v.Position.X - 300 * Math.Cos(angle)), (float)(v.Position.Y - 300 * Math.Sin(angle)), 0);
+                        var Units = ObjectManager.GetEntities<Unit>().Where(creep =>
+                    (creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral
+                    || creep.ClassID == ClassID.CDOTA_BaseNPC_Invoker_Forged_Spirit
+                    || creep.ClassID == ClassID.CDOTA_BaseNPC_Warlock_Golem
+                    || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep
+                    || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
+                    || creep.ClassID == ClassID.CDOTA_Unit_Hero_Beastmaster_Boar
+                    || creep.ClassID == ClassID.CDOTA_Unit_SpiritBear
+                    || creep.ClassID == ClassID.CDOTA_Unit_Broodmother_Spiderling
+                    )
+                    && creep.IsAlive
+                    && creep.Distance2D(v) <= 320
+                    && creep.Team != me.Team
+                    ).ToList();
+                        if (W != null  && W.CanBeCasted()
+                        && !v.HasModifier("modifier_tusk_snowball_movement")
+                        && !v.HasModifier("modifier_snowball_movement_friendly")
+                        && !v.HasModifier("modifier_templar_assassin_refraction_absorb")
+                        && !v.HasModifier("modifier_ember_spirit_flame_guard")
+                        && !v.HasModifier("modifier_ember_spirit_sleight_of_fist_caster_invulnerability")
+                        && !v.HasModifier("modifier_obsidian_destroyer_astral_imprisonment_prison")
+                        && !v.HasModifier("modifier_puck_phase_shift")
+                        && !v.HasModifier("modifier_eul_cyclone")
+                        && !v.HasModifier("modifier_dazzle_shallow_grave")
+                        && !v.HasModifier("modifier_shadow_demon_disruption")
+                        && !v.HasModifier("modifier_necrolyte_reapers_scythe")
+                        && !v.HasModifier("modifier_necrolyte_reapers_scythe")
+                        && !v.HasModifier("modifier_storm_spirit_ball_lightning")
+                        && !v.HasModifier("modifier_ember_spirit_fire_remnant")
+                        && !v.HasModifier("modifier_nyx_assassin_spiked_carapace")
+                        && !v.HasModifier("modifier_phantom_lancer_doppelwalk_phase")
+                        && !v.FindSpell("abaddon_borrowed_time").CanBeCasted() &&
+                        !v.HasModifier("modifier_abaddon_borrowed_time_damage_redirect")
+                        && !v.IsMagicImmune()
+                        && Units.Count(x=>  x.Distance2D(v)<= 300)== 0
+                        && Menu.Item("AutoUlt").GetValue<AbilityToggler>().IsEnabled(W.Name)
+                        && v.Health < damageW
+                        && Utils.SleepCheck(v.Handle.ToString()))
+                        {
+                            W.UseAbility(pos);
+                            Utils.Sleep(150, v.Handle.ToString());
+                        }
+                    }
+					if (R != null && R.CanBeCasted()
 						&& !v.HasModifier("modifier_tusk_snowball_movement")
 						&& !v.HasModifier("modifier_snowball_movement_friendly")
 						&& !v.HasModifier("modifier_templar_assassin_refraction_absorb")
