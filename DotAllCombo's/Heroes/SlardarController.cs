@@ -16,11 +16,7 @@
 		private Ability Q, W, R;
 
 		private Item urn, dagon, mjollnir, abyssal, mom, armlet, Shiva, mail, bkb, satanic, medall, blink;
-
-#pragma warning disable CS0108 // 'SlardarController.Active' hides inherited member 'Variables.Active'. Use the new keyword if hiding was intended.
-		private bool Active;
-#pragma warning restore CS0108 // 'SlardarController.Active' hides inherited member 'Variables.Active'. Use the new keyword if hiding was intended.
-
+        
 		public void Combo()
 		{
 			Active = Game.IsKeyDown(Menu.Item("keyBind").GetValue<KeyBind>().Key);
@@ -45,8 +41,8 @@
 
 			e = me.ClosestToMouseTarget(1800);
 			if (e == null) return;
-			var ModifR = e.Modifiers.Any(y => y.Name == "modifier_slardar_amplify_damage");
-			var stoneModif = e.Modifiers.Any(y => y.Name == "modifier_medusa_stone_gaze_stone");
+			var ModifR = e.HasModifier("modifier_slardar_amplify_damage");
+			var stoneModif = e.HasModifier("modifier_medusa_stone_gaze_stone");
 
 			var v =
 				ObjectManager.GetEntities<Hero>()
@@ -117,15 +113,18 @@
 				else if (
 					R != null && R.CanBeCasted() && me.Distance2D(e) <= 900
 					&& !ModifR
-					&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name)
-					&& Utils.SleepCheck("W")
+					&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name)
+					&& Utils.SleepCheck("R")
 					)
 				{
 					R.UseAbility(e);
-					Utils.Sleep(200, "W");
+					Utils.Sleep(200, "R");
 				}
-				else if (
-					W != null && W.CanBeCasted() && (ModifR || R == null) && me.Distance2D(e) <= 200
+				if (
+					W != null 
+                    && W.CanBeCasted() 
+                    && (ModifR || R == null || !R.CanBeCasted() || !Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name)) 
+                    && me.Distance2D(e) <= W.GetCastRange()+me.HullRadius+23
 					&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name)
 					&& Utils.SleepCheck("W")
 					)
@@ -133,7 +132,12 @@
 					W.UseAbility();
 					Utils.Sleep(200, "W");
 				}
-				if ( // Abyssal Blade
+                if (W != null && W.IsInAbilityPhase && v.Count(x => x.Distance2D(me) <= W.GetCastRange() + me.HullRadius + 23) == 0 && Utils.SleepCheck("Phase"))
+                {
+                    me.Stop();
+                    Utils.Sleep(100, "Phase");
+                }
+                if ( // Abyssal Blade
 					abyssal != null
 					&& abyssal.CanBeCasted()
 					&& me.CanCast()

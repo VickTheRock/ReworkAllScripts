@@ -1,4 +1,4 @@
-namespace DotaAllCombo.Heroes
+﻿namespace DotaAllCombo.Heroes
 {
 	using System;
 	using System.Collections.Generic;
@@ -373,12 +373,17 @@ namespace DotaAllCombo.Heroes
 
 			if (Menu.Item("AutoUlt").GetValue<AbilityToggler>().IsEnabled(R.Name))
 			{
+				double[] decrepify = { 0, 1.3, 1.4, 1.5, 1.6 };
+				double[] vortex = { 0, 1.15, 1.2, 1.25, 1.3 };
+				double[] penitence = { 0, 1.15, 1.2, 1.25, 1.3 };
+				double[] seal = { 0, 1.3, 1.35, 1.4, 1.45 };
+				double[] souls = { 0, 1.2, 1.3, 1.4, 1.5 };
 				foreach (var v in enemies)
 				{
 					orchid = me.FindItem("item_orchid") ?? me.FindItem("item_bloodthorn");
 					atos = me.FindItem("item_rod_of_atos");
 
-					rDmg = me.AghanimState() ? rDmg = new[] {725, 875, 1025} : rDmg = new[] {600, 725, 850};
+					rDmg = me.AghanimState() ? new[] {725, 875, 1025} : new[] {600, 725, 850};
 					
 
 					var lens = me.HasModifier("modifier_item_aether_lens");
@@ -402,6 +407,13 @@ namespace DotaAllCombo.Heroes
 					if (mom) damage = damage * 1.3;
 
 					var spellamplymult = 1 + (me.TotalIntelligence / 16 / 100);
+					if (v.HasModifier("modifier_item_ethereal_blade_slow")) damage = damage * 1.4;
+					if (v.HasModifier("modifier_chen_penitence"))
+						damage = damage * penitence[ObjectManager.GetEntities<Hero>().FirstOrDefault(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Hero_Chen).Spellbook.Spell1.Level];
+
+					if (v.HasModifier("modifier_shadow_demon_soul_catcher"))
+						damage = damage * souls[ObjectManager.GetEntities<Hero>().FirstOrDefault(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Hero_Shadow_Demon).Spellbook.Spell2.Level];
+
 					damage = damage * spellamplymult;
 
 					if ( // vail

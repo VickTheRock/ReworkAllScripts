@@ -24,7 +24,7 @@
 		private Line lines;
 		private Item blink, armlet, blademail, bkb, abyssal, mjollnir, halberd, medallion, madness, urn, 
             satanic, solar, dust, sentry, mango, arcane, buckler, crimson, lotusorb, cheese, stick, 
-            soul, force, cyclone, sheep, orchid;
+            soul, force, cyclone, sheep, orchid, atos;
 		private Unit GetLowestToQ(List<Hero> units, Unit z)
 		{
 
@@ -34,7 +34,8 @@
 			int[] enemyDmg = { 20, 40, 60, 80 };
 			int enemiesCount;
 			int creepsECount;
-
+			double[] penitence = { 0, 1.15, 1.2, 1.25, 1.3 };
+			double[] soul = { 0, 1.2, 1.3, 1.4, 1.5 };
 			foreach (var v in units.Where(x => !x.IsMagicImmune()))
 			{
 				creepsECount = ObjectManager.GetEntities<Unit>().Where(creep =>
@@ -68,13 +69,25 @@
 							 qDmg[Q.Level - 1]) *
 								   (1 - (0.10 + v.Spellbook.Spell3.Level * 0.04))) * (1 - v.MagicDamageResist));
 				}
-				if (v.NetworkName == "CDOTA_Unit_Hero_SkeletonKing" &&
-					v.Spellbook.SpellR.CanBeCasted())
+				
+				if (v.NetworkName == "CDOTA_Unit_Hero_Tusk" &&
+					v.Spellbook.SpellW.CooldownLength - 3 > v.Spellbook.SpellQ.Cooldown)
 					damage = 0;
+
 				var rum = v.HasModifier("modifier_kunkka_ghost_ship_damage_absorb");
 				if (rum) damage = damage * 0.5;
 				var mom = v.HasModifier("modifier_item_mask_of_madness_berserk");
 				if (mom) damage = damage * 1.3;
+
+				var spellamplymult = 1 + (me.TotalIntelligence / 16 / 100);
+
+                if (v.HasModifier("modifier_chen_penitence"))
+					damage = damage * penitence[ObjectManager.GetEntities<Hero>().FirstOrDefault(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Hero_Chen).Spellbook.Spell1.Level];
+                
+				if (v.HasModifier("modifier_shadow_demon_soul_catcher"))
+					damage = damage * soul[ObjectManager.GetEntities<Hero>().FirstOrDefault(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Hero_Shadow_Demon).Spellbook.Spell2.Level];
+
+				damage = damage * spellamplymult;
 				//Console.WriteLine(damage);
 
 				if (damage >= v.Health && z.Distance2D(v) <= Q.GetCastRange())
@@ -133,6 +146,7 @@
                 force = me.FindItem("item_force_staff");
                 cyclone = me.FindItem("item_cyclone");
                 sheep = me.FindItem("item_sheepstick");
+                atos = me.FindItem("item_rod_of_atos");
                 e = me.ClosestToMouseTarget(1470);
 
                 float angle = me.FindAngleBetween(e.Position, true);
@@ -230,7 +244,7 @@
 						    if (e.IsLinkensProtected())
 							{
 								if ((cyclone.CanBeCasted() || force.CanBeCasted() || halberd.CanBeCasted() ||
-									 sheep.CanBeCasted() || abyssal.CanBeCasted()) && Utils.SleepCheck("Combo2"))
+									 sheep.CanBeCasted() || abyssal.CanBeCasted() || atos.CanBeCasted() ) && Utils.SleepCheck("Combo2"))
 								{
 									if (blademail != null && blademail.Cooldown <= 0 &&
 										Menu.Item("Item")
@@ -287,7 +301,16 @@
 									if (medallion != null && medallion.CanBeCasted() &&
 										Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(medallion.Name))
 										medallion.UseAbility(e);
-									if (cyclone != null && cyclone.CanBeCasted() &&
+                                    if (atos != null && atos.CanBeCasted() &&
+                                              Utils.SleepCheck("atos") &&
+                                              Menu.Item("Items")
+                                                  .GetValue<AbilityToggler>()
+                                                  .IsEnabled(atos.Name) && me.Mana - atos.ManaCost >= 75)
+                                    {
+                                        atos.UseAbility(e);
+                                        Utils.Sleep(100, "atos");
+                                    }
+                                    else if (cyclone != null && cyclone.CanBeCasted() &&
 										Utils.SleepCheck("CycloneRemoveLinkens") &&
 										Menu.Item("Link")
 											.GetValue<AbilityToggler>()
@@ -495,7 +518,8 @@
 				int[] enemyDmg = {20, 40, 60, 80};
 				int enemiesCount;
 				int creepsECount;
-
+				double[] penitence = { 0, 1.15, 1.2, 1.25, 1.3 };
+				double[] soul = { 0, 1.2, 1.3, 1.4, 1.5 };
 				var units =
 					ObjectManager.GetEntities<Hero>()
 						.Where(x => x.Team != me.Team && x.IsAlive && x.Distance2D(me) <= Q.GetCastRange() && !x.IsIllusion)
@@ -521,9 +545,7 @@
 					}
 					damage = ((creepsECount*creepsDmg[Q.Level - 1] + enemiesCount*enemyDmg[Q.Level - 1]) +
 					          qDmg[Q.Level - 1])*(1 - v.MagicDamageResist);
-
-
-
+					
 					if (v.NetworkName == "CDOTA_Unit_Hero_Spectre" && v.Spellbook.Spell3.Level > 0)
 					{
 						damage =
@@ -538,6 +560,16 @@
 					if (rum) damage = damage*0.5;
 					var mom = v.HasModifier("modifier_item_mask_of_madness_berserk");
 					if (mom) damage = damage*1.3;
+					var spellamplymult = 1 + (me.TotalIntelligence / 16 / 100);
+					if (v.HasModifier("modifier_item_ethereal_blade_slow")) damage = damage * 1.4;
+					if (v.HasModifier("modifier_chen_penitence"))
+						damage = damage * penitence[ObjectManager.GetEntities<Hero>().FirstOrDefault(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Hero_Chen).Spellbook.Spell1.Level];
+
+					if (v.HasModifier("modifier_shadow_demon_soul_catcher"))
+						damage = damage * soul[ObjectManager.GetEntities<Hero>().FirstOrDefault(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Hero_Shadow_Demon).Spellbook.Spell2.Level];
+
+					damage = damage * spellamplymult;
+					
 					var dmg = v.Health - damage;
 					var canKill = dmg <= 0;
 					var screenPos = HUDInfo.GetHPbarPosition(v);
@@ -622,7 +654,8 @@
 					{
 					    {"item_heavens_halberd", true},
 					    {"item_force_staff", true},
-					    {"item_cyclone", true},
+                        {"item_rod_of_atos", true},
+                        {"item_cyclone", true},
 					    {"item_sheepstick", true}
 					})));
             skills.AddItem(new MenuItem("steal", "KillSteal Q").SetValue(true));

@@ -118,6 +118,20 @@
 							Utils.Sleep(500, "Rem");
 						}
                 }
+                if (//Q Skill
+                    W != null
+                    && (!Q.CanBeCasted()
+                    || Q == null)
+                    && !E.CanBeCasted()
+                    && W.CanBeCasted()
+                    && me.Distance2D(e) <= E.GetCastRange() - 50
+                    && me.CanCast()
+                    && Utils.SleepCheck(me.Handle + "remnantW")
+                    )
+                {
+                    W.CastSkillShot(e);
+                    Utils.Sleep(250, me.Handle + "remnantW");
+                }
                 if (remnant.Count(x => x.Distance2D(me) <= 1200) >= 1)
                 {
 
@@ -152,20 +166,6 @@
                         {
                             me.Move(r.Position);
                             Utils.Sleep(250, "RemMove");
-                        }
-                        if (//Q Skill
-                            W != null
-                            && (!Q.CanBeCasted()
-                            || Q == null)
-                            && !E.CanBeCasted()
-                            && W.CanBeCasted()
-                            && me.Distance2D(e) <= E.GetCastRange() - 50
-                            && me.CanCast()
-                            && Utils.SleepCheck(me.Handle + "remnantW")
-                            )
-                        {
-                            W.CastSkillShot(e);
-                            Utils.Sleep(250, me.Handle + "remnantW");
                         }
                         if (//Q Skill
                            Q != null
@@ -588,33 +588,31 @@
                         }
                     }
                 });
+                if (//W Skill
+                    W != null
+                    && W.CanBeCasted()
+                    && Game.MousePosition.Distance2D(e) <= 500
+                    && me.Distance2D(e) <= W.GetCastRange() - 200
+                    && Utils.SleepCheck(me.Handle + "remnantW")
+                    )
+                {
+                    W.CastSkillShot(e);
+                    Utils.Sleep(250, me.Handle + "remnantW");
+                }
+                else if (//W Skill
+                    W != null
+                    && W.CanBeCasted()
+                    && Game.MousePosition.Distance2D(e) >= 500
+                    && Utils.SleepCheck(me.Handle + "remnantW")
+                    )
+                {
+                    W.UseAbility(Game.MousePosition);
+                    Utils.Sleep(250, me.Handle + "remnantW");
+                }
                 if (remnant.Count(x => x.Distance2D(me) <= 1200) >= 1)
                 {
                     for (var i = 0; i < remnantCount; ++i)
                     {
-
-                        if (//W Skill
-                            W != null
-                            && W.CanBeCasted()
-                            && Game.MousePosition.Distance2D(e) <= 500
-                            && me.Distance2D(e) <= W.GetCastRange() - 200
-                            && Utils.SleepCheck(me.Handle + "remnantW")
-                            )
-                        {
-                            W.CastSkillShot(e);
-                            Utils.Sleep(250, me.Handle + "remnantW");
-                        }
-                        else if (//W Skill
-                            W != null
-                            && W.CanBeCasted()
-                            && Game.MousePosition.Distance2D(e) >= 500
-                            && Utils.SleepCheck(me.Handle + "remnantW")
-                            )
-                        {
-                            W.UseAbility(Game.MousePosition);
-                            Utils.Sleep(250, me.Handle + "remnantW");
-                        }
-
                         Task.Delay(350).ContinueWith(_ =>
                         {
 

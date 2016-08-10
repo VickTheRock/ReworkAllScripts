@@ -16,8 +16,8 @@
 	internal class WeaverController : Variables, IHeroController
 	{
 		private Ability Q, W, R;
-
-		private Item urn, orchid, ethereal, dagon, halberd, blink, mjollnir, abyssal, mom, Shiva, mail, bkb, satanic, medall;
+        private float health;
+        private Item urn, orchid, ethereal, dagon, halberd, blink, mjollnir, abyssal, mom, Shiva, mail, bkb, satanic, medall;
 		
 		private readonly Menu ultME = new Menu("Options Ultimate me", "Ultimate on an Me.");
 		private readonly Menu ultALLY = new Menu("Options Ultimate Ally", "Ultimate on an Ally.");
@@ -255,8 +255,8 @@
 
 		public void OnCloseEvent()
 		{
-			
-		}
+            Drawing.OnDraw -= DrawQDamage;
+        }
 
 		private void OnTimedEvent()
 		{
@@ -315,8 +315,44 @@
 		{
 			return !(Drawing.WorldToScreen(v).X < 0 || Drawing.WorldToScreen(v).X > Drawing.Width || Drawing.WorldToScreen(v).Y < 0 || Drawing.WorldToScreen(v).Y > Drawing.Height);
 		}
-
-		public void OnLoadEvent()
+        private void DrawQDamage(EventArgs args)
+        {
+            if (!Game.IsInGame || Game.IsPaused || !me.IsAlive || Game.IsWatchingGame)
+            {
+                return;
+            }
+            if (Menu.Item("ultDraw").GetValue<bool>())
+            {
+                float now = me.Health;
+                Task.Delay(4000 - (int)Game.Ping / 1000).ContinueWith(_ =>
+                {
+                    float back4 = me.Health;
+                    health = (now - back4);
+                    if (health < 0)
+                        health = 0;
+                });
+                var screenPos = HUDInfo.GetHPbarPosition(me);
+                if (!OnScreen(me.Position)) return;
+                //TODO test
+                var text = Math.Floor(health).ToString();
+                var size = new Vector2(18, 18);
+                var textSize = Drawing.MeasureText(text, "Arial", size, FontFlags.AntiAlias);
+                var position = new Vector2(screenPos.X - textSize.X - 1, screenPos.Y + 1);
+                Drawing.DrawText(
+                    text,
+                    position,
+                    size,
+                    (Color.LawnGreen),
+                    FontFlags.AntiAlias);
+                Drawing.DrawText(
+                    text,
+                    new Vector2(screenPos.X - textSize.X - 0, screenPos.Y + 0),
+                    size,
+                    (Color.Black),
+                    FontFlags.AntiAlias);
+            }
+        }
+        public void OnLoadEvent()
 		{
 			AssemblyExtensions.InitAssembly("VickTheRock", "0.1b");
 
@@ -355,7 +391,7 @@
 			Menu.AddItem(new MenuItem("Heelm", "Min targets to BladeMail").SetValue(new Slider(2, 1, 5)));
 			Menu.AddItem(new MenuItem("Heel", "Min targets to BKB").SetValue(new Slider(2, 1, 5)));
 
-			//ult.AddItem(new MenuItem("ultDraw", "Show me Lost Health").SetValue(true));
+            ultME.AddItem(new MenuItem("ultDraw", "Show me Lost Health").SetValue(true));
 			ultALLY.AddItem(new MenuItem("ult", "Use ult in Ally").SetValue(true)).SetTooltip("You need have AghanimS!");
 			ultME.AddItem(new MenuItem("ultMode1", "Use 1 Mode(Number % of lost health)").SetValue(true));
 			ultME.AddItem(new MenuItem("MomentDownHealth1", "Min Health % Down To Ult").SetValue(new Slider(35, 5, 100))).SetTooltip("Minimal damage % in my max health which I absorb values 4 seconds before using the Ultimate.");
@@ -371,7 +407,8 @@
 
 			Menu.AddSubMenu(ultME);
 			Menu.AddSubMenu(ultALLY);
-		}
+            Drawing.OnDraw += DrawQDamage;
+        }
 	}
 }
 

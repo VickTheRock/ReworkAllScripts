@@ -329,7 +329,10 @@
 		        var enemies =
 			        ObjectManager.GetEntities<Hero>()
 				        .Where(x => x.IsVisible && x.IsAlive && x.Team != me.Team && !x.IsIllusion).ToList();
-		        if (enemies.Count <= 0) return;
+				double[] penitence = { 0, 1.15, 1.2, 1.25, 1.3 };
+				double[] soul = { 0, 1.2, 1.3, 1.4, 1.5 };
+
+				if (enemies.Count <= 0) return;
 		        foreach (var v in enemies)
 		        {
 			        if (v == null) return;
@@ -351,8 +354,16 @@
 			        if (lens) damageW = damageW*1.08;
 			        if (v.HasModifier("modifier_kunkka_ghost_ship_damage_absorb")) damageW = damageW*0.5;
 			        if (v.HasModifier("modifier_item_mask_of_madness_berserk")) damageW = damageW*1.3;
-			        damageW = damageW*spellamplymult;
-			        if (damageW > v.Mana)
+					if (v.HasModifier("modifier_item_ethereal_blade_slow")) damageW = damageW * 1.4;
+					if (v.HasModifier("modifier_chen_penitence"))
+						damageW = damageW * penitence[ObjectManager.GetEntities<Hero>().FirstOrDefault(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Hero_Chen).Spellbook.Spell1.Level];
+                    
+					if (v.HasModifier("modifier_shadow_demon_soul_catcher"))
+						damageW = damageW * soul[ObjectManager.GetEntities<Hero>().FirstOrDefault(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Hero_Shadow_Demon).Spellbook.Spell2.Level];
+					
+					damageW = damageW*spellamplymult;
+
+					if (damageW > v.Mana)
 				        damageW = v.Mana;
 
 

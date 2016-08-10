@@ -1,4 +1,4 @@
-namespace DotaAllCombo.Heroes
+﻿namespace DotaAllCombo.Heroes
 {
 	using System;
 	using System.Collections.Generic;
@@ -220,12 +220,7 @@ namespace DotaAllCombo.Heroes
                 if (R == null || !me.IsAlive) return;
                 var count = v.Count();
                 if (count <= 0) return;
-
-                double[] decrepify = { 0, 1.3, 1.4, 1.5, 1.6 };
-                double[] vortex = { 0, 1.15, 1.2, 1.25, 1.3 };
-                double[] penitence = { 0, 1.15, 1.2, 1.25, 1.3 };
-                double[] seal = { 0, 1.3, 1.35, 1.4, 1.45 };
-                double[] soul = { 0, 1.2, 1.3, 1.4, 1.5 };
+                
                 for (int i = 0; i < count; ++i)
                 {
                     if (W != null && W.CanBeCasted() && Menu.Item("HUNGER").IsActive())

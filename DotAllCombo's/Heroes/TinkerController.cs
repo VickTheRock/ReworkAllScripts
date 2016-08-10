@@ -822,7 +822,7 @@
             Drawing.OnDraw -= ParticleDraw;
         }
 
-        bool iscreated;
+        private bool iscreated;
         void ParticleDraw(EventArgs args)
         {
             //

@@ -389,7 +389,6 @@
 						}
 					}
 				}
-
 				A();
 			}
 		}
@@ -408,6 +407,12 @@
 				var enemies =
 				 ObjectManager.GetEntities<Hero>()
 					.Where(x => x.IsVisible && x.IsAlive && x.Team != me.Team && !x.IsIllusion).ToList();
+
+				double[] decrepify = { 0, 1.3, 1.4, 1.5, 1.6 };
+				double[] vortex = { 0, 1.15, 1.2, 1.25, 1.3 };
+				double[] penitence = { 0, 1.15, 1.2, 1.25, 1.3 };
+				double[] seal = { 0, 1.3, 1.35, 1.4, 1.45 };
+				double[] soul = { 0, 1.2, 1.3, 1.4, 1.5 };
 				foreach (var v in enemies)
 				{
 					if (v == null)
@@ -432,11 +437,14 @@
 
 					if (!me.AghanimState() && !v.IsLinkensProtected())
 					{
-						var mom = v.HasModifier("modifier_item_mask_of_madness_berserk");
-						if (mom) damage = damage * 1.3;
-						var rum = v.HasModifier("modifier_kunkka_ghost_ship_damage_absorb");
-						if (rum) damage = damage * 0.5;
-
+						if (me.HasModifier("modifier_item_aether_lens")) damage = damage * 1.08;
+						if (v.HasModifier("modifier_kunkka_ghost_ship_damage_absorb")) damage = damage * 0.5;
+						if (v.HasModifier("modifier_item_mask_of_madness_berserk")) damage = damage * 1.3;
+						if (v.HasModifier("modifier_chen_penitence"))
+							damage = damage * penitence[ObjectManager.GetEntities<Hero>().FirstOrDefault(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Hero_Chen).Spellbook.Spell1.Level];
+                        if (v.HasModifier("modifier_shadow_demon_soul_catcher"))
+							damage = damage * soul[ObjectManager.GetEntities<Hero>().FirstOrDefault(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Hero_Shadow_Demon).Spellbook.Spell2.Level];
+                        
 						var spellamplymult = 1 + (me.TotalIntelligence / 16 / 100);
 						damage = damage * spellamplymult;
 

@@ -55,20 +55,20 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Ensage">
-      <HintPath>D:\Program Files (x86)\PlaySharp\References\Ensage.dll</HintPath>
+      <HintPath>E:\Program Files (x86)\e2AO9AXYS 1\References\Ensage.dll</HintPath>
     </Reference>
     <Reference Include="Ensage.Common">
-      <HintPath>D:\Program Files (x86)\PlaySharp\References\Ensage.Common.dll</HintPath>
+      <HintPath>E:\Program Files (x86)\e2AO9AXYS 1\References\Ensage.Common.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\Program Files (x86)\PlaySharp\References\Newtonsoft.Json.dll</HintPath>
+      <HintPath>E:\Program Files (x86)\e2AO9AXYS 1\References\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX">
-      <HintPath>D:\Program Files (x86)\PlaySharp\References\SharpDX.dll</HintPath>
+      <HintPath>E:\Program Files (x86)\e2AO9AXYS 1\References\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Direct3D9">
-      <HintPath>D:\Program Files (x86)\PlaySharp\References\SharpDX.Direct3D9.dll</HintPath>
+      <HintPath>E:\Program Files (x86)\e2AO9AXYS 1\References\SharpDX.Direct3D9.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -86,6 +86,7 @@
     <Compile Include="Addons\_Addon.cs" />
     <Compile Include="Extensions\Toolset.cs" />
     <Compile Include="Heroes\AntimageController.cs" />
+    <Compile Include="Heroes\FacelessVoidController.cs" />
     <Compile Include="Heroes\TerrorbladeController.cs" />
     <Compile Include="Heroes\AxeController.cs" />
     <Compile Include="Heroes\BloodseekerController.cs" />

@@ -312,6 +312,89 @@
                     Utils.Sleep(100, "bkb");
                 }
             }
+            if (Menu.Item("autoUlt").GetValue<bool>() && me.IsAlive)
+            {
+                double[] penitence = { 0, 1.15, 1.2, 1.25, 1.3 };
+                double[] souls = { 0, 1.2, 1.3, 1.4, 1.5 };
+
+                R = me.Spellbook.SpellR;
+                var ultLvl = R.Level;
+                var enemy =
+                    ObjectManager.GetEntities<Hero>()
+                        .Where(x => x.Team != me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion)
+                        .ToList();
+                if (enemy.Count == 0) return;
+                foreach (var z in enemy)
+                {
+                    if (!z.IsVisible || !z.IsAlive) continue;
+                    var manna = (z.MaximumMana - z.Mana);
+                    var damage = Math.Floor((manna*ult[ultLvl])*(1 - z.MagicDamageResist));
+
+                    var lens = me.HasModifier("modifier_item_aether_lens");
+
+                    if (z.NetworkName == "CDOTA_Unit_Hero_Spectre" && z.Spellbook.Spell3.Level > 0)
+                    {
+                        damage =
+                            Math.Floor((manna*ult[ultLvl])*
+                                       (1 - (0.10 + z.Spellbook.Spell3.Level*0.04))*(1 - z.MagicDamageResist));
+                    }
+                    if (z.NetworkName == "CDOTA_Unit_Hero_SkeletonKing" &&
+                        z.Spellbook.SpellR.CanBeCasted())
+                        damage = 0;
+                    if (lens) damage = damage*1.08;
+                    if (z.HasModifier("modifier_kunkka_ghost_ship_damage_absorb")) damage = damage*0.5;
+                    if (z.HasModifier("modifier_item_mask_of_madness_berserk")) damage = damage*1.3;
+
+                    if (z.HasModifier("modifier_chen_penitence"))
+                        damage = damage*
+                                 penitence[
+                                     ObjectManager.GetEntities<Hero>()
+                                         .FirstOrDefault(
+                                             x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Hero_Chen)
+                                         .Spellbook.Spell1.Level];
+
+                    if (z.HasModifier("modifier_shadow_demon_soul_catcher"))
+                        damage = damage*
+                                 souls[
+                                     ObjectManager.GetEntities<Hero>()
+                                         .FirstOrDefault(
+                                             x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Hero_Shadow_Demon)
+                                         .Spellbook.Spell2.Level];
+                    
+                    if (R != null && R.CanBeCasted()
+                        && !z.HasModifier("modifier_tusk_snowball_movement")
+                        && !z.HasModifier("modifier_snowball_movement_friendly")
+                        && !z.HasModifier("modifier_templar_assassin_refraction_absorb")
+                        && !z.HasModifier("modifier_ember_spirit_flame_guard")
+                        && !z.HasModifier("modifier_ember_spirit_sleight_of_fist_caster_invulnerability")
+                        && !z.HasModifier("modifier_obsidian_destroyer_astral_imprisonment_prison")
+                        && !z.HasModifier("modifier_puck_phase_shift")
+                        && !z.HasModifier("modifier_eul_cyclone")
+                        && !z.HasModifier("modifier_dazzle_shallow_grave")
+                        && !z.HasModifier("modifier_shadow_demon_disruption")
+                        && !z.HasModifier("modifier_necrolyte_reapers_scythe")
+                        && !z.HasModifier("modifier_medusa_stone_gaze_stone")
+                        && !z.HasModifier("modifier_storm_spirit_ball_lightning")
+                        && !z.HasModifier("modifier_ember_spirit_fire_remnant")
+                        && !z.HasModifier("modifier_nyx_assassin_spiked_carapace")
+                        && !z.HasModifier("modifier_phantom_lancer_doppelwalk_phase")
+                        && !z.FindSpell("abaddon_borrowed_time").CanBeCasted() &&
+                        !z.HasModifier("modifier_abaddon_borrowed_time_damage_redirect")
+                        && me.Distance2D(z) <= R.GetCastRange() + 50
+                        && !z.IsMagicImmune()
+                        && enemy.Count(x => (x.Health - damage) <= 0 && x.Distance2D(z) <= 500)
+                        >= Menu.Item("ulti").GetValue<Slider>().Value
+                        && enemy.Count(x => x.Distance2D(z) <= 500)
+                        >= Menu.Item("ulti").GetValue<Slider>().Value
+                        && damage >= Menu.Item("minDMG").GetValue<Slider>().Value
+                        && Utils.SleepCheck(z.Handle.ToString()))
+                    {
+                        R.UseAbility(z);
+                        Utils.Sleep(150, z.Handle.ToString());
+                        return;
+                    }
+                }
+            }
         } // Combo
 
         public void OnLoadEvent()
@@ -377,7 +460,9 @@
             {
                 return;
             }
-            
+
+            double[] penitence = { 0, 1.15, 1.2, 1.25, 1.3 };
+            double[] soul = { 0, 1.2, 1.3, 1.4, 1.5 };
 
             R = me.Spellbook.SpellR;
             var ultLvl = R.Level;
@@ -406,6 +491,13 @@
                 if (lens) damage = damage * 1.08;
                 if (v.HasModifier("modifier_kunkka_ghost_ship_damage_absorb")) damage = damage * 0.5;
                 if (v.HasModifier("modifier_item_mask_of_madness_berserk")) damage = damage * 1.3;
+
+                if (v.HasModifier("modifier_chen_penitence"))
+                    damage = damage * penitence[ObjectManager.GetEntities<Hero>().FirstOrDefault(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Hero_Chen).Spellbook.Spell1.Level];
+
+                if (v.HasModifier("modifier_shadow_demon_soul_catcher"))
+                    damage = damage * soul[ObjectManager.GetEntities<Hero>().FirstOrDefault(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Hero_Shadow_Demon).Spellbook.Spell2.Level];
+                
                 var dmg = v.Health - damage;
                 var canKill = dmg <= 0;
                 var screenPos = HUDInfo.GetHPbarPosition(v);
@@ -421,41 +513,6 @@
                     size,
                     (canKill ? Color.LawnGreen : Color.Red),
                     FontFlags.AntiAlias);
-                if (Menu.Item("autoUlt").GetValue<bool>() && me.IsAlive)
-                {
-                    if (R != null && R.CanBeCasted()
-                        && !v.HasModifier("modifier_tusk_snowball_movement")
-                        && !v.HasModifier("modifier_snowball_movement_friendly")
-                        && !v.HasModifier("modifier_templar_assassin_refraction_absorb")
-                        && !v.HasModifier("modifier_ember_spirit_flame_guard")
-                        && !v.HasModifier("modifier_ember_spirit_sleight_of_fist_caster_invulnerability")
-                        && !v.HasModifier("modifier_obsidian_destroyer_astral_imprisonment_prison")
-                        && !v.HasModifier("modifier_puck_phase_shift")
-                        && !v.HasModifier("modifier_eul_cyclone")
-                        && !v.HasModifier("modifier_dazzle_shallow_grave")
-                        && !v.HasModifier("modifier_shadow_demon_disruption")
-                        && !v.HasModifier("modifier_necrolyte_reapers_scythe")
-                        && !v.HasModifier("modifier_medusa_stone_gaze_stone")
-                        && !v.HasModifier("modifier_storm_spirit_ball_lightning")
-                        && !v.HasModifier("modifier_ember_spirit_fire_remnant")
-                        && !v.HasModifier("modifier_nyx_assassin_spiked_carapace")
-                        && !v.HasModifier("modifier_phantom_lancer_doppelwalk_phase")
-                        && !v.FindSpell("abaddon_borrowed_time").CanBeCasted() &&
-                        !v.HasModifier("modifier_abaddon_borrowed_time_damage_redirect")
-                        && me.Distance2D(v) <= R.GetCastRange() + 50
-                        && !v.IsMagicImmune()
-                        && enemy.Count(x => (x.Health - damage) <= 0 && x.Distance2D(v) <= 500)
-                        >= Menu.Item("ulti").GetValue<Slider>().Value
-                        && enemy.Count(x => x.Distance2D(v) <= 500)
-                        >= Menu.Item("ulti").GetValue<Slider>().Value
-						&& damage >= Menu.Item("minDMG").GetValue<Slider>().Value
-						&& Utils.SleepCheck(v.Handle.ToString()))
-                    {
-                        R.UseAbility(v);
-                        Utils.Sleep(150, v.Handle.ToString());
-                        return;
-                    }
-                }
             }
         }
         private bool OnScreen(Vector3 v)
