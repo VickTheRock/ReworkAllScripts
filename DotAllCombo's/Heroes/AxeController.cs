@@ -1,4 +1,4 @@
-﻿namespace DotaAllCombo.Heroes
+namespace DotaAllCombo.Heroes
 {
 	using System;
 	using System.Collections.Generic;
@@ -14,9 +14,10 @@
 	internal class AxeController : Variables, IHeroController
 	{
 		private Ability Q, W, R;
+	    private int[] damage;
 
-		private Item urn, dagon, mjollnir, abyssal, mom, armlet, Shiva, mail, bkb, satanic, medall, blink;
-		private Double rDmg;
+        private Item urn, dagon, mjollnir, abyssal, mom, armlet, Shiva, mail, bkb, satanic, medall, blink, lotusorb;
+		private double rDmg;
 		public void Combo()
 		{
 			Active = Game.IsKeyDown(Menu.Item("keyBind").GetValue<KeyBind>().Key);
@@ -34,6 +35,7 @@
 			dagon = me.Inventory.Items.FirstOrDefault(item => item.Name.Contains("item_dagon"));
 			mjollnir = me.FindItem("item_mjollnir");
 			abyssal = me.FindItem("item_abyssal_blade");
+			lotusorb = me.FindItem("item_lotus_orb");
 			mail = me.FindItem("item_blade_mail");
 			armlet = me.FindItem("item_armlet");
 			bkb = me.FindItem("item_black_king_bar");
@@ -41,71 +43,7 @@
 			blink = me.FindItem("item_blink");
 			medall = me.FindItem("item_medallion_of_courage") ?? me.FindItem("item_solar_crest");
 			Shiva = me.FindItem("item_shivas_guard");
-			if (Menu.Item("kill").IsActive())
-			{
-				if (R == null || !R.CanBeCasted() || !me.IsAlive) return;
-				if(v.Count<=0)return;
-
-				if (W != null && W.CanBeCasted() && Menu.Item("HUNGER").IsActive())
-				{
-					for (int i = 0; i < v.Count(); ++i)
-					{
-						if (!v[i].HasModifier("modifier_axe_battle_hunger")
-							&& me.Distance2D(v[i]) <= W.GetCastRange()+me.HullRadius
-							&& me.Mana >= R.ManaCost+180
-							&& Utils.SleepCheck(me.Handle.ToString()))
-						{
-							W.UseAbility(v[i]);
-							Utils.Sleep(400, me.Handle.ToString());
-						}
-					}
-				}
-				foreach (Hero vic in v)
-				{
-					if (vic.Modifiers.Any(x =>
-					(x.Name == "modifier_obsidian_destroyer_astral_imprisonment_prison"
-					|| x.Name == "modifier_puck_phase_shift"
-					|| x.Name == "modifier_eul_cyclone"
-					|| x.Name == "modifier_invoker_tornado"
-					|| x.Name == "modifier_brewmaster_storm_cyclone"
-					|| x.Name == "modifier_shadow_demon_disruption"
-					|| x.Name == "modifier_tusk_snowball_movement"
-					|| x.Name == "modifier_abaddon_borrowed_time"
-					|| x.Name == "modifier_faceless_void_time_walk"
-					|| x.Name == "modifier_huskar_life_break_charge"))) return;
-					rDmg = R.GetAbilityData("damage") * (1 + (me.TotalIntelligence / 16 / 100));
-					if (vic.HasModifier("modifier_item_veil_of_discord_debuff"))
-						rDmg = rDmg * 1.25;
-					if (vic.NetworkName == "CDOTA_Unit_Hero_Spectre" && vic.Spellbook.Spell3.Level > 0)
-					{
-						rDmg =
-							R.GetAbilityData("damage") * (1 + (me.TotalIntelligence / 16 / 100)) *
-									   (1 - (0.10 + vic.Spellbook.Spell3.Level * 0.04));
-					}
-					if (me.HasModifier("modifier_item_aether_lens")) rDmg = rDmg * 1.08;
-					if (vic.HasModifier("modifier_kunkka_ghost_ship_damage_absorb")) rDmg = rDmg * 0.5;
-					if (vic.HasModifier("modifier_item_mask_of_madness_berserk")) rDmg = rDmg * 1.3;
-					
-					if (vic.Health <= rDmg && vic.Distance2D(me) <= R.GetCastRange() + me.HullRadius && Utils.SleepCheck(vic.Handle.ToString()))
-					{
-						R.UseAbility(vic);
-						Utils.Sleep(150, vic.Handle.ToString());
-					}
-					if (blink != null && blink.CanBeCasted() && R != null && R.CanBeCasted() && Menu.Item("blink").IsActive())
-					{
-						if (me.Distance2D(vic) > R.GetCastRange() + me.HullRadius + 24 && vic.Health < rDmg && Utils.SleepCheck(vic.Handle.ToString()))
-						{
-							blink.UseAbility(vic.Position);
-							Utils.Sleep(150, vic.Handle.ToString());
-						}
-					}
-					if (R.IsInAbilityPhase && v.Where(x => me.Distance2D(x) <= R.GetCastRange() + me.HullRadius + 24).OrderBy(z => z.Health).First().Health > rDmg && vic.Distance2D(me) <= R.GetCastRange() + me.HullRadius + 24 && Utils.SleepCheck(vic.Handle.ToString()))
-					{
-						me.Stop();
-						Utils.Sleep(50, vic.Handle.ToString());
-					}
-				}
-			}
+			
 			e = me.ClosestToMouseTarget(1800);
 			if (e == null) return;
 			var stoneModif = e.HasModifier("modifier_medusa_stone_gaze_stone");
@@ -157,6 +95,14 @@
 				{
 					W.UseAbility(e);
 					Utils.Sleep(200, "W");
+				}
+				if (lotusorb != null && lotusorb.CanBeCasted() &&
+				    Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(lotusorb.Name)
+					&& (v.Count(x => x.Distance2D(me) <= 650) >= (Menu.Item("Heelm").GetValue<Slider>().Value) && Utils.SleepCheck("lotusorb"))
+				   )
+				{
+					lotusorb.UseAbility(me);
+					Utils.Sleep(250, "lotusorb");
 				}
 				if ( // Mjollnir
 					mjollnir != null
@@ -263,13 +209,75 @@
 				{
 					Orbwalking.Orbwalk(e, 0, 1600, true, true);
 				}
-				if (Q != null && Q.IsInAbilityPhase && v.Count(x => x.Distance2D(me) <= Q.GetCastRange()+me.HullRadius) == 0 && Utils.SleepCheck("Phase"))
+				if (Q != null && Q.IsInAbilityPhase && v.Count(x => x.Distance2D(me) <= Q.GetCastRange()+me.HullRadius+23) == 0 && Utils.SleepCheck("Phase"))
 				{
 					me.Stop();
 					Utils.Sleep(100, "Phase");
 				}
 			}
-		}
+            if (Menu.Item("kill").IsActive())
+            {
+                if (R == null || !me.IsAlive) return;
+                var count = v.Count();
+                if (count <= 0) return;
+
+                double[] decrepify = { 0, 1.3, 1.4, 1.5, 1.6 };
+                double[] vortex = { 0, 1.15, 1.2, 1.25, 1.3 };
+                double[] penitence = { 0, 1.15, 1.2, 1.25, 1.3 };
+                double[] seal = { 0, 1.3, 1.35, 1.4, 1.45 };
+                double[] soul = { 0, 1.2, 1.3, 1.4, 1.5 };
+                for (int i = 0; i < count; ++i)
+                {
+                    if (W != null && W.CanBeCasted() && Menu.Item("HUNGER").IsActive())
+                    {
+                        if (!v[i].HasModifier("modifier_axe_battle_hunger")
+                            && me.Distance2D(v[i]) <= W.GetCastRange() + me.HullRadius
+                            && me.Mana >= R.ManaCost + 180
+                            && Utils.SleepCheck(me.Handle.ToString()))
+                        {
+                            W.UseAbility(v[i]);
+                            Utils.Sleep(400, me.Handle.ToString());
+                        }
+                    }
+                    if (!R.CanBeCasted()) return;
+                    damage = me.AghanimState() ? new[] { 0, 300, 425, 550 } : new[] { 0, 250, 325, 400 };
+                    rDmg = ((damage[R.Level]));
+                    
+                    if (R.IsInAbilityPhase && v.Where(x => me.Distance2D(x) <= R.GetCastRange() + me.HullRadius + 24).OrderBy(z => z.Health).First().Health > rDmg && v[i].Distance2D(me) <= R.GetCastRange() + me.HullRadius + 24 && Utils.SleepCheck(v[i].Handle.ToString()))
+                    {
+                        me.Stop();
+                        Utils.Sleep(100, v[i].Handle.ToString());
+                    }
+                    if (v[i].Modifiers.Any(x =>
+                    (x.Name == "modifier_obsidian_destroyer_astral_imprisonment_prison"
+                    || x.Name == "modifier_puck_phase_shift"
+                    || x.Name == "modifier_eul_cyclone"
+                    || x.Name == "modifier_invoker_tornado"
+                    || x.Name == "modifier_brewmaster_storm_cyclone"
+                    || x.Name == "modifier_shadow_demon_disruption"
+                    || x.Name == "modifier_tusk_snowball_movement"
+                    || x.Name == "modifier_abaddon_borrowed_time"
+                    || x.Name == "modifier_faceless_void_time_walk"
+                    || x.Name == "modifier_huskar_life_break_charge"))) return;
+                  
+                    if (blink != null && blink.CanBeCasted() && R != null && R.CanBeCasted() && Menu.Item("blink").IsActive())
+                    {
+                        if (me.Distance2D(v[i]) > R.GetCastRange() + me.HullRadius + 24 && v[i].Health < rDmg && Utils.SleepCheck(v[i].Handle.ToString()))
+                        {
+                            blink.UseAbility(v[i].Position);
+                            Utils.Sleep(150, v[i].Handle.ToString());
+                        }
+                    }
+                    var bonusRange = Menu.Item("killRange").IsActive() ? Menu.Item("Blade").GetValue<Slider>().Value : 0;
+                    if (v[i].Health <= rDmg && v[i].Distance2D(me) <= R.GetCastRange() + me.HullRadius+24 + bonusRange && Utils.SleepCheck(v[i].Handle.ToString()))
+                    {
+                        R.UseAbility(v[i]);
+                        Utils.Sleep(150, v[i].Handle.ToString());
+                    }
+                    
+                }
+            }
+        }
 
 		public void OnLoadEvent()
 		{
@@ -294,6 +302,7 @@
 					{"item_dagon", true},
 					{"item_blink", true},
 					{"item_armlet", true},
+					{"item_lotus_orb", true},
 					{"item_heavens_halberd", true},
 					{"item_urn_of_shadows", true},
 					{"item_veil_of_discord", true},
@@ -311,8 +320,11 @@
 
 			Menu.AddItem(new MenuItem("blink", "Use Auto blink and CULLING BLADE(R)").SetValue(true));
 			Menu.AddItem(new MenuItem("Heel", "Min targets to BKB").SetValue(new Slider(2, 1, 5)));
-			Menu.AddItem(new MenuItem("Heelm", "Min targets to BladeMail").SetValue(new Slider(2, 1, 5)));
-		}
+			Menu.AddItem(new MenuItem("Heelm", "Min targets to BladeMail|Lotus").SetValue(new Slider(2, 1, 5)));
+
+            Menu.AddItem(new MenuItem("killRange", "Use Bonus Ult Range").SetValue(true)).SetTooltip("Move to enemy");
+            Menu.AddItem(new MenuItem("Blade", "Bonus Ult Range").SetValue(new Slider(200, 1, 500))).SetTooltip("Move to enemy");
+        }
 
 		public void OnCloseEvent()
 		{
