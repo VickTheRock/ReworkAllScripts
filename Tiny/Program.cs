@@ -20,7 +20,7 @@ namespace TinyAutoCombo
 		
 		private static void OnLoadEvent(object sender, EventArgs args)
 		{
-			if (ObjectManager.LocalHero.ClassID == ClassID.CDOTA_Unit_Hero_Tiny) return;
+			if (ObjectManager.LocalHero.ClassID != ClassID.CDOTA_Unit_Hero_Tiny) return;
 
 			Menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true));
 			Menu.AddItem(new MenuItem("orbwalk", "orbwalk").SetValue(true));
