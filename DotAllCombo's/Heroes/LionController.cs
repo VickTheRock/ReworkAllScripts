@@ -373,10 +373,7 @@
 
 			if (Menu.Item("AutoUlt").GetValue<AbilityToggler>().IsEnabled(R.Name))
 			{
-				double[] decrepify = { 0, 1.3, 1.4, 1.5, 1.6 };
-				double[] vortex = { 0, 1.15, 1.2, 1.25, 1.3 };
 				double[] penitence = { 0, 1.15, 1.2, 1.25, 1.3 };
-				double[] seal = { 0, 1.3, 1.35, 1.4, 1.45 };
 				double[] souls = { 0, 1.2, 1.3, 1.4, 1.5 };
 				foreach (var v in enemies)
 				{

@@ -522,7 +522,7 @@
 				double[] soul = { 0, 1.2, 1.3, 1.4, 1.5 };
 				var units =
 					ObjectManager.GetEntities<Hero>()
-						.Where(x => x.Team != me.Team && x.IsAlive && x.Distance2D(me) <= Q.GetCastRange() && !x.IsIllusion)
+						.Where(x => x.Team != me.Team && x.IsAlive && !x.IsIllusion)
 						.ToList();
 				foreach (var v in units.Where(x => !x.IsMagicImmune()))
 				{
@@ -536,46 +536,42 @@
 					enemiesCount = ObjectManager.GetEntities<Hero>().Where(x =>
 						x.Team != me.Team && x.IsAlive && x.IsVisible && v.Distance2D(x) <= 330 && !x.IsIllusion).ToList().Count();
 					if (enemiesCount == 0)
-					{
 						enemiesCount = 0;
-					}
 					if (creepsECount == 0)
-					{
 						creepsECount = 0;
-					}
-					damage = ((creepsECount*creepsDmg[Q.Level - 1] + enemiesCount*enemyDmg[Q.Level - 1]) +
-					          qDmg[Q.Level - 1])*(1 - v.MagicDamageResist);
 					
-					if (v.NetworkName == "CDOTA_Unit_Hero_Spectre" && v.Spellbook.Spell3.Level > 0)
-					{
-						damage =
-							Math.Floor((((creepsECount*creepsDmg[Q.Level - 1] + enemiesCount*enemyDmg[Q.Level - 1]) +
-							             qDmg[Q.Level - 1])*
-							            (1 - (0.10 + v.Spellbook.Spell3.Level*0.04)))*(1 - v.MagicDamageResist));
-					}
-					if (v.NetworkName == "CDOTA_Unit_Hero_SkeletonKing" &&
-					    v.Spellbook.SpellR.CanBeCasted())
-						damage = 0;
-					var rum = v.HasModifier("modifier_kunkka_ghost_ship_damage_absorb");
-					if (rum) damage = damage*0.5;
-					var mom = v.HasModifier("modifier_item_mask_of_madness_berserk");
-					if (mom) damage = damage*1.3;
-					var spellamplymult = 1 + (me.TotalIntelligence / 16 / 100);
-					if (v.HasModifier("modifier_item_ethereal_blade_slow")) damage = damage * 1.4;
-					if (v.HasModifier("modifier_chen_penitence"))
-						damage = damage * penitence[ObjectManager.GetEntities<Hero>().FirstOrDefault(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Hero_Chen).Spellbook.Spell1.Level];
-
-					if (v.HasModifier("modifier_shadow_demon_soul_catcher"))
-						damage = damage * soul[ObjectManager.GetEntities<Hero>().FirstOrDefault(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Hero_Shadow_Demon).Spellbook.Spell2.Level];
-
-					damage = damage * spellamplymult;
-					
-					var dmg = v.Health - damage;
-					var canKill = dmg <= 0;
 					var screenPos = HUDInfo.GetHPbarPosition(v);
 					if (!OnScreen(v.Position)) continue;
 
-					var text = canKill ? "Yes: " + Math.Floor(damage) : "No: " + Math.Floor(damage);
+                    damage = ((creepsECount * creepsDmg[Q.Level - 1] + enemiesCount * enemyDmg[Q.Level - 1]) +
+                              qDmg[Q.Level - 1]) * (1 - v.MagicDamageResist);
+
+                    if (v.NetworkName == "CDOTA_Unit_Hero_Spectre" && v.Spellbook.Spell3.Level > 0)
+                    {
+                        damage =
+                            Math.Floor((((creepsECount * creepsDmg[Q.Level - 1] + enemiesCount * enemyDmg[Q.Level - 1]) +
+                                         qDmg[Q.Level - 1]) *
+                                        (1 - (0.10 + v.Spellbook.Spell3.Level * 0.04))) * (1 - v.MagicDamageResist));
+                    }
+                    if (v.NetworkName == "CDOTA_Unit_Hero_SkeletonKing" &&
+                        v.Spellbook.SpellR.CanBeCasted())
+                        damage = 0;
+                    var rum = v.HasModifier("modifier_kunkka_ghost_ship_damage_absorb");
+                    if (rum) damage = damage * 0.5;
+                    var mom = v.HasModifier("modifier_item_mask_of_madness_berserk");
+                    if (mom) damage = damage * 1.3;
+                    var spellamplymult = 1 + (me.TotalIntelligence / 16 / 100);
+                    if (v.HasModifier("modifier_item_ethereal_blade_slow")) damage = damage * 1.4;
+                    if (v.HasModifier("modifier_chen_penitence"))
+                        damage = damage * penitence[ObjectManager.GetEntities<Hero>().FirstOrDefault(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Hero_Chen).Spellbook.Spell1.Level];
+
+                    if (v.HasModifier("modifier_shadow_demon_soul_catcher"))
+                        damage = damage * soul[ObjectManager.GetEntities<Hero>().FirstOrDefault(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Hero_Shadow_Demon).Spellbook.Spell2.Level];
+
+                    damage = damage * spellamplymult;
+                    
+                    var canKill = v.Health <= damage;
+                    var text = canKill ? "Yes: " + Math.Floor(damage) : "No: " + Math.Floor(damage);
 					var size = new Vector2(18, 18);
 					var textSize = Drawing.MeasureText(text, "Arial", size, FontFlags.AntiAlias);
 					var position = new Vector2(screenPos.X - textSize.X + 91, screenPos.Y + 62);
