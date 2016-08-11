@@ -145,6 +145,8 @@
                                 && me.CanCast()
                                 && !e.IsLinkensProtected()
                                 && !e.IsMagicImmune()
+                                && !e.IsStunned()
+                                && !e.IsHexed()
                                 && me.Distance2D(e) <= 1400
                                 && !stoneModif
                                 && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(sheep.Name)
@@ -154,10 +156,14 @@
                                 sheep.UseAbility(e);
                                 Utils.Sleep(250, "sheep");
                             } // sheep Item end
-                            if (Q!=null
+                            if (
+                                Q!=null
 								&& Q.CanBeCasted()
-								&& Q.Cooldown<=0
-								&& me.AghanimState() ? me.Distance2D(e) <= 1190 : me.Distance2D(e) <= Q.GetCastRange() - 50
+                                && Q.Cooldown<=0
+                                && me.Mana>= Q.ManaCost
+                                && !e.IsStunned()
+                                && !e.IsHexed()
+								&& me.Distance2D(e) <= Q.GetCastRange() +me.HullRadius
 								&& !e.IsMagicImmune()
                                 && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name)
                                 && Utils.SleepCheck("Q"))
@@ -165,10 +171,12 @@
                                 Q.CastSkillShot(e);
                                 Utils.Sleep(100, "Q");
                             }
-                            if (W.CanBeCasted()
+                            if (
+                                W != null
+                                && W.CanBeCasted()
                                 && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name)
-								&& e.Mana >= (me.MaximumMana * 0.2)
-								&& me.Position.Distance2D(e.Position) < 800
+								&& e.Mana >= (e.MaximumMana * 0.2)
+								&& me.Position.Distance2D(e.Position) < W.GetCastRange()
                                 && Utils.SleepCheck("W"))
                             {
                                 W.UseAbility(e);
@@ -177,21 +185,25 @@
 
                             if ( // SoulRing Item 
                                 soul != null &&
-                                me.Health >= (me.MaximumHealth * 0.3) &&
+                                me.Health >= (me.MaximumHealth * 0.5) &&
                                 me.Mana <= R.ManaCost &&
                                 soul.CanBeCasted()
-                                && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(soul.Name))
+                                && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(soul.Name)
+                                && Utils.SleepCheck("soul"))
                             {
                                 soul.UseAbility();
+                                Utils.Sleep(100, "soul");
                             } // SoulRing Item end
 
                             if ( // Arcane Boots Item
                                 arcane != null &&
                                 me.Mana <= Q.ManaCost &&
                                 arcane.CanBeCasted()
-                                && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(arcane.Name))
+                                && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(arcane.Name) 
+                                && Utils.SleepCheck("arcane"))
                             {
                                 arcane.UseAbility();
+                                Utils.Sleep(100, "arcane");
                             } // Arcane Boots Item end
 
                             if ( // Shiva Item
@@ -255,6 +267,7 @@
                                 !e.IsMagicImmune() &&
                                 Utils.SleepCheck("abyssal") &&
                                 me.Distance2D(e) <= 400
+                                && !e.IsStunned()
                                 && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(abyssal.Name)
                                 )
                             {
@@ -475,8 +488,6 @@
                 {"nyx_assassin_vendetta", true}
             })));
 			Menu.AddItem(new MenuItem("Kill", "KillSteal W").SetValue(true)); 
-
-			Console.WriteLine(">Nyx by VickTheRock loaded!");
         }
 
         public void OnCloseEvent()
