@@ -16,7 +16,7 @@
         private readonly Menu items = new Menu("Items", "Items");
         private readonly Menu skills = new Menu("Skills: ", "Skills: ");
         private Ability Q, W, R;
-        private Item sheep, vail, soul, abyssal, mjollnir, arcane, blink, shiva, dagon, ethereal, cheese, halberd, satanic, mom, medall;
+        private Item sheep, vail, soul, abyssal, mjollnir, orchid, arcane, blink, shiva, dagon, ethereal, cheese, halberd, satanic, mom, medall;
         
 
         public void Combo()
@@ -46,7 +46,9 @@
 
 				arcane = me.FindItem("item_arcane_boots");
 
-				mom = me.FindItem("item_mask_of_madness");
+                orchid = me.FindItem("item_orchid") ?? me.FindItem("item_bloodthorn");
+
+                mom = me.FindItem("item_mask_of_madness");
 
 				vail = me.FindItem("item_veil_of_discord");
 
@@ -108,6 +110,20 @@
                             blink.UseAbility(pos);
                             Utils.Sleep(250, "blink");
                         }
+                        if ( // orchid
+                           orchid != null
+                           && orchid.CanBeCasted()
+                           && me.CanCast()
+                           && !e.IsLinkensProtected()
+                           && !e.IsMagicImmune()
+                           && me.Distance2D(e) <= me.AttackRange+me.HullRadius+50
+                           && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(orchid.Name)
+                           && Utils.SleepCheck("orchid")
+                           )
+                        {
+                            orchid.UseAbility(e);
+                            Utils.Sleep(250, "orchid");
+                        } // orchid Item end
                         if ( // vail
                             vail != null
                             && vail.CanBeCasted()

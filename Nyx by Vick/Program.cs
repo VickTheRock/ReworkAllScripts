@@ -14,7 +14,7 @@ namespace NyxbyVick
 		private static readonly Menu items = new Menu("Items", "Items");
 		private static readonly Menu skills = new Menu("Skills: ", "Skills: ");
 		private static Ability Q, W, R;
-		private static Item sheep, vail, soul, abyssal, mjollnir, arcane, blink, shiva, dagon, ethereal, cheese, halberd, satanic, mom, medall;
+		private static Item sheep, vail, soul, abyssal, mjollnir, orchid, arcane, blink, shiva, dagon, ethereal, cheese, halberd, satanic, mom, medall;
 		
 		private static bool Active;
         private static Hero me,e;
@@ -105,8 +105,10 @@ namespace NyxbyVick
 				vail = me.FindItem("item_veil_of_discord");
 
 				medall = me.FindItem("item_medallion_of_courage") ?? me.FindItem("item_solar_crest");
+                
+                orchid = me.FindItem("item_orchid") ?? me.FindItem("item_bloodthorn");
 
-				ethereal = me.FindItem("item_ethereal_blade");
+                ethereal = me.FindItem("item_ethereal_blade");
 
 				blink = me.FindItem("item_blink");
 
@@ -160,8 +162,22 @@ namespace NyxbyVick
 						{
 							blink.UseAbility(pos);
 							Utils.Sleep(250, "blink");
-						}
-						if ( // vail
+                        }
+                        if ( // orchid
+                         orchid != null
+                         && orchid.CanBeCasted()
+                         && me.CanCast()
+                         && !e.IsLinkensProtected()
+                         && !e.IsMagicImmune()
+                         && me.Distance2D(e) <= me.AttackRange + me.HullRadius + 50
+                         && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(orchid.Name)
+                         && Utils.SleepCheck("orchid")
+                         )
+                        {
+                            orchid.UseAbility(e);
+                            Utils.Sleep(250, "orchid");
+                        } // orchid Item end
+                        if ( // vail
 							vail != null
 							&& vail.CanBeCasted()
 							&& me.CanCast()
