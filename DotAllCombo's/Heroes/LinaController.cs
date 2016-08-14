@@ -408,12 +408,11 @@
 				 ObjectManager.GetEntities<Hero>()
 					.Where(x => x.IsVisible && x.IsAlive && x.Team != me.Team && !x.IsIllusion).ToList();
 
-				double[] decrepify = { 0, 1.3, 1.4, 1.5, 1.6 };
-				double[] vortex = { 0, 1.15, 1.2, 1.25, 1.3 };
-				double[] penitence = { 0, 1.15, 1.2, 1.25, 1.3 };
-				double[] seal = { 0, 1.3, 1.35, 1.4, 1.45 };
-				double[] soul = { 0, 1.2, 1.3, 1.4, 1.5 };
-				foreach (var v in enemies)
+
+                double[] penitence = { 0, 1.15, 1.2, 1.25, 1.3 };
+                double[] bloodrage = { 0, 1.15, 1.2, 1.25, 1.3 };
+                double[] soul = { 0, 1.2, 1.3, 1.4, 1.5 };
+                foreach (var v in enemies)
 				{
 					if (v == null)
 						return;
@@ -440,12 +439,37 @@
 						if (me.HasModifier("modifier_item_aether_lens")) damage = damage * 1.08;
 						if (v.HasModifier("modifier_kunkka_ghost_ship_damage_absorb")) damage = damage * 0.5;
 						if (v.HasModifier("modifier_item_mask_of_madness_berserk")) damage = damage * 1.3;
-						if (v.HasModifier("modifier_chen_penitence"))
-							damage = damage * penitence[ObjectManager.GetEntities<Hero>().FirstOrDefault(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Hero_Chen).Spellbook.Spell1.Level];
+                        if (v.HasModifier("modifier_bloodseeker_bloodrage"))
+                        {
+                            var blood =
+                                ObjectManager.GetEntities<Hero>()
+                                    .FirstOrDefault(x => x.ClassID == ClassID.CDOTA_Unit_Hero_Bloodseeker);
+                            if (blood != null)
+                                damage = damage * bloodrage[blood.Spellbook.Spell1.Level];
+                            else
+                                damage = damage * 1.4;
+                        }
+
+
+                        if (v.HasModifier("modifier_chen_penitence"))
+                        {
+                            var chen =
+                                ObjectManager.GetEntities<Hero>()
+                                    .FirstOrDefault(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Hero_Chen);
+                            if (chen != null)
+                                damage = damage * penitence[chen.Spellbook.Spell1.Level];
+                        }
+
+
                         if (v.HasModifier("modifier_shadow_demon_soul_catcher"))
-							damage = damage * soul[ObjectManager.GetEntities<Hero>().FirstOrDefault(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Hero_Shadow_Demon).Spellbook.Spell2.Level];
-                        
-						var spellamplymult = 1 + (me.TotalIntelligence / 16 / 100);
+                        {
+                            var demon =
+                                ObjectManager.GetEntities<Hero>()
+                                    .FirstOrDefault(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Hero_Shadow_Demon);
+                            if (demon != null)
+                                damage = damage * soul[demon.Spellbook.Spell2.Level];
+                        }
+                        var spellamplymult = 1 + (me.TotalIntelligence / 16 / 100);
 						damage = damage * spellamplymult;
 
 						if ( // vail

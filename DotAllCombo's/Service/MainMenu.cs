@@ -12,16 +12,21 @@ namespace DotaAllCombo.Service
 	{
 		private static Menu mainMenu;
 		private static Menu addonsMenu;
-       // private static readonly Menu dodgeMenu = new Menu("AutoDodgeSpells", "Auto Dodge All Spell's");
-		//private static readonly Menu stackMenu = new Menu("Stack Camp's", "Stack Camp's");
-		private static readonly Menu ccMenu    = new Menu("Auto Controll All Unit's", "Auto Controll All Unit's");
+        private static Menu KeySetting;
+        private static Menu GlobalSetting;
+        
+        // private static readonly Menu dodgeMenu = new Menu("AutoDodgeSpells", "Auto Dodge All Spell's");
+        //private static readonly Menu stackMenu = new Menu("Stack Camp's", "Stack Camp's");
+        private static readonly Menu ccMenu    = new Menu("Auto Controll All Unit's", "Auto Controll All Unit's");
 		private static readonly Menu othersMenu = new Menu("Others Addon's", "Others Addon's");
 		public static Menu Menu		  { get { return mainMenu;   } }
 		public static Menu AddonsMenu { get { return addonsMenu; } }
 
-		//public static Menu DodgeMenu { get { return dodgeMenu; } }
-		//public static Menu StackMenu { get { return stackMenu; } }
-		public static Menu OthersMenu { get { return othersMenu; } }
+        public static Menu globalSetting { get { return GlobalSetting; } }
+        public static Menu keySetting { get { return KeySetting; } }
+        //public static Menu DodgeMenu { get { return dodgeMenu; } }
+        //public static Menu StackMenu { get { return stackMenu; } }
+        public static Menu OthersMenu { get { return othersMenu; } }
 		public static Menu CCMenu    { get { return ccMenu;	   } }
 
 		public static void Load()
@@ -29,12 +34,15 @@ namespace DotaAllCombo.Service
 			// Инициализируем главное меню
 			mainMenu = new Menu("DotaAllCombo's", "menuName", true);
 			addonsMenu = new Menu("Addons", "addonsMenu");
-			//Menu ul = new Menu("Escape", "Auto Escape Target Attack");
-			// Инициализация меню для аддонов
-			//dodgeMenu.AddItem(new MenuItem("dodge", "Auto Dodge Spell's").SetValue(true));
-			//addonsMenu.AddSubMenu(dodgeMenu);
 
-			othersMenu.AddItem(new MenuItem("others", "Others Addon's").SetValue(true));
+            KeySetting = new Menu("Keys Setting", "Keys Setting");
+            GlobalSetting = new Menu("Global Setting", "Global Setting");
+            //Menu ul = new Menu("Escape", "Auto Escape Target Attack");
+            // Инициализация меню для аддонов
+            //dodgeMenu.AddItem(new MenuItem("dodge", "Auto Dodge Spell's").SetValue(true));
+            //addonsMenu.AddSubMenu(dodgeMenu);
+
+            othersMenu.AddItem(new MenuItem("others", "Others Addon's").SetValue(true));
 			othersMenu.AddItem(new MenuItem("ShowTargetMarker", "Show Target Marker").SetValue(true));
 			othersMenu.AddItem(new MenuItem("ShowAttakRange", "Show AttackRange").SetValue(true));
 
@@ -50,7 +58,16 @@ namespace DotaAllCombo.Service
 			//addonsMenu.AddSubMenu(stackMenu);
 
 			ccMenu.AddItem(new MenuItem("controll", "Auto Controll Unit's").SetValue(true));
-			addonsMenu.AddSubMenu(ccMenu);
+            KeySetting.AddItem(new MenuItem("Toogle Key", "Toogle Key").SetValue(new KeyBind('T', KeyBindType.Toggle)));
+            KeySetting.AddItem(new MenuItem("Press Key", "Press Key").SetValue(new KeyBind('F', KeyBindType.Press)));
+            KeySetting.AddItem(new MenuItem("Lock target Key", "Lock target Key").SetValue(new KeyBind('G', KeyBindType.Press)).SetTooltip("Lock a target closest mouse."));
+            ccMenu.AddSubMenu(KeySetting);
+            GlobalSetting.AddItem(new MenuItem("Target find range", "Target find range").SetValue(new Slider(1550, 0, 2000)).SetTooltip("Range from mouse to find TargetNow Hero."));
+            GlobalSetting.AddItem(new MenuItem("Target mode", "Target mode").SetValue(new StringList(new[] { "ClosesFindSource", "LowestHealth" })));
+            GlobalSetting.AddItem(new MenuItem("Target find source", "Target find source").SetValue(new StringList(new[] { "Me", "Mouse" })));
+            GlobalSetting.AddItem(new MenuItem("Delete lock target when Off", "Delete lock target when Off").SetValue(false));
+            ccMenu.AddSubMenu(GlobalSetting);
+            addonsMenu.AddSubMenu(ccMenu);
 			
 			// Добавление меню с аддонами в главное
 			mainMenu.AddSubMenu(addonsMenu);
@@ -63,18 +80,16 @@ namespace DotaAllCombo.Service
 			// Подключаем меню настроек героя
 			mainMenu.AddSubMenu((Menu)HeroSelector.HeroClass.GetField("Menu").GetValue(HeroSelector.HeroInst));
 
-			// Выводим автора текущего скрипта
-#pragma warning disable CS0618 // 'MenuItem.SetFontStyle(FontStyle, Color?)' is obsolete: 'SetFontStyle is deprecated, please use SetFontColor instead'
-			mainMenu.AddItem(new MenuItem("scriptAutor", HeroSelector.HeroName + " by " + AssemblyExtensions.GetAuthor(), true).SetFontStyle(
-				System.Drawing.FontStyle.Bold, Color.Coral));
-#pragma warning restore CS0618 // 'MenuItem.SetFontStyle(FontStyle, Color?)' is obsolete: 'SetFontStyle is deprecated, please use SetFontColor instead'
-
-			// Выводим версию текущего скрипта
-#pragma warning disable CS0618 // 'MenuItem.SetFontStyle(FontStyle, Color?)' is obsolete: 'SetFontStyle is deprecated, please use SetFontColor instead'
-			mainMenu.AddItem(new MenuItem("scriptVersion", "Version " + AssemblyExtensions.GetVersion()).SetFontStyle(
-				System.Drawing.FontStyle.Bold, Color.Coral));
-#pragma warning restore CS0618 // 'MenuItem.SetFontStyle(FontStyle, Color?)' is obsolete: 'SetFontStyle is deprecated, please use SetFontColor instead'
-			mainMenu.AddToMainMenu();
+            // Выводим автора текущего скрипта
+            // mainMenu.AddItem(new MenuItem("scriptAutor", HeroSelector.HeroName + " by " + AssemblyExtensions.GetAuthor(), true).SetFontStyle(
+			//	System.Drawing.FontStyle.Bold, Color.Coral));
+            // Выводим версию текущего скрипта
+            //mainMenu.AddItem(new MenuItem("scriptVersion", "Version " + AssemblyExtensions.GetVersion()).SetFontStyle(
+			//	System.Drawing.FontStyle.Bold, Color.Coral));
+            mainMenu.AddItem(new MenuItem("scriptAutor", HeroSelector.HeroName + " by " + AssemblyExtensions.GetAuthor(), true).SetFontColor(Color.Coral));
+            // Выводим версию текущего скрипта
+            mainMenu.AddItem(new MenuItem("scriptVersion", "Version " + AssemblyExtensions.GetVersion()).SetFontColor(Color.Coral));
+            mainMenu.AddToMainMenu();
 
 			Print.ConsoleMessage.Success("[DotaAllCombo's] Initialization complete!");
 		}
@@ -82,7 +97,6 @@ namespace DotaAllCombo.Service
 		public static void Unload()
 		{
 			if (mainMenu == null) return;
-
 			mainMenu.RemoveFromMainMenu();
 			mainMenu = null;
 		}

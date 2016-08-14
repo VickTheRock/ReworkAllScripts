@@ -2,7 +2,7 @@
 
 namespace DotaAllCombo.Heroes
 {
-	using Ensage;
+    using Ensage;
 	using Ensage.Common.Menu;
 
     [PermissionSet(SecurityAction.Assert, Unrestricted = true)]

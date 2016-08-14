@@ -60,6 +60,10 @@
     <Reference Include="Ensage.Common">
       <HintPath>E:\Program Files (x86)\e2AO9AXYS 1\References\Ensage.Common.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.DirectX.AudioVideoPlayback, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Microsoft.Net.Compilers.1.2.1\tools\Microsoft.DirectX.AudioVideoPlayback.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>E:\Program Files (x86)\e2AO9AXYS 1\References\Newtonsoft.Json.dll</HintPath>
@@ -85,8 +89,73 @@
     <Compile Include="Addons\CreepControl.cs" />
     <Compile Include="Addons\_Addon.cs" />
     <Compile Include="Extensions\Toolset.cs" />
+    <Compile Include="Heroes\AbaddonController.cs" />
+    <Compile Include="Heroes\WitchDoctorController.cs" />
+    <Compile Include="Heroes\WispController.cs" />
+    <Compile Include="Heroes\WinterWyvernController.cs" />
+    <Compile Include="Heroes\WarlockController.cs" />
+    <Compile Include="Heroes\VisageController.cs" />
+    <Compile Include="Heroes\VengefulSpiritController.cs" />
+    <Compile Include="Heroes\AbyssalUnderlordController.cs" />
+    <Compile Include="Heroes\AlchemistController.cs" />
+    <Compile Include="Heroes\AncientApparitionController.cs" />
     <Compile Include="Heroes\AntimageController.cs" />
+    <Compile Include="Heroes\ArcWardenController.cs" />
+    <Compile Include="Heroes\BaneController.cs" />
+    <Compile Include="Heroes\BatriderController.cs" />
+    <Compile Include="Heroes\BeastmasterController.cs" />
+    <Compile Include="Heroes\BristlebackController.cs" />
+    <Compile Include="Heroes\CentaurController.cs" />
+    <Compile Include="Heroes\ChenController.cs" />
+    <Compile Include="Heroes\CrystalMaidenController.cs" />
+    <Compile Include="Heroes\DarkSeerController.cs" />
+    <Compile Include="Heroes\DazzleController.cs" />
+    <Compile Include="Heroes\DeathProphetController.cs" />
+    <Compile Include="Heroes\DisruptorController.cs" />
+    <Compile Include="Heroes\DoomBringerController.cs" />
+    <Compile Include="Heroes\DragonKnightController.cs" />
+    <Compile Include="Heroes\EarthshakerController.cs" />
+    <Compile Include="Heroes\ElderTitanController.cs" />
+    <Compile Include="Heroes\EnchantressController.cs" />
+    <Compile Include="Heroes\EnigmaController.cs" />
     <Compile Include="Heroes\FacelessVoidController.cs" />
+    <Compile Include="Heroes\FurionController.cs" />
+    <Compile Include="Heroes\GyrocopterController.cs" />
+    <Compile Include="Heroes\HuskarController.cs" />
+    <Compile Include="Heroes\InvokerController.cs" />
+    <Compile Include="Heroes\JakiroController.cs" />
+    <Compile Include="Heroes\KeeperOfTheLightController.cs" />
+    <Compile Include="Heroes\KunkkaController.cs" />
+    <Compile Include="Heroes\LeshracController.cs" />
+    <Compile Include="Heroes\LichController.cs" />
+    <Compile Include="Heroes\LifeStealerController.cs" />
+    <Compile Include="Heroes\LoneDruidController.cs" />
+    <Compile Include="Heroes\LunaController.cs" />
+    <Compile Include="Heroes\LycanController.cs" />
+    <Compile Include="Heroes\MagnataurController.cs" />
+    <Compile Include="Heroes\MedusaController.cs" />
+    <Compile Include="Heroes\MiranaController.cs" />
+    <Compile Include="Heroes\Morphlingontroller.cs" />
+    <Compile Include="Heroes\NagaSirenController.cs" />
+    <Compile Include="Heroes\NecrolyteController.cs" />
+    <Compile Include="Heroes\NevermoreController.cs" />
+    <Compile Include="Heroes\ObsidianDestroyerController.cs" />
+    <Compile Include="Heroes\OgreMagiController.cs" />
+    <Compile Include="Heroes\PhantomLancerController.cs" />
+    <Compile Include="Heroes\PhoenixController.cs" />
+    <Compile Include="Heroes\PugnaController.cs" />
+    <Compile Include="Heroes\QueenOfPainController.cs" />
+    <Compile Include="Heroes\RattletrapController.cs" />
+    <Compile Include="Heroes\RazorController.cs" />
+    <Compile Include="Heroes\RubickController.cs" />
+    <Compile Include="Heroes\ShadowDemonController.cs" />
+    <Compile Include="Heroes\ShadowShamanController.cs" />
+    <Compile Include="Heroes\ShredderController.cs" />
+    <Compile Include="Heroes\SniperController.cs" />
+    <Compile Include="Heroes\SpectreController.cs" />
+    <Compile Include="Heroes\SpiritBreakerController.cs" />
+    <Compile Include="Heroes\StormSpiritController.cs" />
+    <Compile Include="Heroes\TechiesController.cs" />
     <Compile Include="Heroes\TerrorbladeController.cs" />
     <Compile Include="Heroes\AxeController.cs" />
     <Compile Include="Heroes\BloodseekerController.cs" />
@@ -118,9 +187,13 @@
     <Compile Include="Heroes\SlarkController.cs" />
     <Compile Include="Heroes\SvenController.cs" />
     <Compile Include="Heroes\TemplarAssassinController.cs" />
+    <Compile Include="Heroes\TidehunterController.cs" />
     <Compile Include="Heroes\TinkerController.cs" />
     <Compile Include="Heroes\TinyController.cs" />
+    <Compile Include="Heroes\TreantController.cs" />
+    <Compile Include="Heroes\TrollWarlordController.cs" />
     <Compile Include="Heroes\TuskController.cs" />
+    <Compile Include="Heroes\UndyingController.cs" />
     <Compile Include="Heroes\UrsaController.cs" />
     <Compile Include="Heroes\VenomancerController.cs" />
     <Compile Include="Heroes\ViperController.cs" />

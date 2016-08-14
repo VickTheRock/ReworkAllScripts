@@ -363,7 +363,7 @@ namespace NyxbyVick
 								&& dagon != null
 								&& (ethereal == null
 									|| (e.HasModifier("modifier_item_ethereal_blade_slow")
-										|| ethereal.Cooldown < 17))
+										|| ethereal.Cooldown < 18))
 								&& !e.IsLinkensProtected()
 								&& dagon.CanBeCasted()
 								&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled("item_dagon")

@@ -60,7 +60,7 @@
 
 		    var stoneModif = e.Modifiers.Any(y => y.Name == "modifier_medusa_stone_gaze_stone");
 			var modifR = e.Modifiers.Any(y => y.Name == "modifier_bloodseeker_rupture");
-			var modifQ = e.Modifiers.All(y => y.Name == "modifier_bloodseeker_bloodrage");
+			var modifQ = e.HasModifier("modifier_bloodseeker_bloodrage");
 			if (Active && me.Distance2D(e) <= 1400 && e != null && e.IsAlive)
             {
 				if (Menu.Item("orbwalk").GetValue<bool>() && me.Distance2D(e) <= 1900)

@@ -64,7 +64,7 @@
 			e = me.ClosestToMouseTarget(3000);
 			if (e == null) return;
 
-			var stoneModif = e.Modifiers.All(y => y.Name == "modifier_medusa_stone_gaze_stone");
+			var stoneModif = e.HasModifier("modifier_medusa_stone_gaze_stone");
 
 
 			if (me.IsChanneling() || R.IsInAbilityPhase || R.IsChanneling) return;
@@ -72,12 +72,7 @@
 				ObjectManager.GetEntities<Hero>()
 					.Where(x => x.Team != me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && !x.IsMagicImmune())
 					.ToList();
-			var modifInv =
-				me.Modifiers.All(
-					x =>
-						x.Name == "modifier_item_silver_edge_windwalk" || x.Name == "modifier_item_edge_windwalk" ||
-						x.Name == "modifier_treant_natures_guise" || x.Name == "modifier_rune_invis" ||
-						x.Name == "modifier_bounty_hunter_wind_walk");
+			var modifInv = me.IsInvisible();
 			if (Active && Utils.SleepCheck("Combo"))
 			{
 				if (me.HasModifier("modifier_sandking_sand_storm")) return;
@@ -98,7 +93,6 @@
 						Utils.Sleep(200, "R");
 						Utils.Sleep(300, "Combo");
 					}
-
 				}
 
 				if (!Utils.SleepCheck("Combo") || me.IsChanneling() || R.IsChanneling || R.IsInAbilityPhase) return;

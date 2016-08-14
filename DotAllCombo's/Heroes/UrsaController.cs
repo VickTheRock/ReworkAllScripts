@@ -42,7 +42,7 @@
 			if (e == null) return;
 
 			sheep = e.ClassID == ClassID.CDOTA_Unit_Hero_Tidehunter ? null : me.FindItem("item_sheepstick");
-			var stoneModif = e.Modifiers.All(y => y.Name == "modifier_medusa_stone_gaze_stone");
+			var stoneModif = e.HasModifier("modifier_medusa_stone_gaze_stone");
 
 
 			var v =
