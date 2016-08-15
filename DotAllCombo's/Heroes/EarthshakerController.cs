@@ -69,7 +69,7 @@
                 sheep = e.ClassID == ClassID.CDOTA_Unit_Hero_Tidehunter ? null : me.FindItem("item_sheepstick");
                 if (e.IsAlive && e.IsVisible && me.Distance2D(e) <= 2300 && !noBlade)
                 {
-                    if (me.HasModifier("modifier_earthshaker_enchant_totem") && me.Distance2D(e) <= 300 && Utils.SleepCheck("WMod"))
+                    if (me.HasModifier("modifier_earthshaker_enchant_totem") && !me.IsAttacking() && me.Distance2D(e) <= 300 && Utils.SleepCheck("WMod"))
                     {
                         me.Attack(e);
                         Utils.Sleep(250, "WMod");
@@ -326,8 +326,12 @@
                             }
                         }
                     }
-                    Utils.Sleep(200, "activated");
+                    if (Menu.Item("orbwalk").GetValue<bool>() && me.Distance2D(e) <= 1600 && !me.HasModifier("modifier_earthshaker_enchant_totem"))
+                    {
+                        Orbwalking.Orbwalk(e, 0, 1600, true, true);
+                    }
                 }
+                Utils.Sleep(150, "activated");
             }
             GetLowestToR();
 
@@ -339,6 +343,7 @@
 
 
             Menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true));
+            Menu.AddItem(new MenuItem("orbwalk", "orbwalk").SetValue(true));
             Menu.AddItem(new MenuItem("keyBind", "Combo key").SetValue(new KeyBind('D', KeyBindType.Press)));
 
             skills.AddItem(new MenuItem("Skills", "Skills").SetValue(new AbilityToggler(new Dictionary<string, bool>
