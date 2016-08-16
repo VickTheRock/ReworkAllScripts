@@ -17,13 +17,19 @@
         private Ability Q, W, E, R;
         private readonly Menu skills = new Menu("Skills", "Skills");
         private readonly Menu items = new Menu("Items", "Items");
-        private readonly Menu ult = new Menu("AutoUlt", "AutoUlt");
+        private readonly Menu ult = new Menu("AutoUsage", "AutoUsage");
         
         private Item orchid, sheep, vail, soul, arcane, blink, shiva, dagon, atos, ethereal, cheese, ghost;
-        private int[] eDmg;
-        private int[] rDmg;
-        private int[] wDmg;
-        private int[] qDmg;
+        private int[] eDmg  = new[] { 0, 50, 75, 100, 125 };
+        private int[] rDmg = new[] { 0, 160, 210, 270 };
+        private int[] wDmg = new[] { 0, 100, 200, 300, 400 };
+        private int[] qDmg = new[] { 0, 110, 160, 210, 260 };
+        private int[] creepsDmg = { 0, 40, 55, 70 };
+        private double[] penitence = { 0, 1.15, 1.2, 1.25, 1.3 };
+        private double[] bloodrage = { 0, 1.25, 1.3, 1.35, 1.4 };
+        private double[] souls = { 0, 1.2, 1.3, 1.4, 1.5 };
+        private int creepsECount;
+        private double damage = 0;
         public void Combo()
         {
             //spell
@@ -368,14 +374,20 @@
                 {"item_ghost", true},
                 {"item_cheese", true}
             })));
-            ult.AddItem(new MenuItem("autoUlt", "AutoUlt").SetValue(true));
+            ult.AddItem(new MenuItem("autoUlt", "AutoUsage").SetValue(true));
             ult.AddItem(new MenuItem("dmg", "Show Ult Damage Spell(R)").SetValue(true));
             
-            ult.AddItem(new MenuItem("AutoUlt", "AutoUlt").SetValue(new AbilityToggler(new Dictionary<string, bool>
+            ult.AddItem(new MenuItem("AutoSpells", "AutoSpells").SetValue(new AbilityToggler(new Dictionary<string, bool>
             {
                 {"earthshaker_fissure", true},
                 {"earthshaker_enchant_totem", true},
                 {"earthshaker_echo_slam", true}
+            })));
+            ult.AddItem(new MenuItem("AutoItems", "AutoItems").SetValue(new AbilityToggler(new Dictionary<string, bool>
+            {
+                {"item_shivas_guard", true},
+                {"item_veil_of_discord", true},
+                {"item_ethereal_blade", true}
             })));
             ult.AddItem(new MenuItem("Heel", "Min targets to ult").SetValue(new Slider(3, 1, 5)));
             Menu.AddSubMenu(skills);
@@ -394,7 +406,7 @@
         {
             //var orchid = source.FindItem("item_orchid") ?? source.FindItem("item_bloodthorn");
             var veil = source.FindItem("item_veil_of_discord");
-            var ethereal = source.FindItem("item_ethereal_blade");
+            ethereal = source.FindItem("item_ethereal_blade");
 
             return (//(orchid != null && orchid.CanBeCasted() && !target.HasModifier("modifier_orchid_malevolence_debuff"))||
                   (veil != null && veil.CanBeCasted() && !target.HasModifier("modifier_item_veil_of_discord_debuff"))
@@ -413,7 +425,6 @@
 
             return target.HasModifiers(modifs);
         }
-        private double damage = 0;
         private void GetLowestToR()
         {
             Q = me.Spellbook.SpellQ;
@@ -421,14 +432,6 @@
             E = me.Spellbook.SpellE;
             R = me.Spellbook.SpellR;
             R = me.Spellbook.SpellR;
-            qDmg = new[] { 0, 110, 160, 210, 260 };
-            eDmg = new[] { 0, 50, 75, 100, 125 };
-            rDmg = new[] { 0, 160, 210, 270 };
-            int[] creepsDmg = { 0, 40, 55, 70 };
-            double[] penitence = { 0, 1.15, 1.2, 1.25, 1.3 };
-            double[] bloodrage = { 0, 1.25, 1.3, 1.35, 1.4 };
-            double[] soul = { 0, 1.2, 1.3, 1.4, 1.5 };
-            int creepsECount;
             var enemies =
               ObjectManager.GetEntities<Hero>()
                  .Where(x => x.IsVisible && x.IsAlive && x.Team != me.Team && !x.IsMagicImmune() && !x.IsIllusion).ToList();
@@ -438,43 +441,40 @@
                 foreach (var v in enemies.Where(x => !x.IsMagicImmune()))
                 {
                     creepsECount = ObjectManager.GetEntities<Unit>().Where(x =>
-                        (x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
-                         || x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege
-                         || x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral
-                         || x.ClassID == ClassID.CDOTA_Unit_Broodmother_Spiderling
-                         || x.ClassID == ClassID.CDOTA_Unit_SpiritBear
-                         || x.ClassID == ClassID.CDOTA_BaseNPC_Invoker_Forged_Spirit
-                         || x.ClassID == ClassID.CDOTA_BaseNPC_Warlock_Golem
-                         || x.ClassID == ClassID.CDOTA_BaseNPC_Creep
-                         || x.HasInventory) && !x.IsMagicImmune() &&
-                        x.IsAlive && x.Team != me.Team && x.IsVisible &&
-                        v.Distance2D(x) <= R.GetCastRange() + me.HullRadius && x.IsValidTarget() &&
-                        x.IsSpawned).ToList().Count();
+                     (x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
+                      || x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege
+                      || x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral
+                      || x.ClassID == ClassID.CDOTA_Unit_Broodmother_Spiderling
+                      || x.ClassID == ClassID.CDOTA_Unit_SpiritBear
+                      || x.ClassID == ClassID.CDOTA_BaseNPC_Invoker_Forged_Spirit
+                      || x.ClassID == ClassID.CDOTA_BaseNPC_Warlock_Golem
+                      || x.ClassID == ClassID.CDOTA_BaseNPC_Creep
+                      || x.HasInventory) && !x.IsMagicImmune() &&
+                     x.IsAlive && x.Team != me.Team && x.IsVisible && v.Distance2D(x) <= R.GetCastRange() + me.HullRadius &&
+                     x.IsSpawned && x.IsValidTarget()).ToList().Count();
 
                     if (creepsECount == 0)
                     {
                         creepsECount = 0;
                     }
-                    if (R != null && Menu.Item("AutoUlt").GetValue<AbilityToggler>().IsEnabled(R.Name))
+                    damage = R != null && Menu.Item("AutoSpells").GetValue<AbilityToggler>().IsEnabled(R.Name) && R.CanBeCasted()
+                        ? ((creepsECount * creepsDmg[R.Level]) +
+                           rDmg[R.Level]) + eDmg[E.Level]
+                        : 0;
+                    if (v.NetworkName == "CDOTA_Unit_Hero_Spectre" && v.Spellbook.Spell3.Level > 0)
                     {
-                        damage = R.CanBeCasted()
+                        damage = R != null && Menu.Item("AutoSpells").GetValue<AbilityToggler>().IsEnabled(R.Name) && R.CanBeCasted()
                             ? ((creepsECount * creepsDmg[R.Level]) +
-                               rDmg[R.Level]) + eDmg[E.Level]
+                               rDmg[R.Level]) + eDmg[E.Level] *
+                              (1 - (0.10 + v.Spellbook.Spell3.Level * 0.04))
                             : 0;
-                        if (v.NetworkName == "CDOTA_Unit_Hero_Spectre" && v.Spellbook.Spell3.Level > 0)
-                        {
-                            damage = R.CanBeCasted()
-                                ? ((creepsECount * creepsDmg[R.Level]) +
-                                   rDmg[R.Level]) + eDmg[E.Level] *
-                                  (1 - (0.10 + v.Spellbook.Spell3.Level * 0.04))
-                                : 0;
 
-                            if (me.Distance2D(v) < 300 + me.HullRadius)
-                                damage += eDmg[E.Level] *
-                                          (1 - (0.10 + v.Spellbook.Spell3.Level * 0.04));
-                        }
+                        if (me.Distance2D(v) < 300 + me.HullRadius)
+                            damage += eDmg[E.Level] *
+                                      (1 - (0.10 + v.Spellbook.Spell3.Level * 0.04));
                     }
-                    if (Q != null && Menu.Item("AutoUlt").GetValue<AbilityToggler>().IsEnabled(Q.Name) && Q.CanBeCasted())
+
+                    if (Q != null && Menu.Item("AutoSpells").GetValue<AbilityToggler>().IsEnabled(Q.Name) && Q.CanBeCasted())
                     {
                         damage = damage + qDmg[Q.Level];
 
@@ -483,7 +483,7 @@
                             damage = (damage + eDmg[E.Level]);
                         }
                     }
-                    if (W != null && W.CanBeCasted() && Menu.Item("AutoUlt").GetValue<AbilityToggler>().IsEnabled(W.Name))
+                    if (W != null && W.CanBeCasted() && Menu.Item("AutoSpells").GetValue<AbilityToggler>().IsEnabled(W.Name))
                     {
                         if (enemies.Count(x => x.Distance2D(v) <= 300 + me.HullRadius && !Equals(x)) > 1)
                             damage = (damage + eDmg[E.Level]);
@@ -516,31 +516,44 @@
                         var demon = ObjectManager.GetEntities<Hero>()
                             .FirstOrDefault(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Hero_Shadow_Demon);
                         if (demon != null)
-                            damage = damage * soul[demon.Spellbook.Spell2.Level];
+                            damage = damage * souls[demon.Spellbook.Spell2.Level];
                     }
 
                     if (v.HasModifier("modifier_item_mask_of_madness_berserk")) damage = damage * 1.3;
 
                     vail = me.FindItem("item_veil_of_discord");
-                    if (vail != null && vail.CanBeCasted() && !v.HasModifier("modifier_item_veil_of_discord_debuff"))
+                    if (vail != null && vail.CanBeCasted() && !v.HasModifier("modifier_item_veil_of_discord_debuff") && Menu.Item("AutoItems").GetValue<AbilityToggler>().IsEnabled(vail.Name))
                     {
                         damage = damage * 1.25;
                     }
                     var spellamplymult = 1 + (me.TotalIntelligence / 16 / 100);
                     shiva = me.FindItem("item_shivas_guard");
-                    if (shiva != null && shiva.CanBeCasted())
+                    if (shiva != null && shiva.CanBeCasted() && Menu.Item("AutoItems").GetValue<AbilityToggler>().IsEnabled(shiva.Name))
                         damage = damage + 200;
                     int etherealdamage = (int)(((me.TotalStrength * 2) + 75));
 
-                    if (ethereal != null && ethereal.CanBeCasted() && v.Handle == e.Handle)
+                    if (ethereal != null && ethereal.CanBeCasted() && v.Handle == e?.Handle)
                         damage = damage + etherealdamage * 1.4;
 
                     damage = damage * spellamplymult;
-                    if (vail != null && vail.CanBeCasted() && !v.HasModifier("modifier_item_veil_of_discord_debuff") &&
-                        ethereal != null && ethereal.CanBeCasted() && v.Handle == e.Handle)
+                    if (vail != null && vail.CanBeCasted() && Menu.Item("AutoItems").GetValue<AbilityToggler>().IsEnabled(vail.Name) && !v.HasModifier("modifier_item_veil_of_discord_debuff") &&
+                        ethereal != null && ethereal.CanBeCasted() && Menu.Item("AutoItems").GetValue<AbilityToggler>().IsEnabled(ethereal.Name) && v.Handle == e?.Handle)
                         damage = damage + etherealdamage * 1.4;
 
                     damage = damage * (1 - v.MagicDamageResist);
+                    if (!me.HasModifier("modifier_earthshaker_enchant_totem") && W != null && W.CanBeCasted()
+                        && v.Handle == e?.Handle
+                        && Menu.Item("AutoSpells").GetValue<AbilityToggler>().IsEnabled(W.Name))
+                        damage = damage +
+                                 ((((((me.MaximumDamage + me.MinimumDamage) / 2) * (wDmg[W.Level] / 100)) + me.BonusDamage) - v.DamageResist) + (eDmg[E.Level] * (1 - v.MagicDamageResist)));
+                    if (me.HasModifier("modifier_earthshaker_enchant_totem")
+                       && v.Handle == e?.Handle
+                       && Menu.Item("AutoSpells").GetValue<AbilityToggler>().IsEnabled(W.Name))
+                        damage = damage +
+                                 (((((me.MaximumDamage + me.MinimumDamage) / 2) + me.BonusDamage) - v.DamageResist) + (eDmg[E.Level] * (1 - v.MagicDamageResist)));
+
+                    if (me.IsInvisible()) return;
+                    
                     if (
                         enemies.Count(
                             x => x.Health <= damage && v.Distance2D(x) <= R.GetCastRange() + me.HullRadius + 24) >=
@@ -559,6 +572,7 @@
                             Utils.Sleep(250, "blink");
                         }
                         else if (W != null && W.CanBeCasted() && me.Distance2D(v) <= 900+me.HullRadius+24 && me.AghanimState()
+                            && Menu.Item("AutoSpells").GetValue<AbilityToggler>().IsEnabled(W.Name)
                             && (blink == null || !blink.CanBeCasted())
                         && Utils.SleepCheck("W"))
                         {
@@ -573,6 +587,7 @@
                             if (vail != null
                                 && vail.CanBeCasted()
                                 && me.CanCast()
+                                && Menu.Item("AutoItems").GetValue<AbilityToggler>().IsEnabled(vail.Name)
                                 && me.Distance2D(v) <= 1190
                                 && Utils.SleepCheck("vail")
                                 )
@@ -586,6 +601,7 @@
                                 ethereal != null
                                 && ethereal.CanBeCasted()
                                 && me.CanCast()
+                                && Menu.Item("AutoItems").GetValue<AbilityToggler>().IsEnabled(ethereal.Name)
                                 && (v.Handle == e.Handle || e.Distance2D(v) > 700)
                                 && me.Distance2D(v) <= 1190
                                 && Utils.SleepCheck("ethereal")
@@ -597,22 +613,25 @@
                             else elsecount += 1;
                             if (!CanIncreaseMagicDmg(me, v))
                             {
-                                if (elsecount == 4 && R != null && R.CanBeCasted() && Utils.SleepCheck("R"))
+                                if (elsecount == 4 && R != null && R.CanBeCasted() && Utils.SleepCheck("R")
+                                    && Menu.Item("AutoSpells").GetValue<AbilityToggler>().IsEnabled(R.Name))
                                 {
                                     R.UseAbility();
                                     Utils.Sleep(250, "R");
                                 }
                                 if (R == null || !R.CanBeCasted() ||
-                                    !Menu.Item("AutoUlt").GetValue<AbilityToggler>().IsEnabled(R.Name))
+                                    !Menu.Item("AutoSpells").GetValue<AbilityToggler>().IsEnabled(R.Name))
                                 {
-                                    if (Q != null && Q.CanBeCasted() && v.Distance2D(me) <= 525 + me.HullRadius + 24 &&
-                                  Utils.SleepCheck("Q"))
+                                    if (Q != null && Q.CanBeCasted() && v.Distance2D(me) <= 525 + me.HullRadius + 24 
+                                        && Menu.Item("AutoSpells").GetValue<AbilityToggler>().IsEnabled(Q.Name)
+                                        && Utils.SleepCheck("Q"))
                                     {
                                         Q.UseAbility(v.Position);
                                         Utils.Sleep(250, "Q");
                                     }
                                     if (shiva != null
                                       && shiva.CanBeCasted()
+                                      && Menu.Item("AutoItems").GetValue<AbilityToggler>().IsEnabled(shiva.Name)
                                       && v.Distance2D(me) <= shiva.GetCastRange()
                                       && Utils.SleepCheck("shiva"))
                                     {
@@ -623,36 +642,116 @@
 
                                 if (me.AghanimState())
                                 {
-                                    if (W != null && W.CanBeCasted() &&
-                                    v.Distance2D(me) <= 300 + me.HullRadius + 24 &&
+                                    if (W != null && W.CanBeCasted()
+                                        && Menu.Item("AutoSpells").GetValue<AbilityToggler>().IsEnabled(W.Name) 
+                                        && v.Distance2D(me) <= 300 + me.HullRadius + 24 &&
                                     !me.HasModifier("modifier_earthshaker_enchant_totem") && Utils.SleepCheck("W"))
                                     {
                                         W.UseAbility(me);
                                         Utils.Sleep(250, "W");
                                     }
                                 }
-                                else if (W != null && W.CanBeCasted() &&
-                                  v.Distance2D(me) <= W.GetCastRange() + me.HullRadius + 24 &&
-                                  !me.HasModifier("modifier_earthshaker_enchant_totem") && Utils.SleepCheck("W"))
+                                else if (W != null && W.CanBeCasted()
+                                        && Menu.Item("AutoSpells").GetValue<AbilityToggler>().IsEnabled(W.Name) 
+                                        && v.Distance2D(me) <= W.GetCastRange() + me.HullRadius + 24 &&
+                                        !me.HasModifier("modifier_earthshaker_enchant_totem") && Utils.SleepCheck("W"))
+                                        {
+                                            W.UseAbility();
+                                            Utils.Sleep(250, "W");
+                                        }
+                            }
+                        }
+                    }
+                    else if (enemies.Count(
+                       x => me.Distance2D(x) <= 300 + me.HullRadius + 24 &&  v.Health <= damage) >= 1)
+                     {
+
+                        if (R == null || !R.CanBeCasted() ||
+                            !Menu.Item("AutoSpells").GetValue<AbilityToggler>().IsEnabled(R.Name))
+                        {
+                            if (vail != null
+                                 && vail.CanBeCasted()
+                                 && me.CanCast()
+                                 && Menu.Item("AutoItems").GetValue<AbilityToggler>().IsEnabled(vail.Name)
+                                 && me.Distance2D(v) <= 500
+                                 && Utils.SleepCheck("vail")
+                                 )
+                            {
+                                vail.UseAbility(v.Position);
+                                Utils.Sleep(250, "vail");
+                            } // orchid Item endelse 
+                            if (Q != null && Q.CanBeCasted() && v.Distance2D(me) <= 300 + me.HullRadius + 24 &&
+                          Utils.SleepCheck("Q"))
+                            {
+                                Q.UseAbility(v.Position);
+                                Utils.Sleep(250, "Q");
+                            }
+                            if (shiva != null
+                              && shiva.CanBeCasted()
+                              && Menu.Item("AutoItems").GetValue<AbilityToggler>().IsEnabled(shiva.Name)
+                              && v.Distance2D(me) <= shiva.GetCastRange()
+                              && Utils.SleepCheck("shiva"))
+                            {
+                                shiva.UseAbility();
+                                Utils.Sleep(250, "shiva");
+                            }
+                        }
+                        if (me.AghanimState())
+                        {
+                            if (W != null && W.CanBeCasted()
+                                && Menu.Item("AutoSpells").GetValue<AbilityToggler>().IsEnabled(W.Name) &&
+                            v.Distance2D(me) <= 300 + me.HullRadius + 24 &&
+                            !me.HasModifier("modifier_earthshaker_enchant_totem") && Utils.SleepCheck("W"))
+                            {
+                                W.UseAbility(me);
+                                Utils.Sleep(250, "W");
+                            }
+                        }
+                        else if (W != null && W.CanBeCasted()
+                            && Menu.Item("AutoSpells").GetValue<AbilityToggler>().IsEnabled(W.Name)
+                            && v.Distance2D(me) <= W.GetCastRange() + me.HullRadius + 24
+                            && !me.HasModifier("modifier_earthshaker_enchant_totem") && Utils.SleepCheck("W"))
+                        {
+                            W.UseAbility();
+                            Utils.Sleep(250, "W");
+                        }
+
+                        if (!me.HasModifier("modifier_earthshaker_enchant_totem")
+                            && Menu.Item("AutoSpells").GetValue<AbilityToggler>().IsEnabled(W.Name)
+                            && v.Health <= (((((me.MaximumDamage + me.MinimumDamage) / 2) * (wDmg[W.Level] / 100)) + me.BonusDamage) + eDmg[E.Level]))
+                        {
+                            if (me.AghanimState())
+                            {
+                                if (W != null && W.CanBeCasted() &&
+                                v.Distance2D(me) <= 300 + me.HullRadius + 24 &&
+                                !me.HasModifier("modifier_earthshaker_enchant_totem") && Utils.SleepCheck("W"))
                                 {
-                                    W.UseAbility();
+                                    W.UseAbility(me);
                                     Utils.Sleep(250, "W");
                                 }
+                            }
+                            else if (W != null && W.CanBeCasted() &&
+                              v.Distance2D(me) <= 300 + me.HullRadius + 24 &&
+                              !me.HasModifier("modifier_earthshaker_enchant_totem") && Utils.SleepCheck("W"))
+                            {
+                                W.UseAbility();
+                                Utils.Sleep(250, "W");
                             }
                         }
                     }
                     if (me.HasModifier("modifier_earthshaker_enchant_totem"))
                     {
                         if (v.Health <=
-                            ((me.MinimumDamage + me.MaximumDamage) / 2) + me.BonusDamage 
-                            && me.Distance2D(v) <= 300
+                            (((me.MinimumDamage + me.MaximumDamage) / 2) + me.BonusDamage)-v.DamageAverage
+                            && !me.IsAttacking()
+                            && me.Distance2D(v) <= 300+me.HullRadius+24
                             && Utils.SleepCheck("Attack"))
                         {
                             me.Attack(v);
                             Utils.Sleep(250, "Attack");
                         }
-                        else if (me.Distance2D(v) <= 300 &&
-                            !me.IsAttacking() &&
+                        else if (me.Distance2D(v) <= 300 + me.HullRadius + 24 
+                            && !me.IsAttacking() &&
                             Utils.SleepCheck("Attack"))
                         {
                             me.Attack(v);
@@ -678,23 +777,15 @@
             {
 
                 e = me.ClosestToMouseTarget(8000);
-                qDmg = new[] { 0, 110, 160, 210, 260 };
-                eDmg = new[] { 0, 50, 75, 100, 125 };
-                rDmg = new[] { 0, 160, 210, 270 };
-                int[] creepsDmg = { 0, 40, 55, 70 };
-                double[] penitence = { 0, 1.15, 1.2, 1.25, 1.3 };
-                double[] bloodrage = { 0, 1.25, 1.3, 1.35, 1.4 };
-                double[] soul = { 0, 1.2, 1.3, 1.4, 1.5 };
-                int creepsECount;
                 var enemies =
               ObjectManager.GetEntities<Hero>()
                  .Where(x => x.IsVisible && x.IsAlive && x.Team != me.Team && !x.IsMagicImmune() && !x.IsIllusion).ToList();
 
                 foreach (var v in enemies)
                 {
-
                     var screenPos = HUDInfo.GetHPbarPosition(v);
                     if (!OnScreen(v.Position)) continue;
+
                     creepsECount = ObjectManager.GetEntities<Unit>().Where(x =>
                      (x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
                       || x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege
@@ -712,13 +803,13 @@
                     {
                         creepsECount = 0;
                     }
-                    damage = R != null && Menu.Item("AutoUlt").GetValue<AbilityToggler>().IsEnabled(R.Name) && R.CanBeCasted()
+                    damage = R != null && Menu.Item("AutoSpells").GetValue<AbilityToggler>().IsEnabled(R.Name) && R.CanBeCasted()
                         ? ((creepsECount * creepsDmg[R.Level]) +
                            rDmg[R.Level]) + eDmg[E.Level]
                         : 0;
                     if (v.NetworkName == "CDOTA_Unit_Hero_Spectre" && v.Spellbook.Spell3.Level > 0)
                     {
-                        damage = R != null && Menu.Item("AutoUlt").GetValue<AbilityToggler>().IsEnabled(R.Name) && R.CanBeCasted()
+                        damage = R != null && Menu.Item("AutoSpells").GetValue<AbilityToggler>().IsEnabled(R.Name) && R.CanBeCasted()
                             ? ((creepsECount * creepsDmg[R.Level]) +
                                rDmg[R.Level]) + eDmg[E.Level] *
                               (1 - (0.10 + v.Spellbook.Spell3.Level * 0.04))
@@ -729,7 +820,7 @@
                                       (1 - (0.10 + v.Spellbook.Spell3.Level * 0.04));
                     }
 
-                    if (Q != null && Menu.Item("AutoUlt").GetValue<AbilityToggler>().IsEnabled(Q.Name) && Q.CanBeCasted())
+                    if (Q != null && Menu.Item("AutoSpells").GetValue<AbilityToggler>().IsEnabled(Q.Name) && Q.CanBeCasted())
                     {
                         damage = damage + qDmg[Q.Level];
 
@@ -738,7 +829,7 @@
                             damage = (damage + eDmg[E.Level]);
                         }
                     }
-                    if (W != null && W.CanBeCasted() && Menu.Item("AutoUlt").GetValue<AbilityToggler>().IsEnabled(W.Name))
+                    if (W != null && W.CanBeCasted() && Menu.Item("AutoSpells").GetValue<AbilityToggler>().IsEnabled(W.Name))
                     {
                         if (enemies.Count(x => x.Distance2D(v) <= 300 + me.HullRadius && !Equals(x)) > 1)
                             damage = (damage + eDmg[E.Level]);
@@ -771,19 +862,19 @@
                         var demon = ObjectManager.GetEntities<Hero>()
                             .FirstOrDefault(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Hero_Shadow_Demon);
                         if (demon != null)
-                            damage = damage * soul[demon.Spellbook.Spell2.Level];
+                            damage = damage * souls[demon.Spellbook.Spell2.Level];
                     }
 
                     if (v.HasModifier("modifier_item_mask_of_madness_berserk")) damage = damage * 1.3;
 
                     vail = me.FindItem("item_veil_of_discord");
-                    if (vail != null && vail.CanBeCasted() && !v.HasModifier("modifier_item_veil_of_discord_debuff"))
+                    if (vail != null && vail.CanBeCasted() && !v.HasModifier("modifier_item_veil_of_discord_debuff") && Menu.Item("AutoItems").GetValue<AbilityToggler>().IsEnabled(vail.Name))
                     {
                         damage = damage * 1.25;
                     }
                     var spellamplymult = 1 + (me.TotalIntelligence / 16 / 100);
                     shiva = me.FindItem("item_shivas_guard");
-                    if (shiva != null && shiva.CanBeCasted())
+                    if (shiva != null && shiva.CanBeCasted() && Menu.Item("AutoItems").GetValue<AbilityToggler>().IsEnabled(shiva.Name))
                         damage = damage + 200;
                     int etherealdamage = (int)(((me.TotalStrength * 2) + 75));
 
@@ -791,14 +882,24 @@
                         damage = damage + etherealdamage * 1.4;
 
                     damage = damage * spellamplymult;
-                    if (vail != null && vail.CanBeCasted() && !v.HasModifier("modifier_item_veil_of_discord_debuff") &&
-                        ethereal != null && ethereal.CanBeCasted() && v.Handle == e?.Handle)
+                    if (vail != null && vail.CanBeCasted() && Menu.Item("AutoItems").GetValue<AbilityToggler>().IsEnabled(vail.Name) && !v.HasModifier("modifier_item_veil_of_discord_debuff") &&
+                        ethereal != null && ethereal.CanBeCasted() && Menu.Item("AutoItems").GetValue<AbilityToggler>().IsEnabled(ethereal.Name) && v.Handle == e?.Handle)
                         damage = damage + etherealdamage * 1.4;
 
                     damage = damage * (1 - v.MagicDamageResist);
+                    if (!me.HasModifier("modifier_earthshaker_enchant_totem") && W != null && W.CanBeCasted()
+                        && v.Handle == e?.Handle
+                        && Menu.Item("AutoSpells").GetValue<AbilityToggler>().IsEnabled(W.Name))
+                        damage = damage +
+                                 ((((((me.MaximumDamage + me.MinimumDamage) / 2) * (wDmg[W.Level] / 100)) + me.BonusDamage) - v.DamageResist) + (eDmg[E.Level] * (1 - v.MagicDamageResist)));
+                    if (me.HasModifier("modifier_earthshaker_enchant_totem")
+                       && v.Handle == e?.Handle
+                       && Menu.Item("AutoSpells").GetValue<AbilityToggler>().IsEnabled(W.Name))
+                        damage = damage +
+                                 (((((me.MaximumDamage + me.MinimumDamage) / 2) + me.BonusDamage) - v.DamageResist) + (eDmg[E.Level] * (1 - v.MagicDamageResist)));
 
-                    var canKill = v.Health <= damage;
-                    var text = canKill ? "Yes: " + Math.Floor(damage) : "No: " + Math.Floor(damage);
+
+                    var text = v.Health <= damage ? "Yes: " + Math.Floor(damage) : "No: " + Math.Floor(damage);
                     var size = new Vector2(18, 18);
                     var textSize = Drawing.MeasureText(text, "Arial", size, FontFlags.AntiAlias);
                     var position = new Vector2(screenPos.X - textSize.X + 91, screenPos.Y + 62);
@@ -806,7 +907,7 @@
                         text,
                         position,
                         size,
-                        (canKill ? Color.LawnGreen : Color.Red),
+                        (v.Health <= damage ? Color.LawnGreen : Color.Red),
                         FontFlags.AntiAlias);
                     Drawing.DrawText(
                         text,
