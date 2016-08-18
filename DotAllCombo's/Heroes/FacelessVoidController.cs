@@ -1,4 +1,4 @@
-﻿namespace DotaAllCombo.Heroes
+namespace DotaAllCombo.Heroes
 {
 	using System.Threading.Tasks;
 	using SharpDX;
@@ -57,7 +57,12 @@
 					{"item_medallion_of_courage", true},
 					{"item_solar_crest", true}
 				})));
-			Menu.AddItem(new MenuItem("Heelm", "Min targets to BladeMail").SetValue(new Slider(2, 1, 5)));
+            ult.AddItem(
+                 new MenuItem("blink", ":").SetValue(new AbilityToggler(new Dictionary<string, bool>
+                 {
+                    {"item_blink", true}
+                 })));
+            Menu.AddItem(new MenuItem("Heelm", "Min targets to BladeMail").SetValue(new Slider(2, 1, 5)));
             Menu.AddItem(new MenuItem("time_dilation", "Min targets to TimeDilation").SetValue(new Slider(2, 1, 5))).SetTooltip("TODO UPDATE LOGIC");
             Menu.AddItem(new MenuItem("Heel", "Min targets to BKB").SetValue(new Slider(2, 1, 5)));
 			Menu.AddItem(new MenuItem("v", "Min targets in Ult").SetValue(new Slider(2, 1, 5)));
@@ -68,7 +73,7 @@
 			Drawing.OnDraw += DrawUltiDamage;
 		}
 
-		public void Combo()
+		public void OnUpdateEvent()
 		{
 			if (!Menu.Item("enabled").GetValue<bool>()) return;
 
@@ -123,20 +128,21 @@
 					W.UseAbility();
 					Utils.Sleep(100, "W");
 				}
-				if (
-					blink != null
-					&& me.CanCast()
-					&& blink.CanBeCasted()
-					&& me.Distance2D(e) < 1190
-					&& me.Distance2D(e) > me.AttackRange + 150
-					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name)
-					&& Utils.SleepCheck("blink")
-					)
-				{
-					blink.UseAbility(e.Position);
-					Utils.Sleep(250, "blink");
-				}
-				if (
+                if (
+                    blink != null
+                    && me.CanCast()
+                    && blink.CanBeCasted()
+                    && me.Distance2D(e) < 1190
+                    && v.Count(x => x.Distance2D(e) <= 700) <= 1
+                    && me.Distance2D(e) > me.AttackRange + 150
+                    && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name)
+                    && Utils.SleepCheck("blink")
+                    )
+                {
+                    blink.UseAbility(e.Position);
+                    Utils.Sleep(250, "blink");
+                }
+                if (
 					Q != null && Q.CanBeCasted() 
 					&& me.Distance2D(e) <= Q.GetCastRange()+me.HullRadius+24
 					&& me.Distance2D(e) >= 450
@@ -289,36 +295,40 @@
 				}
 			}
 			OnTimedEvent();
-			if (Active)
-			{
-				//TODO test
-				var ally = ObjectManager.GetEntities<Hero>()
-											 .Where(x => x.Team == me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && !x.Equals(me)).ToList();
-				for (int i = 0; i < v.Count; ++i)
-				{
-					if (Q != null && Q.CanBeCasted() && me.Distance2D(v[i]) <= Q.GetCastRange() + me.HullRadius && me.Distance2D(v[i])> R.GetCastRange()+me.HullRadius
-						   && (v.Count(x => x.Distance2D(v[i]) <= 425 + me.HullRadius) >=
-															(Menu.Item("v").GetValue<Slider>().Value))
-						   && (ally.Count(x => x.Distance2D(me) <= 425 + me.HullRadius) <=
-							   (Menu.Item("ally").GetValue<Slider>().Value))
-						   && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name) && Utils.SleepCheck("Q"))
-					{
-						Q.UseAbility(v[i].Position);
-						Utils.Sleep(100, "Q");
-					}
-					if (R != null && R.CanBeCasted() && me.Distance2D(v[i])<= R.GetCastRange()+me.HullRadius
-						&& (v.Count(x => x.Distance2D(v[i]) <= 425+me.HullRadius) >=
-					                                     (Menu.Item("v").GetValue<Slider>().Value))
-					    && (ally.Count(x => x.Distance2D(me) <= 425 + me.HullRadius) <=
-					        (Menu.Item("ally").GetValue<Slider>().Value))
-					    && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name) && Utils.SleepCheck("Q"))
-					{
-						R.UseAbility(v[i].Position);
-						Utils.Sleep(100, "Q");
-					}
-				}
-			}
-		}
+            if (Active)
+            {
+                //TODO test
+                var ally = ObjectManager.GetEntities<Hero>()
+                                             .Where(x => x.Team == me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && !x.Equals(me)).ToList();
+                for (int i = 0; i < v.Count; ++i)
+                {
+                    if ((v.Count(x => x.Distance2D(v[i]) <= 425 + me.HullRadius) >=
+                         (Menu.Item("v").GetValue<Slider>().Value))
+                        && (ally.Count(x => x.Distance2D(me) <= 425 + me.HullRadius) <=
+                            (Menu.Item("ally").GetValue<Slider>().Value)))
+                    {
+                        if (blink != null && blink.CanBeCasted() && me.Distance2D(v[i]) <= blink.GetCastRange() && me.Distance2D(v[i]) > R.GetCastRange() + me.HullRadius
+                             && Menu.Item("blink").GetValue<AbilityToggler>().IsEnabled(blink.Name) && Utils.SleepCheck("blink"))
+                        {
+                            blink.UseAbility(v[i].Position);
+                            Utils.Sleep(100, "blink");
+                        }
+                        if (Q != null && Q.CanBeCasted() && me.Distance2D(v[i]) <= Q.GetCastRange() + me.HullRadius && me.Distance2D(v[i]) > R.GetCastRange() + me.HullRadius
+                             && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name) && Utils.SleepCheck("Q"))
+                        {
+                            Q.UseAbility(v[i].Position);
+                            Utils.Sleep(100, "Q");
+                        }
+                        if (R != null && R.CanBeCasted() && me.Distance2D(v[i]) <= R.GetCastRange() + me.HullRadius
+                            && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name) && Utils.SleepCheck("Q"))
+                        {
+                            R.UseAbility(v[i].Position);
+                            Utils.Sleep(100, "Q");
+                        }
+                    }
+                }
+            }
+        }
 
 
 		public void OnCloseEvent()
