@@ -451,13 +451,21 @@
                         } // orchid Item end
                         if (!CanIncreaseMagicDmg(me, v))
                         {
-                            if (Q != null && Q.CanBeCasted() && Menu.Item("AutoSpells").GetValue<AbilityToggler>().IsEnabled(Q.Name)
+                             if (dagon != null
+                            && dagon.CanBeCasted()
+                            && Menu.Item("AutoItems").GetValue<AbilityToggler>().IsEnabled("item_dagon")
+                            && Utils.SleepCheck("dagon"))
+                            {
+                                dagon.UseAbility(v);
+                                Utils.Sleep(250, "dagon");
+                            }
+                            else if(Q != null && Q.CanBeCasted() && Menu.Item("AutoSpells").GetValue<AbilityToggler>().IsEnabled(Q.Name)
                                 && Utils.SleepCheck("Q"))
                             {
                                 Q.UseAbility(v);
                                 Utils.Sleep(250, "Q");
                             }
-                            else if (W != null && W.CanBeCasted() && Menu.Item("AutoSpells").GetValue<AbilityToggler>().IsEnabled(W.Name)
+                            else if (W != null && W.CanBeCasted() && me.Distance2D(v) <= W.GetCastRange() + me.HullRadius && Menu.Item("AutoSpells").GetValue<AbilityToggler>().IsEnabled(W.Name)
                                && Utils.SleepCheck("W"))
                             {
                                 W.UseAbility(v.Position);
@@ -469,16 +477,9 @@
                                 W.UseAbility(pos);
                                 Utils.Sleep(250, "W");
                             }
-                            else if (dagon != null
-                            && dagon.CanBeCasted()
-                            && Menu.Item("AutoItems").GetValue<AbilityToggler>().IsEnabled("item_dagon")
-                            && Utils.SleepCheck("dagon"))
-                            {
-                                dagon.UseAbility(v);
-                                Utils.Sleep(250, "dagon");
-                            }
                             else if (R != null
                             && R.CanBeCasted()
+                            && (W == null || !W.CanBeCasted() || !Menu.Item("AutoSpells").GetValue<AbilityToggler>().IsEnabled(W.Name))
                             && Menu.Item("AutoSpells").GetValue<AbilityToggler>().IsEnabled(R.Name)
                             && Utils.SleepCheck("R"))
                             {
