@@ -73,7 +73,7 @@ namespace DotaAllCombo.Heroes
 			Drawing.OnDraw += DrawUltiDamage;
 		}
 
-		public void OnUpdateEvent()
+		public void Combo()
 		{
 			if (!Menu.Item("enabled").GetValue<bool>()) return;
 
