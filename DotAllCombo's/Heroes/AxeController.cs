@@ -243,17 +243,9 @@
                         me.Stop();
                         Utils.Sleep(100, v[i].Handle.ToString());
                     }
-                    if (v[i].Modifiers.Any(x =>
-                    (x.Name == "modifier_obsidian_destroyer_astral_imprisonment_prison"
-                    || x.Name == "modifier_puck_phase_shift"
-                    || x.Name == "modifier_eul_cyclone"
-                    || x.Name == "modifier_invoker_tornado"
-                    || x.Name == "modifier_brewmaster_storm_cyclone"
-                    || x.Name == "modifier_shadow_demon_disruption"
-                    || x.Name == "modifier_tusk_snowball_movement"
-                    || x.Name == "modifier_abaddon_borrowed_time"
-                    || x.Name == "modifier_faceless_void_time_walk"
-                    || x.Name == "modifier_huskar_life_break_charge"))) return;
+
+
+                    if (v[i].IsFullMagicSpellResist()) return;
                   
                     if (blink != null && blink.CanBeCasted() && R != null && R.CanBeCasted() && Menu.Item("blink").IsActive())
                     {
@@ -320,8 +312,8 @@
             Menu.AddItem(new MenuItem("killRange", "Use Bonus Ult Range").SetValue(true)).SetTooltip("Move to enemy");
             Menu.AddItem(new MenuItem("Blade", "Bonus Ult Range").SetValue(new Slider(200, 1, 500))).SetTooltip("Move to enemy");
         }
-
-		public void OnCloseEvent()
+       
+        public void OnCloseEvent()
 		{
 			
 		}

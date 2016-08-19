@@ -15,7 +15,7 @@ namespace DotaAllCombo.Heroes
         public void OnLoadEvent()
         {
             AssemblyExtensions.InitAssembly("TODO", "0");
-            Print.LogMessage.Success("This hero not Supported!");
+            Print.LogMessage.Error("This hero not Supported!");
         }
        
         public void OnCloseEvent()

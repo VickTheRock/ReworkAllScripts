@@ -128,6 +128,7 @@
 					&& me.CanCast()
 					&& blink.CanBeCasted()
 					&& me.Distance2D(e) < 1190
+					&& v.Count(x => x.Distance2D(e) <= 525) <= 1
 					&& me.Distance2D(e) > me.AttackRange + 150
 					&& Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name)
 					&& Utils.SleepCheck("blink")
@@ -296,26 +297,30 @@
 											 .Where(x => x.Team == me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && !x.Equals(me)).ToList();
 				for (int i = 0; i < v.Count; ++i)
 				{
-					if (Q != null && Q.CanBeCasted() && me.Distance2D(v[i]) <= Q.GetCastRange() + me.HullRadius && me.Distance2D(v[i])> R.GetCastRange()+me.HullRadius
-						   && (v.Count(x => x.Distance2D(v[i]) <= 425 + me.HullRadius) >=
-															(Menu.Item("v").GetValue<Slider>().Value))
-						   && (ally.Count(x => x.Distance2D(me) <= 425 + me.HullRadius) <=
-							   (Menu.Item("ally").GetValue<Slider>().Value))
-						   && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name) && Utils.SleepCheck("Q"))
-					{
-						Q.UseAbility(v[i].Position);
-						Utils.Sleep(100, "Q");
-					}
-					if (R != null && R.CanBeCasted() && me.Distance2D(v[i])<= R.GetCastRange()+me.HullRadius
-						&& (v.Count(x => x.Distance2D(v[i]) <= 425+me.HullRadius) >=
-					                                     (Menu.Item("v").GetValue<Slider>().Value))
-					    && (ally.Count(x => x.Distance2D(me) <= 425 + me.HullRadius) <=
-					        (Menu.Item("ally").GetValue<Slider>().Value))
-					    && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name) && Utils.SleepCheck("Q"))
-					{
-						R.UseAbility(v[i].Position);
-						Utils.Sleep(100, "Q");
-					}
+				    if ((v.Count(x => x.Distance2D(v[i]) <= 425 + me.HullRadius) >=
+				         (Menu.Item("v").GetValue<Slider>().Value))
+				        && (ally.Count(x => x.Distance2D(me) <= 425 + me.HullRadius) <=
+				            (Menu.Item("ally").GetValue<Slider>().Value)))
+				    {
+                        if (blink != null && blink.CanBeCasted() && me.Distance2D(v[i]) <= blink.GetCastRange() && me.Distance2D(v[i]) > R.GetCastRange() + me.HullRadius
+                             && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(blink.Name) && Utils.SleepCheck("blink"))
+                        {
+                            blink.UseAbility(v[i].Position);
+                            Utils.Sleep(100, "blink");
+                        }
+                        if (Q != null && Q.CanBeCasted() && me.Distance2D(v[i]) <= Q.GetCastRange() + me.HullRadius && me.Distance2D(v[i]) > R.GetCastRange() + me.HullRadius
+                             && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name) && Utils.SleepCheck("Q"))
+                        {
+                            Q.UseAbility(v[i].Position);
+                            Utils.Sleep(100, "Q");
+                        }
+                        if (R != null && R.CanBeCasted() && me.Distance2D(v[i]) <= R.GetCastRange() + me.HullRadius
+                            && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name) && Utils.SleepCheck("Q"))
+                        {
+                            R.UseAbility(v[i].Position);
+                            Utils.Sleep(100, "Q");
+                        }
+                    }
 				}
 			}
 		}
@@ -365,7 +370,7 @@
 			if (Menu.Item("ultDraw").GetValue<bool>())
 			{
 				float now = me.Health;
-				Task.Delay(2000-(int)Game.Ping/1000).ContinueWith(_ =>
+				Task.Delay(2000-(int)Game.Ping).ContinueWith(_ =>
 				{
 					float back4 = me.Health;
 					health = (now - back4);

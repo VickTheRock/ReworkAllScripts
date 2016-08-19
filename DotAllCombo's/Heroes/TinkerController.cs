@@ -16,7 +16,7 @@
     {
         private const int HIDE_AWAY_RANGE = 130;
         private Ability Q, W, R, E;
-       private Item dagon, sheep, soul, ethereal, shiva, ghost, eul, blink, force, glimmer, vail, orchid, guardian, travel, lotus;
+        private Item dagon, sheep, soul, ethereal, shiva, ghost, eul, blink, force, glimmer, vail, orchid, guardian, travel, lotus;
         private readonly List<ParticleEffect> Effects = new List<ParticleEffect>();
         private const string EffectPath = @"particles\range_display_blue.vpcf";
         private const string EffectPanicPath = @"particles\range_display_red.vpcf";
@@ -25,7 +25,7 @@
         private readonly Menu panics = new Menu("Panic", "Panic Menu");
         private readonly Menu push = new Menu("Push", "Push Menu");
         //private readonly Menu farm = new Menu("Farm", "Farm Menu");
-       
+
         public Vector3 GetClosestToVector(Vector3[] coords, Unit z)
         {
             var closestVector = coords.First();
@@ -53,7 +53,7 @@
                   creep.IsAlive && creep.Team != me.Team && creep.IsVisible && creep.IsSpawned).ToList();
             Vector3 panic = GetClosestToVector(TinkerCords.PanicPos, me);
             Vector3 safe = GetClosestToVector(TinkerCords.SafePos, me);
-           
+
             if (Menu.Item("panicMod").IsActive() && me.IsAlive)
             {
                 blink = me.FindItem("item_blink");
@@ -65,7 +65,7 @@
                 ObjectManager.GetEntities<Hero>()
                     .Where(x => x.Team != me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion)
                     .ToList();
-                if (    v.Count(x => x.Distance2D(me) <= 1190) >= 1
+                if (v.Count(x => x.Distance2D(me) <= 1190) >= 1
                         && !Active
                         && me.Distance2D(panic) <= 1190
                         && !Push
@@ -161,53 +161,53 @@
                             && eul.CanBeCasted()
                             && Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(eul.Name))
                         {
-                                eul.UseAbility(e);
+                            eul.UseAbility(e);
                         }
                         else if (force != null
                             && force.CanBeCasted()
                             && Menu.Item("Item").GetValue<AbilityToggler>().IsEnabled(force.Name))
                         {
-                                force.UseAbility(e);
+                            force.UseAbility(e);
                         }
                         else if (dagon != null
                             && dagon.CanBeCasted()
                             && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled("item_dagon"))
                         {
-                                dagon.UseAbility(e);
-						}
-						else if (Q != null
-							&& Q.CanBeCasted()
-							&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name))
-						{
-							Q.UseAbility(e);
-						}
-						else if (ethereal != null
+                            dagon.UseAbility(e);
+                        }
+                        else if (Q != null
+                            && Q.CanBeCasted()
+                            && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name))
+                        {
+                            Q.UseAbility(e);
+                        }
+                        else if (ethereal != null
                             && ethereal.CanBeCasted()
                             && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(ethereal.Name))
                         {
-                                ethereal.UseAbility(e);
-                                Utils.Sleep(200, "Linkens");
-                                Utils.Sleep((me.NetworkPosition.Distance2D(e.NetworkPosition) / 650) * 1000, "Linkens");
+                            ethereal.UseAbility(e);
+                            Utils.Sleep(200, "Linkens");
+                            Utils.Sleep((me.NetworkPosition.Distance2D(e.NetworkPosition) / 650) * 1000, "Linkens");
                         }
                         else if (sheep != null
                             && sheep.CanBeCasted()
                             && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(sheep.Name))
                         {
-                                sheep.UseAbility(e);
-						}
-						Utils.Sleep(450, "Linkens");
-					}
+                            sheep.UseAbility(e);
+                        }
+                        Utils.Sleep(450, "Linkens");
+                    }
                     else
                     {
                         float angle = me.FindAngleBetween(e.Position, true);
                         Vector3 pos = new Vector3((float)(e.Position.X - 550 * Math.Cos(angle)), (float)(e.Position.Y - 550 * Math.Sin(angle)), 0);
                         uint elsecount = 0;
-						var v =
-						 ObjectManager.GetEntities<Hero>()
-							.Where(x => x.Team != me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion)
-							.ToList();
+                        var v =
+                         ObjectManager.GetEntities<Hero>()
+                            .Where(x => x.Team != me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion)
+                            .ToList();
 
-						bool magicimune = (!e.IsMagicImmune() && !e.HasModifier("modifier_eul_cyclone"));
+                        bool magicimune = (!e.IsMagicImmune() && !e.HasModifier("modifier_eul_cyclone"));
                         if (Utils.SleepCheck("combo"))
                         {
 
@@ -251,7 +251,7 @@
                                 && Utils.SleepCheck("Rearm"))
                                 glimmer.UseAbility(me);
                             else
-                              elsecount += 1;
+                                elsecount += 1;
                             if (lotus != null
                                 && lotus.CanBeCasted()
                                 && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(lotus.Name)
@@ -289,16 +289,16 @@
                                 && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(Q.Name)
                                 && magicimune && Utils.SleepCheck("Rearm"))
                                 Q.UseAbility(e);
-							else
-								elsecount += 1;
-							if (E != null
-								&& E.CanBeCasted()
-								&& v.Count(x => x.Distance2D(me) <= 800) >= 2
-								&& Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(E.Name)
-								&& magicimune && Utils.SleepCheck("Rearm"))
-								E.UseAbility(Prediction.InFront(me, 150));
-							else
-								elsecount += 1;
+                            else
+                                elsecount += 1;
+                            if (E != null
+                                && E.CanBeCasted()
+                                && v.Count(x => x.Distance2D(me) <= 800) >= 2
+                                && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(E.Name)
+                                && magicimune && Utils.SleepCheck("Rearm"))
+                                E.UseAbility(Prediction.InFront(me, 150));
+                            else
+                                elsecount += 1;
                             if (dagon != null
                                 && dagon.CanBeCasted()
                                 && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled("item_dagon")
@@ -357,12 +357,12 @@
                             {
                                 if (!me.IsChanneling() && Utils.SleepCheck("Rearm"))
                                 {
-									if (Menu.Item("orbwalk").GetValue<bool>() && me.Distance2D(e) <= 1900)
-									{
-										Orbwalking.Orbwalk(e, 0, 1600, true, true);
-									}
-								}
-                               
+                                    if (Menu.Item("orbwalk").GetValue<bool>() && me.Distance2D(e) <= 1900)
+                                    {
+                                        Orbwalking.Orbwalk(e, 0, 1600, true, true);
+                                    }
+                                }
+
                             }
                             Utils.Sleep(150, "combo");
                         }
@@ -412,7 +412,7 @@
                         else
                             elsecount += 1;
                         if (elsecount == 3
-                            && R != null 
+                            && R != null
                             && R.CanBeCasted()
                             && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name)
                             && !R.IsChanneling
@@ -470,14 +470,14 @@
                             && R != null && R.CanBeCasted()
                             && !R.IsChanneling
                             && (
-                            (((soul != null 
-                            && !soul.CanBeCasted())) 
+                            (((soul != null
+                            && !soul.CanBeCasted()))
                             || soul == null)
-                            || (((E != null 
-                            && !E.CanBeCasted())) 
+                            || (((E != null
+                            && !E.CanBeCasted()))
                             || E == null)
-                            | (((guardian != null 
-                            && !guardian.CanBeCasted())) 
+                            | (((guardian != null
+                            && !guardian.CanBeCasted()))
                             || guardian == null)
                             )
                             && Utils.SleepCheck("Rearm")
@@ -505,7 +505,7 @@
                 if ((me.HasModifier("modifier_fountain_aura_buff") && Menu.Item("pushModif").IsActive()) || Push)
                 {
 
-                    if (R.IsChanneling || me.HasModifier("modifier_tinker_rearm") || me.IsChanneling() || R==null) return;
+                    if (R.IsChanneling || me.HasModifier("modifier_tinker_rearm") || me.IsChanneling() || R == null) return;
 
                     if (creeps.Count(x => x.Distance2D(me) <= 1100) >= 1)
                     {
@@ -537,50 +537,50 @@
                             glimmer.UseAbility(me);
                             Utils.Sleep(250, "glimmer");
                         }
-                         if (
-                           E != null && E.CanBeCasted()
-                           && !R.IsChanneling
-                           && (me.Distance2D(safe) <= HIDE_AWAY_RANGE
-                           || !Menu.Item("pushSafe").IsActive())
-                           && creeps.Count(x => x.Distance2D(me) <= 900) >= 2
-                           && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(E.Name)
-                           && Utils.SleepCheck("E")
-                           )
-                        {
-                            E.UseAbility(Prediction.InFront(me, 200));
-                            Utils.Sleep(250, "E");
-                        }
-                         if (
-                           E != null && E.CanBeCasted()
-                           && !R.IsChanneling
-                           && (creeps.Count(x => x.Distance2D(safe) <= 900) <= 1 || me.Distance2D(safe) >= 1190)
-                           && creeps.Count(x => x.Distance2D(me) <= 900) >= 2
-                           && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(E.Name)
-                           && Utils.SleepCheck("E")
-                           )
-                        {
-                            E.UseAbility(Prediction.InFront(me, 200));
-                            Utils.Sleep(250, "E");
-                        }
-                         if (
-                          E != null && !E.CanBeCasted()
+                        if (
+                          E != null && E.CanBeCasted()
                           && !R.IsChanneling
-                          && me.Distance2D(safe) >= 1190
+                          && (me.Distance2D(safe) <= HIDE_AWAY_RANGE
+                          || !Menu.Item("pushSafe").IsActive())
+                          && creeps.Count(x => x.Distance2D(me) <= 900) >= 2
                           && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(E.Name)
                           && Utils.SleepCheck("E")
                           )
                         {
+                            E.UseAbility(Prediction.InFront(me, 200));
+                            Utils.Sleep(250, "E");
+                        }
+                        if (
+                          E != null && E.CanBeCasted()
+                          && !R.IsChanneling
+                          && (creeps.Count(x => x.Distance2D(safe) <= 900) <= 1 || me.Distance2D(safe) >= 1190)
+                          && creeps.Count(x => x.Distance2D(me) <= 900) >= 2
+                          && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(E.Name)
+                          && Utils.SleepCheck("E")
+                          )
+                        {
+                            E.UseAbility(Prediction.InFront(me, 200));
+                            Utils.Sleep(250, "E");
+                        }
+                        if (
+                         E != null && !E.CanBeCasted()
+                         && !R.IsChanneling
+                         && me.Distance2D(safe) >= 1190
+                         && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(E.Name)
+                         && Utils.SleepCheck("E")
+                         )
+                        {
                             me.Move(safe);
                             Utils.Sleep(250, "E");
                         }
-                         if (
-                         blink != null
-                         && me.CanCast()
-                         && (Menu.Item("pushSafe").IsActive()
-                         || !E.CanBeCasted())
-                         && !R.IsChanneling
-                         && blink.CanBeCasted()
-                         )
+                        if (
+                        blink != null
+                        && me.CanCast()
+                        && (Menu.Item("pushSafe").IsActive()
+                        || !E.CanBeCasted())
+                        && !R.IsChanneling
+                        && blink.CanBeCasted()
+                        )
                         {
                             if (me.Distance2D(safe) <= 1190
                                 && me.Distance2D(safe) >= 100
@@ -591,13 +591,13 @@
                                 Utils.Sleep(250, "blink");
                             }
                         }
-                         if (
-                            blink != null
-                            && me.CanCast()
-                            && Menu.Item("panicMod").IsActive()
-                            && !R.IsChanneling
-                            && blink.CanBeCasted()
-                            )
+                        if (
+                           blink != null
+                           && me.CanCast()
+                           && Menu.Item("panicMod").IsActive()
+                           && !R.IsChanneling
+                           && blink.CanBeCasted()
+                           )
                         {
                             if (me.Distance2D(safe) >= 1190
                                 && me.Distance2D(panic) <= 1190
@@ -648,46 +648,46 @@
                     soul.UseAbility();
                     Utils.Sleep(500, "soul");
                 }
-                
-                    if (
-                        travel != null
-                        && travel.CanBeCasted()
-                        && !R.IsChanneling
-                        && Menu.Item("Push Items").GetValue<AbilityToggler>().IsEnabled("item_travel_boots")
-                        && me.Mana <= R.ManaCost + 75
-                        && me.Distance2D(safe) <= HIDE_AWAY_RANGE
-                        && Utils.SleepCheck("travel")
-                       )
+
+                if (
+                    travel != null
+                    && travel.CanBeCasted()
+                    && !R.IsChanneling
+                    && Menu.Item("Push Items").GetValue<AbilityToggler>().IsEnabled("item_travel_boots")
+                    && me.Mana <= R.ManaCost + 75
+                    && me.Distance2D(safe) <= HIDE_AWAY_RANGE
+                    && Utils.SleepCheck("travel")
+                   )
                 {
                     travel.UseAbility(fount.First().Position);
                     Utils.Sleep(300, "travel");
                 }
-                
-                    if (
-                        travel != null
-                        && travel.CanBeCasted()
-                        && creeps.Count(x => x.Distance2D(me) <= 1100) <= 2
-                        && !R.IsChanneling
-                        && Menu.Item("Push Items").GetValue<AbilityToggler>().IsEnabled("item_travel_boots")
-                        && me.Distance2D(safe) <= HIDE_AWAY_RANGE
-                        && Utils.SleepCheck("travel")
-                       )
+
+                if (
+                    travel != null
+                    && travel.CanBeCasted()
+                    && creeps.Count(x => x.Distance2D(me) <= 1100) <= 2
+                    && !R.IsChanneling
+                    && Menu.Item("Push Items").GetValue<AbilityToggler>().IsEnabled("item_travel_boots")
+                    && me.Distance2D(safe) <= HIDE_AWAY_RANGE
+                    && Utils.SleepCheck("travel")
+                   )
                 {
                     travel.UseAbility(fount.First().Position);
                     Utils.Sleep(300, "travel");
                 }
                 else
-                    if (
-                        R != null
-                        && R.CanBeCasted()
-                        && !E.CanBeCasted()
-                        && creeps.Count(x => x.Distance2D(me) >= 1100) >= 2
-                        && !R.IsChanneling
-                        && me.Mana >= R.ManaCost + 75
-                        && me.Distance2D(safe) <= HIDE_AWAY_RANGE
-                        && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name)
-                        && Utils.SleepCheck("R")
-                       )
+                if (
+                    R != null
+                    && R.CanBeCasted()
+                    && !E.CanBeCasted()
+                    && creeps.Count(x => x.Distance2D(me) >= 1100) >= 2
+                    && !R.IsChanneling
+                    && me.Mana >= R.ManaCost + 75
+                    && me.Distance2D(safe) <= HIDE_AWAY_RANGE
+                    && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(R.Name)
+                    && Utils.SleepCheck("R")
+                   )
                 {
                     R.UseAbility();
                     Utils.Sleep(900, "R");
@@ -760,8 +760,8 @@
             AssemblyExtensions.InitAssembly("VickTheRock", "0.2");
 
             Print.LogMessage.Success(" I have several theories I'd like to put into practice.");
-			Menu.AddItem(new MenuItem("orbwalk", "orbwalk").SetValue(true));
-			Menu.AddItem(new MenuItem("keyBind", "Combo Key").SetValue(new KeyBind('D', KeyBindType.Press)));
+            Menu.AddItem(new MenuItem("orbwalk", "orbwalk").SetValue(true));
+            Menu.AddItem(new MenuItem("keyBind", "Combo Key").SetValue(new KeyBind('D', KeyBindType.Press)));
             push.AddItem(new MenuItem("keyPush", "Press Push Key").SetValue(new KeyBind('E', KeyBindType.Press)));
             Menu.AddItem(new MenuItem("keySpamW", "Use Missile and Mana items(DefMode)").SetValue(new KeyBind('F', KeyBindType.Press)));
             Menu.AddItem(new MenuItem("keySpamE", "Use March and Mana items(DefMode)").SetValue(new KeyBind('G', KeyBindType.Press)));
@@ -868,7 +868,7 @@
                 {
                     new Vector3(-6752, 4325, 384),
                 };*/
-            public static readonly Vector3[] 
+            public static readonly Vector3[]
             SafePos =
             {
             new Vector3(-6752, 4325, 384),
@@ -919,7 +919,7 @@
             new Vector3(-6690, 5024, 384),
             new Vector3(-5553, 1961, 384),
         };
-            public static readonly Vector3[] 
+            public static readonly Vector3[]
             PanicPos =
             {
             new Vector3(-752, -6961, 383),
