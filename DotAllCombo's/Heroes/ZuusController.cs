@@ -693,21 +693,19 @@
                 dmgResult += eDmg;
 
 
-            int etherealdamage = (int)((me.TotalStrength * 2) + 75);
-            if (ethereal != null && ethereal.CanBeCasted() && victim.Handle == e?.Handle)
-                dmgResult += etherealdamage * 1.4;
+            var spellamplymult = 1 + (me.TotalIntelligence / 16 / 100);
+            dmgResult = dmgResult * spellamplymult;
+            dmgResult *= 1 - victim.MagicDamageResist;
+            int etherealdamage = (int)((me.TotalIntelligence * 2) + 75);
+            if (ethereal != null && ethereal.CanBeCasted() && victim.Handle == e?.Handle && (vail == null || victim.HasModifier("modifier_item_veil_of_discord_debuff") || vail.CanBeCasted() && Menu.Item("AutoItems").GetValue<AbilityToggler>().IsEnabled(vail.Name) || !Menu.Item("AutoItems").GetValue<AbilityToggler>().IsEnabled(vail.Name)))
+                dmgResult = dmgResult * 1.4 + etherealdamage;
+
+            if (dagon != null && dagon.CanBeCasted() && victim.Handle == e?.Handle && Menu.Item("AutoItems").GetValue<AbilityToggler>().IsEnabled("item_dagon"))
+                dmgResult += dagonDmg[dagon.Level];
             shiva = me.FindItem("item_shivas_guard");
             if (shiva != null && shiva.CanBeCasted() && Menu.Item("AutoItems").GetValue<AbilityToggler>().IsEnabled(shiva.Name))
                 dmgResult += 200;
-            if (dagon != null && dagon.CanBeCasted() && victim.Handle == e?.Handle && Menu.Item("AutoItems").GetValue<AbilityToggler>().IsEnabled("item_dagon"))
-                dmgResult += dagonDmg[dagon.Level];
-            var spellamplymult = 1 + (me.TotalIntelligence / 16 / 100);
-            dmgResult = dmgResult * spellamplymult;
-            if (vail != null && vail.CanBeCasted() && Menu.Item("AutoItems").GetValue<AbilityToggler>().IsEnabled(vail.Name) && !victim.HasModifier("modifier_item_veil_of_discord_debuff") &&
-                ethereal != null && ethereal.CanBeCasted() && Menu.Item("AutoItems").GetValue<AbilityToggler>().IsEnabled(ethereal.Name) && victim.Handle == e?.Handle)
-                dmgResult += etherealdamage * 1.4;
 
-            dmgResult *= 1 - victim.MagicDamageResist;
 
 
             return dmgResult;
