@@ -419,6 +419,7 @@
                            && blink != null
                            && blink.CanBeCasted()
                            && me.CanCast()
+                           && me.Health >= (me.MaximumHealth / 100 * Menu.Item("minHealth").GetValue<Slider>().Value)
                            && v.Health <= damage[v.Handle]
                            && me.Distance2D(posBlink) <= 1180
                            && Menu.Item("AutoItems").GetValue<AbilityToggler>().IsEnabled(blink.Name)
@@ -863,6 +864,7 @@
                 {"item_veil_of_discord", true},
                 {"item_ethereal_blade", true}
             })));
+            ult.AddItem(new MenuItem("minHealth", "Min healh % to ult").SetValue(new Slider(25, 05))); // x/ 10%
             ult.AddItem(new MenuItem("Heelm", "Max Enemies in Range to solo kill").SetValue(new Slider(2, 1, 5)));
             Menu.AddSubMenu(skills);
             Menu.AddSubMenu(items);
