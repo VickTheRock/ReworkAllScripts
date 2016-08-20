@@ -400,6 +400,7 @@
                     || creep.ClassID == ClassID.CDOTA_Unit_Broodmother_Spiderling
                     || creep.HasInventory
                     )
+                    && !creep.Equals(v)
                     && creep.IsAlive
                     && creep.Distance2D(v) <= 320
                     && creep.Team != me.Team
@@ -472,7 +473,7 @@
                                 W.UseAbility(v.Position);
                                 Utils.Sleep(250, "W");
                             }
-                            else if (W != null && W.CanBeCasted() && Units.Count(x => x.Distance2D(pos) <= 300) == 0 && me.Distance2D(v) <= W.GetCastRange() + me.HullRadius + 320 && Menu.Item("AutoSpells").GetValue<AbilityToggler>().IsEnabled(W.Name)
+                            else if (W != null && W.CanBeCasted() && Units.Count(x => x.Distance2D(pos) <= 300) == 0 && me.Distance2D(v) <= W.GetCastRange() + me.HullRadius + 300 && Menu.Item("AutoSpells").GetValue<AbilityToggler>().IsEnabled(W.Name)
                               && Utils.SleepCheck("W"))
                             {
                                 W.UseAbility(pos);
@@ -495,6 +496,11 @@
                             {
                                 shiva.UseAbility();
                                 Utils.Sleep(250, "shiva");
+                            }
+                             if(W!=null && W.CanBeCasted() && me.Distance2D(v)>= W.GetCastRange() + me.HullRadius && me.Distance2D(v) <= W.GetCastRange() + me.HullRadius + 325 && Menu.Item("AutoSpells").GetValue<AbilityToggler>().IsEnabled(W.Name) && Utils.SleepCheck("Move"))
+                            {
+                                me.Move(v.Position);
+                                Utils.Sleep(250, "Move");
                             }
                         }
 
