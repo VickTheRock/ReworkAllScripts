@@ -864,7 +864,7 @@
                 {"item_veil_of_discord", true},
                 {"item_ethereal_blade", true}
             })));
-            ult.AddItem(new MenuItem("minHealth", "Min healh % to ult").SetValue(new Slider(25, 05))); // x/ 10%
+            ult.AddItem(new MenuItem("minHealth", "Min me healh % to blink in killsteal").SetValue(new Slider(25, 05))); // x/ 10%
             ult.AddItem(new MenuItem("Heelm", "Max Enemies in Range to solo kill").SetValue(new Slider(2, 1, 5)));
             Menu.AddSubMenu(skills);
             Menu.AddSubMenu(items);
