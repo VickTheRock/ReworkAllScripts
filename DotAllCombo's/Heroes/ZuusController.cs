@@ -210,6 +210,7 @@
                                 if (
                                     Q != null
                                     && Q.CanBeCasted()
+                                    && (!W.CanBeCasted() || e.Health <= (e.MaximumHealth * 0.5))
                                     && (e.IsLinkensProtected()
                                         || !e.IsLinkensProtected())
                                     && me.CanCast()
@@ -404,7 +405,7 @@
                     && creep.Team != me.Team
                     ).ToList();
                     if (me.IsInvisible()) return;
-
+                    if(v.IsFullMagiclResistZuus()) return;
                     damage[v.Handle] = CalculateDamage(v);
 
                     var Range = me.HullRadius + (dagon == null ? W?.GetCastRange() : dagon.GetCastRange());
@@ -509,6 +510,26 @@
                                     x.Health <= damage[v.Handle]) >=
                             Menu.Item("Heel").GetValue<Slider>().Value)
                         {
+                            if ( // SoulRing Item 
+                                soul != null
+                                && soul.CanBeCasted()
+                                && me.CanCast()
+                                && me.Mana <= R.ManaCost
+                                && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(soul.Name)
+                                )
+                            {
+                                soul.UseAbility();
+                            } // SoulRing Item end
+                            if ( // Arcane Boots Item
+                                arcane != null
+                                && arcane.CanBeCasted()
+                                && me.CanCast()
+                                && me.Mana <= R.ManaCost
+                                && Menu.Item("Items").GetValue<AbilityToggler>().IsEnabled(arcane.Name)
+                                )
+                            {
+                                arcane.UseAbility();
+                            } // Arcane Boots Item end
                             if (ethereal != null
                                   && ethereal.CanBeCasted()
                                   && me.CanCast()
@@ -538,7 +559,6 @@
                             }
                         }
                     }
-
                 } // foreach::END
             }
         } // AutoSpells::END
@@ -849,6 +869,29 @@
         {
 
             Drawing.OnDraw -= DrawUltiDamage;
+        }
+    }
+
+    internal static class ToolsetZuus
+    {
+        public static bool IsFullMagiclResistZuus(this Unit source)
+        {
+            return source.HasModifier("modifier_medusa_stone_gaze_stone")
+                   || source.HasModifier("modifier_huskar_life_break_charge")
+                   || source.HasModifier("modifier_oracle_fates_edict")
+                   || source.HasModifier("modifier_obsidian_destroyer_astral_imprisonment_prison")
+                   || source.HasModifier("modifier_puck_phase_shift")
+                   || source.HasModifier("modifier_eul_cyclone")
+                   || source.HasModifier("modifier_invoker_tornado")
+                   || source.HasModifier("modifier_dazzle_shallow_grave")
+                   || source.HasModifier("modifier_winter_wyvern_winters_curse")
+                   || (source.HasModifier("modifier_legion_commander_duel") && source.ClassID== ClassID.CDOTA_Unit_Hero_Legion_Commander && source.AghanimState())
+                   || source.HasModifier("modifier_brewmaster_storm_cyclone")
+                   || source.HasModifier("modifier_shadow_demon_disruption")
+                   || source.HasModifier("modifier_tusk_snowball_movement")
+                   || source.HasModifier("modifier_abaddon_borrowed_time")
+                   || source.HasModifier("modifier_faceless_void_time_walk")
+                   || source.HasModifier("modifier_huskar_life_break_charge");
         }
     }
 }
