@@ -1,4 +1,4 @@
-﻿namespace DotaAllCombo.Heroes
+namespace DotaAllCombo.Heroes
 {
     using System;
     using System.Collections.Generic;
@@ -110,7 +110,7 @@
             var modifEther = e.HasModifier("modifier_item_ethereal_blade_slow");
             var stoneModif = e.HasModifier("modifier_medusa_stone_gaze_stone");
             sheep = e.Name == "npc_dota_hero_tidehunter" ? null : me.FindItem("item_sheepstick");
-
+            
             if (Active && me.IsAlive && e.IsAlive && Utils.SleepCheck("activated"))
             {
                 var noBlade = e.HasModifier("modifier_item_blade_mail_reflect");
@@ -200,9 +200,31 @@
                                     W != null
                                     && W.CanBeCasted()
                                     && me.CanCast()
-                                    && me.Distance2D(e) < 1300
+                                    && me.Distance2D(e) < W.GetCastRange()+me.HullRadius
                                     && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name)
                                     && Utils.SleepCheck("W"))
+                                {
+                                    W.UseAbility(e.Position);
+                                    Utils.Sleep(200, "W");
+                                }
+                                float angle = me.FindAngleBetween(E.Position, true);
+                                Vector3 pos = new Vector3((float)(e.Position.X - 290 * Math.Cos(angle)), (float)(e.Position.Y - 290 * Math.Sin(angle)), 0);
+                                var Units = ObjectManager.GetEntities<Hero>().Where(x =>
+                                             !x.Equals(e)
+                                             && x.IsAlive
+                                             && x.Distance2D(pos) < e.Distance2D(pos)
+                                             && x.Distance2D(e) <= 320
+                                             && x.Team != me.Team
+                                             ).ToList();
+                                if (
+                                   W != null
+                                   && W.CanBeCasted()
+                                   && me.CanCast() 
+                                   && Units.Count(x => x.Distance2D(pos) <= 290) == 0
+                                   && me.Distance2D(e) > W.GetCastRange() + me.HullRadius
+                                   && me.Distance2D(e) < W.GetCastRange() + 300
+                                   && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name)
+                                   && Utils.SleepCheck("W"))
                                 {
                                     W.UseAbility(e.Position);
                                     Utils.Sleep(200, "W");
@@ -389,22 +411,7 @@
 
                 foreach (var v in enemies)
                 {
-                    var Units = ObjectManager.GetEntities<Unit>().Where(creep =>
-                    (creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Neutral
-                    || creep.ClassID == ClassID.CDOTA_BaseNPC_Invoker_Forged_Spirit
-                    || creep.ClassID == ClassID.CDOTA_BaseNPC_Warlock_Golem
-                    || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep
-                    || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
-                    || creep.ClassID == ClassID.CDOTA_Unit_Hero_Beastmaster_Boar
-                    || creep.ClassID == ClassID.CDOTA_Unit_SpiritBear
-                    || creep.ClassID == ClassID.CDOTA_Unit_Broodmother_Spiderling
-                    || creep.HasInventory
-                    )
-                    && !creep.Equals(v)
-                    && creep.IsAlive
-                    && creep.Distance2D(v) <= 320
-                    && creep.Team != me.Team
-                    ).ToList();
+                    
                     if (me.IsInvisible()) return;
                     if(v.IsFullMagiclResistZuus()) return;
                     damage[v.Handle] = CalculateDamage(v);
@@ -412,8 +419,15 @@
                     var Range = me.HullRadius + (dagon == null ? W?.GetCastRange() : dagon.GetCastRange());
 
                     float angle = me.FindAngleBetween(v.Position, true);
-                    Vector3 pos = new Vector3((float)(v.Position.X - 300 * Math.Cos(angle)), (float)(v.Position.Y - 300 * Math.Sin(angle)), 0);
+                    Vector3 pos = new Vector3((float)(v.Position.X - 290 * Math.Cos(angle)), (float)(v.Position.Y - 290 * Math.Sin(angle)), 0);
                     Vector3 posBlink = new Vector3((float)(v.Position.X - Range * Math.Cos(angle)), (float)(v.Position.Y - Range * Math.Sin(angle)), 0);
+                    var Units = ObjectManager.GetEntities<Hero>().Where(x =>
+                                             !x.Equals(v)
+                                             && x.IsAlive
+                                             && x.Distance2D(pos) < v.Distance2D(pos)
+                                             && x.Distance2D(v) <= 320
+                                             && x.Team != me.Team
+                                             ).ToList();
                     if (enemies.Count(
                         x => x.Distance2D(v) <= 500) <= Menu.Item("Heelm").GetValue<Slider>().Value
                            && blink != null
