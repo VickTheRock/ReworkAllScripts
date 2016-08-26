@@ -172,7 +172,7 @@
                 cyclone = me.FindItem("item_cyclone");
                 sheep = me.FindItem("item_sheepstick");
                 atos = me.FindItem("item_rod_of_atos");
-                e = me.ClosestToMouseTarget(1470);
+                e = Toolset.ClosestToMouse(me);
 
                 float angle = me.FindAngleBetween(e.Position, true);
                 Vector3 pos = new Vector3((float)(e.Position.X - 55 * Math.Cos(angle)), (float)(e.Position.Y - 55 * Math.Sin(angle)), 0);

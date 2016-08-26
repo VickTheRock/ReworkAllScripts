@@ -46,9 +46,9 @@
 				ObjectManager.GetEntities<Hero>()
 					.Where(x => x.Team != me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && !x.IsMagicImmune())
 					.ToList();
-		    e = me.ClosestToMouseTarget(1800);
+            e = Toolset.ClosestToMouse(me);
 
-			if (Active && me.Distance2D(e) <= 1400 && e != null && e.IsAlive && !me.IsInvisible())
+            if (Active && me.Distance2D(e) <= 1400 && e != null && e.IsAlive && !me.IsInvisible())
 			{
 				if (
 					Q != null && Q.CanBeCasted() && me.Distance2D(e) <= 1500

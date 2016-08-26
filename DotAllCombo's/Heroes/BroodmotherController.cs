@@ -36,7 +36,7 @@ namespace DotaAllCombo.Heroes
 			if (!Menu.Item("enabled").IsActive())
 				return;
 			me = ObjectManager.LocalHero;
-            e = me.ClosestToMouseTarget(1900);
+            e = Toolset.ClosestToMouse(me);
             LastHitkey = Menu.Item("LastHit").GetValue<KeyBind>().Active;
 			Combokey = Game.IsKeyDown(Menu.Item("ComboKey").GetValue<KeyBind>().Key);
 			Chasekey = Game.IsKeyDown(Menu.Item("ChaseKey").GetValue<KeyBind>().Key);
@@ -293,8 +293,8 @@ namespace DotaAllCombo.Heroes
 		public void ChasingAll(EventArgs args)
 		{
 
-			e = me.ClosestToMouseTarget(1900);
-		    if (e == null) return;
+            e = Toolset.ClosestToMouse(me);
+            if (e == null) return;
 			if (Combokey  && e.IsAlive && !me.IsVisibleToEnemies)
 			{
 

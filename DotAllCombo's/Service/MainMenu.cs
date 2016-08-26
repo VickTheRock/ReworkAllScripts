@@ -11,7 +11,8 @@ namespace DotaAllCombo.Service
 	class MainMenu
 	{
 		private static Menu mainMenu;
-		private static Menu addonsMenu;
+        private static Menu lastHitMenu;
+        private static Menu addonsMenu;
         private static Menu KeySetting;
         private static Menu GlobalSetting;
         
@@ -22,6 +23,7 @@ namespace DotaAllCombo.Service
 		public static Menu Menu		  { get { return mainMenu;   } }
 		public static Menu AddonsMenu { get { return addonsMenu; } }
 
+       // public static Menu LastHitMenu { get { return lastHitMenu; } }
         public static Menu globalSetting { get { return GlobalSetting; } }
         public static Menu keySetting { get { return KeySetting; } }
         //public static Menu DodgeMenu { get { return dodgeMenu; } }
@@ -34,6 +36,8 @@ namespace DotaAllCombo.Service
 			// Инициализируем главное меню
 			mainMenu = new Menu("DotaAllCombo's", "menuName", true);
 			addonsMenu = new Menu("Addons", "addonsMenu");
+
+          //  lastHitMenu = new Menu("LastHit", "lastHitMenu");
 
             KeySetting = new Menu("Keys Setting", "Keys Setting");
             GlobalSetting = new Menu("Global Setting", "Global Setting");
@@ -72,7 +76,12 @@ namespace DotaAllCombo.Service
 			// Добавление меню с аддонами в главное
 			mainMenu.AddSubMenu(addonsMenu);
 
-			if (!HeroSelector.IsSelected)
+           // lastHitMenu.AddItem(new MenuItem("LastOn", "Auto LastHit creeps").SetValue(true));
+           // lastHitMenu.AddItem(new MenuItem("LastHitKey", "LastHit Key").SetValue(new KeyBind('C', KeyBindType.Press)));
+           // mainMenu.AddSubMenu(lastHitMenu);
+
+
+            if (!HeroSelector.IsSelected)
 			{
 				Print.ConsoleMessage.Success("[DotaAllCombo's] Initialization complete!"); return;
 			}

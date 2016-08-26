@@ -75,9 +75,9 @@
 			Menu.AddSubMenu(ult);
 		}
 		public void Combo()
-		{
-			e = me.ClosestToMouseTarget(2000);
-			if (e == null)
+        {
+            e = Toolset.ClosestToMouse(me);
+            if (e == null)
 				return;
 			if (!Menu.Item("enabled").IsActive())
 				return;

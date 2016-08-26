@@ -60,9 +60,9 @@
 					.ToList();
 			
 			if (Active)
-			{
-				e = me.ClosestToMouseTarget(1800);
-				if (e == null)
+            {
+                e = Toolset.ClosestToMouse(me);
+                if (e == null)
 					return;
 				var track = e.HasModifier("modifier_bounty_hunter_track");
 				if (Menu.Item("orbwalk").GetValue<bool>() && me.Distance2D(e) <= 1900)

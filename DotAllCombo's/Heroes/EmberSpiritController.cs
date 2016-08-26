@@ -33,8 +33,8 @@ namespace DotaAllCombo.Heroes
 			if (!Menu.Item("enabled").IsActive())
 				return;
 
-			e = me.ClosestToMouseTarget(1800);
-			if (Push)
+            e = Toolset.ClosestToMouse(me);
+            if (Push)
 			{
 				Unit fount = ObjectManager.GetEntities<Unit>().FirstOrDefault(x => x.Team == me.Team && x.ClassID == ClassID.CDOTA_Unit_Fountain);
 				var remnant = ObjectManager.GetEntities<Unit>().Where(unit => unit.IsValid && unit.IsAlive && unit.Team == me.Team && unit.Name == "npc_dota_ember_spirit_remnant").ToList();

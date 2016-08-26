@@ -61,8 +61,8 @@
 			satanic = me.FindItem("item_satanic");
 			blink = me.FindItem("item_blink");
 			medall = me.FindItem("item_medallion_of_courage") ?? me.FindItem("item_solar_crest");
-			e = me.ClosestToMouseTarget(3000);
-			if (e == null) return;
+            e = Toolset.ClosestToMouse(me);
+            if (e == null) return;
 
 			var stoneModif = e.HasModifier("modifier_medusa_stone_gaze_stone");
 

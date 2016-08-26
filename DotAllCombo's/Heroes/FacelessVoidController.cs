@@ -94,8 +94,8 @@
 			var v = ObjectManager.GetEntities<Hero>()
 					.Where(x => x.Team != me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion)
 					.ToList();
-			e = me.ClosestToMouseTarget(2400);
-			if (e == null) return;
+            e = Toolset.ClosestToMouse(me);
+            if (e == null) return;
 			if (Active)
 			{
 				if (Menu.Item("orbwalk").GetValue<bool>())

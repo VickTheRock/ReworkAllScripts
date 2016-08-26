@@ -26,8 +26,8 @@ namespace DotaAllCombo.Heroes
 			if (!Menu.Item("enabled").IsActive())
 				return;
 
-			e = me.ClosestToMouseTarget(1800);
-			if (e == null)
+            e = Toolset.ClosestToMouse(me);
+            if (e == null)
 				return;
 			Active = Game.IsKeyDown(Menu.Item("keyBind").GetValue<KeyBind>().Key);
 

@@ -24,7 +24,7 @@
         public void Combo()
         {
             Active = Game.IsKeyDown(Menu.Item("keyBind").GetValue<KeyBind>().Key) && !Game.IsChatOpen;
-            e = me.ClosestToMouseTarget(2000);
+            e = Toolset.ClosestToMouse(me);
 
             if (!Menu.Item("enabled").IsActive())
                 return;

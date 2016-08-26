@@ -60,9 +60,9 @@
 				ObjectManager.GetEntities<Hero>()
 					.Where(x => x.Team != me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && !x.IsMagicImmune())
 					.ToList();
-			e = me.ClosestToMouseTarget(1800);
-			
-			if (e == null) return;
+            e = Toolset.ClosestToMouse(me);
+
+            if (e == null) return;
 			if (Active && me.Distance2D(e) <= 1400 && me.HasModifier("modifier_juggernaut_blade_fury") && Utils.SleepCheck("move"))
 			{
 				me.Move(Prediction.InFront(e, 170));

@@ -46,8 +46,8 @@
 				if (me.CanCast())
 				{
 					mousepos = Game.MousePosition;
-					e = me.ClosestToMouseTarget(1200);
-				    if (me.Distance2D(mousepos) <= 1200)
+                    e = Toolset.ClosestToMouse(me);
+                    if (me.Distance2D(mousepos) <= 1200)
 					{
 						//drunken haze (main combo)
 						if ((W != null && Menu.Item("Skills: ").GetValue<AbilityToggler>().IsEnabled(W.Name)) &&

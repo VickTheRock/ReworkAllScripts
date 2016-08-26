@@ -78,9 +78,9 @@ namespace DotaAllCombo.Heroes
 						count = 0;
 					}
 				}
-			}
-			e = me.ClosestToMouseTarget(1800);
-			if (e == null)
+            }
+            e = Toolset.ClosestToMouse(me);
+            if (e == null)
 				return;
 			if (Active)
 			{

@@ -48,8 +48,8 @@ namespace DotaAllCombo.Heroes
 				ObjectManager.GetEntities<Hero>()
 					.Where(x => x.Team != me.Team && x.IsAlive && x.IsVisible && !x.IsIllusion && !x.IsMagicImmune())
 					.ToList();
-		    e = me.ClosestToMouseTarget(10000);
-			if (e == null)
+            e = Toolset.ClosestToMouse(me);
+            if (e == null)
 				return;
 			var a = ObjectManager.GetEntities<Hero>()
 						.Where(x => x.Team == me.Team && x.IsAlive && x.IsVisible && x.IsIllusion && x.IsControllable).ToList();

@@ -1,4 +1,6 @@
-﻿namespace DotaAllCombo.Heroes
+﻿
+
+namespace DotaAllCombo.Heroes
 {
 	using Ensage.Common;
 	using System;
@@ -9,7 +11,7 @@
 	using Ensage.Common.Extensions;
 	using Ensage.Common.Menu;
 	using SharpDX;
-
+    using Service;
 	internal class PudgeController : Variables, IHeroController
 	{
 		public Ability Q, W, R;
@@ -24,7 +26,6 @@
 
 		public void OnLoadEvent()
 		{
-
 			Menu.AddItem(new MenuItem("enabled", "Enabled").SetValue(true));
 			Menu.AddItem(new MenuItem("orbwalk", "orbwalk").SetValue(true));
 			Menu.AddItem(new MenuItem("Combo Key", "Combo Key").SetValue(new KeyBind('D', KeyBindType.Press)));
@@ -104,8 +105,8 @@
 				}
 			}
 
-			e = me.ClosestToMouseTarget(2200);
-			if (e == null || !me.IsAlive) return;
+            e = Toolset.ClosestToMouse(me);
+            if (e == null || !me.IsAlive) return;
 			sheep = e.ClassID == ClassID.CDOTA_Unit_Hero_Tidehunter ? null : me.FindItem("item_sheepstick");
 			if (R.IsInAbilityPhase || R.IsChanneling || me.IsChanneling()) return;
 			if (Active)
@@ -328,9 +329,9 @@
 		}
 
 		public void CancelHook(object s, ElapsedEventArgs args)
-		{
-			e = me.ClosestToMouseTarget(1800);
-			if (e == null) return;
+        {
+            e = Toolset.ClosestToMouse(me);
+            if (e == null) return;
 			if (e.HasModifier("modifier_spirit_breaker_charge_of_darkness")) return;
 
 			double travelTime = HookPosition.Distance2D(me.Position) / 1600;

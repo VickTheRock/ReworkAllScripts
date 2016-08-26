@@ -102,8 +102,28 @@
 			}
 			return closestHero;
 		}
-
-		private static Hero GetClosestToTarget(List<Hero> units, Vector3 position)
+        public static Hero ClosestToMouse(Hero source, float range = 2500)
+        {
+            var mousePosition = Game.MousePosition;
+            var enemyHeroes =
+                ObjectMgr.GetEntities<Hero>()
+                    .Where(
+                        x =>
+                            x.Team != source.Team && !x.IsIllusion && x.IsAlive && x.IsVisible
+                            && x.Distance2D(mousePosition) <= range);
+            Hero[] closestHero = { null };
+            foreach (
+                var enemyHero in
+                    enemyHeroes.Where(
+                        enemyHero =>
+                            closestHero[0] == null ||
+                            closestHero[0].Distance2D(mousePosition) > enemyHero.Distance2D(mousePosition)))
+            {
+                closestHero[0] = enemyHero;
+            }
+            return closestHero[0];
+        }
+        public static Hero GetClosestToTarget(this List<Hero> units, Vector3 position)
 		{
 			Hero closestHero = null;
 			foreach (var v in units.Where(v => closestHero == null || closestHero.Distance2D(position) > v.Distance2D(position)))

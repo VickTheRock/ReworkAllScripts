@@ -23,8 +23,8 @@
 			if (!Menu.Item("enabled").IsActive())
 				return;
 
-			e = me.ClosestToMouseTarget(1800);
-			if (e == null)
+            e = Toolset.ClosestToMouse(me);
+            if (e == null)
 				return;
 			Q = me.Spellbook.SpellQ;
 			W = me.Spellbook.SpellW;

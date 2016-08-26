@@ -74,8 +74,8 @@
 			if (Menu.Item("enabled").IsActive() && Utils.SleepCheck("combo"))
 			{
 
-				e = me.ClosestToMouseTarget(2500);
-				if (e == null)
+                e = Toolset.ClosestToMouse(me);
+                if (e == null)
 					return;
 				Q = me.Spellbook.SpellQ;
 				W = me.Spellbook.SpellW;

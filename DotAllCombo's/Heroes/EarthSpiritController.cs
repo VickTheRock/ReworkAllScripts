@@ -22,8 +22,7 @@
             AutoUlt = Menu.Item("oneult").IsActive();
             if (!Menu.Item("enabled").IsActive())
                 return;
-
-            e = me.ClosestToMouseTarget(1300);
+            e = Toolset.ClosestToMouse(me);
             if (e == null) return;
 
 			Q = me.FindSpell("earth_spirit_boulder_smash");

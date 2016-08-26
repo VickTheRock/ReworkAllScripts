@@ -24,9 +24,9 @@
 		private int[] rDmg;
 
 		public void Combo()
-		{
-			e = me.ClosestToMouseTarget(2000);
-			if (e == null) return;
+        {
+            e = Toolset.ClosestToMouse(me);
+            if (e == null) return;
 
 			//spell
 			Q = me.Spellbook.SpellQ;

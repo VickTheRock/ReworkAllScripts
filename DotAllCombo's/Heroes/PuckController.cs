@@ -24,10 +24,10 @@
 		{
 			if (!Menu.Item("enabled").IsActive())
 				return;
-			e = me.ClosestToMouseTarget(2000);
-			
+            e = Toolset.ClosestToMouse(me);
 
-			if (me == null || e == null)
+
+            if (me == null || e == null)
 				return;
 			// skills
 				Q = me.Spellbook.SpellQ;

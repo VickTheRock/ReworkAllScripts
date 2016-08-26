@@ -551,7 +551,7 @@
                 dagon = me.Inventory.Items.FirstOrDefault(item => item.Name.Contains("item_dagon"));
                 ethereal = me.FindItem("item_ethereal_blade");
 
-                e = me.ClosestToMouseTarget(2000);
+                e = Toolset.ClosestToMouse(me);
                 if (e == null) return;
                 if ( // ethereal
                     ethereal != null

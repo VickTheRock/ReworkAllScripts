@@ -9,22 +9,24 @@ namespace DotaAllCombo.Service
 		//private static AutoDodge autoDodge;
 		//private static AutoStack autoStack;
 		private static CreepControl creepControl;
-		private static OthersAddons othersAddons;
+        //private static LastHit lastHit;
+        private static OthersAddons othersAddons;
 		public static void RunAddons()
 		{
 			if (!IsLoaded) return;
 
 			creepControl.RunScript();
-			//autoStack.RunScript();
-			//autoDodge.RunScript();
-			othersAddons.RunScript();
+            //autoStack.RunScript();
+            //autoDodge.RunScript();
+            //lastHit.RunScript();
+            othersAddons.RunScript();
 		}
 
 		public static void Load()
 		{
-			
-			//autoDodge = new AutoDodge();
-			//autoStack = new AutoStack();
+
+            //autoDodge = new AutoDodge();
+            //lastHit = new LastHit();
 			creepControl = new CreepControl();
 			othersAddons = new OthersAddons();
 
@@ -36,8 +38,9 @@ namespace DotaAllCombo.Service
 		}
 
 		public static void Unload()
-		{
-			othersAddons.Unload();
+        {
+           // lastHit.Unload();
+            othersAddons.Unload();
 			//autoDodge.Unload();
 			//autoStack.Unload();
 			creepControl.Unload();

@@ -100,8 +100,8 @@
 
 		public void Combo()
 		{
-			e = me.ClosestToMouseTarget(2000);
-			if (e.HasModifier("modifier_abaddon_borrowed_time")
+            e = Toolset.ClosestToMouse(me);
+            if (e.HasModifier("modifier_abaddon_borrowed_time")
 			|| e.HasModifier("modifier_item_blade_mail_reflect")
 			|| e.IsMagicImmune())
 			{

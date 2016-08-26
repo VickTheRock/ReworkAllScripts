@@ -63,7 +63,7 @@
 
             if (Active && me.IsAlive && Utils.SleepCheck("activated"))
             {
-                e = me.ClosestToMouseTarget(2000);
+                e = Toolset.ClosestToMouse(me);
                 if (e == null) return; var modifEther = e.HasModifier("modifier_item_ethereal_blade_slow");
                 var stoneModif = e.HasModifier("modifier_medusa_stone_gaze_stone");
                 var noBlade = e.HasModifier("modifier_item_blade_mail_reflect");
@@ -560,7 +560,7 @@
 
             if (Menu.Item("autoUlt").IsActive())
             {
-                e = me.ClosestToMouseTarget(8000);
+                e = Toolset.ClosestToMouse(me, 9000);
 
                 foreach (var v in enemies.Where(x => !x.IsMagicImmune()))
                 {

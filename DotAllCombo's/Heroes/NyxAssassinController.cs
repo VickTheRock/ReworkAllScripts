@@ -26,9 +26,9 @@
 
 			Active = Game.IsKeyDown(Menu.Item("Combo Key").GetValue<KeyBind>().Key) && !Game.IsChatOpen;
 			if (Active && me.IsAlive)
-			{
-				e = me.ClosestToMouseTarget(2000);
-				if (e == null) return;
+            {
+                e = Toolset.ClosestToMouse(me);
+                if (e == null) return;
 				Q = me.Spellbook.SpellQ;
 
 				W = me.Spellbook.SpellW;

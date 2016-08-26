@@ -50,9 +50,9 @@
 			var modifInv = me.IsInvisible();
 
 			if (Active)
-			{
-				e = me.ClosestToMouseTarget(1800);
-				if (e == null)
+            {
+                e = Toolset.ClosestToMouse(me);
+                if (e == null)
 					return;
 				
 				if ((W!=null && W.CanBeCasted() && Menu.Item("Skills").GetValue<AbilityToggler>().IsEnabled(W.Name)))

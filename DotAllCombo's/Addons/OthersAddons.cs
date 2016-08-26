@@ -77,9 +77,9 @@ namespace DotaAllCombo.Addons
 			if (!MainMenu.OthersMenu.Item("others").IsActive() || !Game.IsInGame || me == null || Game.IsPaused || Game.IsWatchingGame) return;
 
 
-			e = me.ClosestToMouseTarget(10000);
-			//TODO:UNAGRRO
-			if (MainMenu.OthersMenu.Item("Auto Un Aggro").GetValue<bool>())
+            e = Toolset.ClosestToMouse(me, 10000);
+            //TODO:UNAGRRO
+            if (MainMenu.OthersMenu.Item("Auto Un Aggro").GetValue<bool>())
 			{
 				Toolset.UnAggro(me);
 			}
@@ -183,11 +183,11 @@ namespace DotaAllCombo.Addons
 					if (rangeDisplay != null) rangeDisplay.Dispose();
 					rangeDisplay = null;
 				}
-			
 
-			//TODO:TARGETMARKER
-			e = me.ClosestToMouseTarget(10000);
-			if (e != null && e.IsValid && !e.IsIllusion && e.IsAlive && e.IsVisible &&
+
+            //TODO:TARGETMARKER
+            e = Toolset.ClosestToMouse(me, 10000);
+            if (e != null && e.IsValid && !e.IsIllusion && e.IsAlive && e.IsVisible &&
 			    MainMenu.OthersMenu.Item("ShowTargetMarker").GetValue<bool>())
 			{
 				DrawTarget();

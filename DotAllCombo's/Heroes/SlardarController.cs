@@ -39,8 +39,8 @@
 			medall = me.FindItem("item_medallion_of_courage") ?? me.FindItem("item_solar_crest");
 			Shiva = me.FindItem("item_shivas_guard");
 
-			e = me.ClosestToMouseTarget(1800);
-			if (e == null) return;
+            e = Toolset.ClosestToMouse(me);
+            if (e == null) return;
 			var ModifR = e.HasModifier("modifier_slardar_amplify_damage");
 			var stoneModif = e.HasModifier("modifier_medusa_stone_gaze_stone");
 

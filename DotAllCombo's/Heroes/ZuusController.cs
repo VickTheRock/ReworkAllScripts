@@ -104,7 +104,7 @@
                 }
             } // if(Push)::END
 
-            e = me.ClosestToMouseTarget(2000);
+            e = Toolset.ClosestToMouse(me);
             if (e == null) return;
 
             var modifEther = e.HasModifier("modifier_item_ethereal_blade_slow");
@@ -385,7 +385,7 @@
 
             if (Menu.Item("AutoUsage").IsActive())
             {
-                e = me.ClosestToMouseTarget(8000);
+                e = Toolset.ClosestToMouse(me,8000);
 
                 foreach (var v in enemies)
                 {
